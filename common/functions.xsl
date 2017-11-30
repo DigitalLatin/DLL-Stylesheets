@@ -1359,7 +1359,7 @@ of this software, even if advised of the possibility of such damage.
                   else if (@n) then @n else @xml:id"/>
                 <xsl:variable name="detail" select="if ($context) then key('WITDETAIL',
                   concat('#', $context/@xml:id))[@wit = $wit] else false()"/>
-                <xsl:if test="$detail"> (<xsl:apply-templates select="$detail/node()"/>)<xsl:if
+                <xsl:if test="$detail"> (<xsl:value-of select="tei:getWitDetail($detail[1])"/>)<xsl:if
                   test="not($last)"><xsl:text> </xsl:text></xsl:if></xsl:if>
               </xsl:for-each>
             </xsl:when>
@@ -1389,6 +1389,19 @@ of this software, even if advised of the possibility of such damage.
   <xsl:function name="tei:getWitness" as="xs:string*">
     <xsl:param name="witness"/>
     <xsl:value-of select="tei:getWitness($witness, (), '')"/>
+  </xsl:function>
+  
+  <xsl:function name="tei:getWitDetail">
+    <xsl:param name="detail"/>
+    <xsl:choose>
+      <xsl:when test="$detail/node()"><xsl:apply-templates select="$detail/node()"/></xsl:when>
+      <xsl:otherwise>
+        <xsl:choose>
+          <xsl:when test="$detail/@type='correction-altered'">p.c.</xsl:when>
+          <xsl:when test="$detail/@type='correction-original'">a.c.</xsl:when>
+        </xsl:choose>
+      </xsl:otherwise>
+    </xsl:choose>
   </xsl:function>
 
     <xsl:function name="tei:createSpecName" as="xs:string">
