@@ -132,7 +132,6 @@ of this software, even if advised of the possibility of such damage.
   <xsl:key match="tei:elementSpec" name="ElementModule" use="@module"/>
   <xsl:key match="tei:classSpec" name="ClassModule" use="@module"/>
   <xsl:key match="tei:macroSpec" name="MacroModule" use="@module"/>
-  <xsl:key match="tei:macroSpec[@type='dt']" name="DataMacroModule" use="@module"/>
   <xsl:key match="tei:dataSpec" name="MacroModule" use="@module"/>
   <xsl:key match="tei:dataSpec" name="DataMacroModule" use="@module"/>
   <xsl:key match="tei:moduleSpec" name="Modules" use="1"/>
@@ -330,7 +329,18 @@ of this software, even if advised of the possibility of such damage.
   
   <xsl:template match="tei:anyElement" mode="tangle">
     <xsl:variable name="spec" select="ancestor::tei:elementSpec|ancestor::tei:macroSpec"/>
-    <ref xmlns="http://relaxng.org/ns/structure/1.0" name="{concat('anyElement-',$spec/@ident)}"/>
+    <!-- "owe" = occurence wrapper element -->
+    <xsl:variable name="owe" select="tei:generateIndicators(@minOccurs,@maxOccurs)"/>
+    <xsl:choose>
+      <xsl:when test="string-length($owe) eq 0">
+        <ref xmlns="http://relaxng.org/ns/structure/1.0" name="{concat('anyElement-',$spec/@ident)}"/>
+      </xsl:when>
+      <xsl:otherwise>
+        <xsl:element name="{$owe}" namespace="http://relaxng.org/ns/structure/1.0">
+          <ref xmlns="http://relaxng.org/ns/structure/1.0" name="{concat('anyElement-',$spec/@ident)}"/>
+        </xsl:element>
+      </xsl:otherwise>
+    </xsl:choose>
   </xsl:template>
 
   <xsl:template match="tei:attRef" mode="tangle">  
@@ -883,7 +893,7 @@ select="$makeDecls"/></xsl:message>
                   </xsl:if>
                   <xsl:if test="not($oddmode = 'tei')">
                     <a:documentation>
-                      <xsl:sequence select="tei:makeDescription(., true())"/>
+                      <xsl:sequence select="tei:makeDescription(., true(), true())"/>
                     </a:documentation>
                   </xsl:if>
                   <xsl:choose>
@@ -1028,7 +1038,7 @@ select="$makeDecls"/></xsl:message>
         </value>
         <xsl:if test="not($oddmode='tei')">
           <a:documentation>
-	    <xsl:sequence select="tei:makeDescription(.,true())"/>
+	    <xsl:sequence select="tei:makeDescription(., true(), true())"/>
           </a:documentation>
         </xsl:if>
       </xsl:for-each>
@@ -1154,7 +1164,6 @@ select="$makeDecls"/></xsl:message>
                   </xsl:otherwise>
                 </xsl:choose>
               </define>
-              <xsl:apply-templates select="tei:constraintSpec"/>
             </Wrapper>
           </xsl:with-param>
         </xsl:call-template>
@@ -1410,7 +1419,7 @@ select="$makeDecls"/></xsl:message>
             </value>
             <xsl:if test="not($oddmode='tei')">
               <a:documentation>
-                <xsl:sequence select="tei:makeDescription(.,true())"/>
+                <xsl:sequence select="tei:makeDescription(., true(), true())"/>
               </a:documentation>
             </xsl:if>
           </xsl:for-each>
@@ -1462,7 +1471,7 @@ select="$makeDecls"/></xsl:message>
       </xsl:if>
       <xsl:if test="not($oddmode='tei')">
         <a:documentation>
-	  <xsl:sequence select="tei:makeDescription(.,true())"/>
+	  <xsl:sequence select="tei:makeDescription(., true(), true())"/>
         </a:documentation>
       </xsl:if>
       <xsl:variable name="minmax" select="tei:minOmaxO( tei:datatype/@minOccurs, tei:datatype/@maxOccurs )"/>
@@ -2044,7 +2053,7 @@ select="$makeDecls"/></xsl:message>
   <xsl:template name="die">
     <xsl:param name="message"/>
     <xsl:message terminate="yes">
-      <xsl:text>Error: odd2odd.xsl: </xsl:text> 
+      <xsl:text>Error: teiodds.xsl: </xsl:text> 
       <xsl:value-of select="$message"/>
     </xsl:message>
   </xsl:template>
@@ -2389,7 +2398,7 @@ select="$makeDecls"/></xsl:message>
 	  <xsl:value-of select="$fullname"/>
 	</xsl:when>
 	<xsl:when test="key('IDENTS',$lookup)">
-	  <xsl:for-each select="key('IDENTS',$lookup)">
+	  <xsl:for-each select="key('IDENTS',$lookup)[1]">
 	    <xsl:choose>
 	      <xsl:when test="@prefix and starts-with($fullname,@prefix)">
 		<xsl:value-of select="$fullname"/>

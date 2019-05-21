@@ -20,7 +20,7 @@ Tmacro.paraContent =
    | Tmodel.lLike)*
 Tmacro.limitedContent = (text | Tmodel.limitedPhrase | Tmodel.inter)*
 Tmacro.phraseSeq =
-  (text | Tmodel.gLike | Tmodel.phrase | Tmodel.global)*
+  (text | Tmodel.gLike | Tmodel.qLike | Tmodel.phrase | Tmodel.global)*
 Tmacro.phraseSeq.limited =
   (text | Tmodel.limitedPhrase | Tmodel.global)*
 Tmacro.specialPara =
@@ -41,6 +41,14 @@ Tatt.ascribed.attribute.who =
   
   ## indicates the person, or group of people, to whom the element content is ascribed.
   attribute who {
+    list { xsd:anyURI+ }
+  }?
+Tatt.ascribed.directed.attributes =
+  Tatt.ascribed.attributes, Tatt.ascribed.directed.attribute.toWhom
+Tatt.ascribed.directed.attribute.toWhom =
+  
+  ## indicates the person, or group of people, to whom a speech act or action is directed.
+  attribute toWhom {
     list { xsd:anyURI+ }
   }?
 Tatt.canonical.attributes =
@@ -107,7 +115,7 @@ Tatt.dimensions.attributes =
 Tatt.dimensions.attribute.unit =
   
   ## names the unit used for the measurement
-  ## Suggested values include: 1] cm(centimetres) ; 2] mm(millimetres) ; 3] in(inches) ; 4] lines; 5] chars(characters) 
+  ## Suggested values include: 1] cm (centimetres) ; 2] mm (millimetres) ; 3] in (inches) ; 4] lines; 5] chars (characters) 
   attribute unit {
     
     ## (centimetres) 
@@ -165,7 +173,7 @@ Tatt.dimensions.attribute.scope =
 Tatt.written.attributes = Tatt.written.attribute.hand
 Tatt.written.attribute.hand =
   
-  ## points to a handNote element describing the hand considered responsible for the textual content of the element concerned.
+  ## points to a handNote element describing the hand considered responsible for the content of the element concerned.
   attribute hand { xsd:anyURI }?
 Tatt.damaged.attributes =
   Tatt.dimensions.attributes,
@@ -510,9 +518,7 @@ Tatt.global.responsibility.attribute.resp =
     list { xsd:anyURI+ }
   }?
 Tatt.editLike.attributes =
-  Tatt.dimensions.attributes,
-  Tatt.editLike.attribute.evidence,
-  Tatt.editLike.attribute.instant
+  Tatt.editLike.attribute.evidence, Tatt.editLike.attribute.instant
 Tatt.editLike.attribute.evidence =
   
   ## indicates the nature of the evidence supporting the reliability or accuracy of the intervention or interpretation.
@@ -690,7 +696,7 @@ Tatt.measurement.attributes =
 Tatt.measurement.attribute.unit =
   
   ## indicates the units used for the measurement, usually using the standard symbol for the desired units.
-  ## Suggested values include: 1] m(metre) ; 2] kg(kilogram) ; 3] s(second) ; 4] Hz(hertz) ; 5] Pa(pascal) ; 6] Ω(ohm) ; 7] L(litre) ; 8] t(tonne) ; 9] ha(hectare) ; 10] Å(ångström) ; 11] mL(millilitre) ; 12] cm(centimetre) ; 13] dB(decibel) ; 14] kbit(kilobit) ; 15] Kibit(kibibit) ; 16] kB(kilobyte) ; 17] KiB(kibibyte) ; 18] MB(megabyte) ; 19] MiB(mebibyte) 
+  ## Suggested values include: 1] m (metre) ; 2] kg (kilogram) ; 3] s (second) ; 4] Hz (hertz) ; 5] Pa (pascal) ; 6] Ω (ohm) ; 7] L (litre) ; 8] t (tonne) ; 9] ha (hectare) ; 10] Å (ångström) ; 11] mL (millilitre) ; 12] cm (centimetre) ; 13] dB (decibel) ; 14] kbit (kilobit) ; 15] Kibit (kibibit) ; 16] kB (kilobyte) ; 17] KiB (kibibyte) ; 18] MB (megabyte) ; 19] MiB (mebibyte) 
   attribute unit {
     
     ## (metre) SI base unit of length
@@ -1049,32 +1055,6 @@ sch:pattern [
   "\x{a}" ~
   "   "
 ]
-Tatt.tableDecoration.attributes =
-  Tatt.tableDecoration.attribute.role,
-  Tatt.tableDecoration.attribute.rows,
-  Tatt.tableDecoration.attribute.cols
-Tatt.tableDecoration.attribute.role =
-  
-  ## indicates the kind of information held in this cell or in each cell of this row.
-  ## Suggested values include: 1] label; 2] data
-  [ a:defaultValue = "data" ]
-  attribute role {
-    
-    ## labelling or descriptive information only.
-    "label"
-    | 
-      ## data values.
-      "data"
-    | xsd:token { pattern = "(\p{L}|\p{N}|\p{P}|\p{S})+" }
-  }?
-Tatt.tableDecoration.attribute.rows =
-  
-  ## indicates the number of rows occupied by this cell or row.
-  [ a:defaultValue = "1" ] attribute rows { xsd:nonNegativeInteger }?
-Tatt.tableDecoration.attribute.cols =
-  
-  ## (columns) indicates the number of columns occupied by this cell or row.
-  [ a:defaultValue = "1" ] attribute cols { xsd:nonNegativeInteger }?
 Tatt.timed.attributes =
   Tatt.timed.attribute.start, Tatt.timed.attribute.end
 Tatt.timed.attribute.start =
@@ -1151,10 +1131,10 @@ Tatt.citing.attribute.unit =
       ## the element identifies a part of a book or collection.
       "part"
     | 
-      ## the element identifies an entry number or label in a list of entries.
+      ## the element identifies a column.
       "column"
     | 
-      ## the element identifies a column.
+      ## the element identifies an entry number or label in a list of entries.
       "entry"
     | xsd:token { pattern = "(\p{L}|\p{N}|\p{P}|\p{S})+" }
   }?
@@ -1248,15 +1228,16 @@ Tmodel.dateLike_sequence = Tdate, Ttime
 Tmodel.dateLike_sequenceOptional = Tdate?, Ttime?
 Tmodel.dateLike_sequenceOptionalRepeatable = Tdate*, Ttime*
 Tmodel.dateLike_sequenceRepeatable = Tdate+, Ttime+
-Tmodel.measureLike = Tnum | Tmeasure | TmeasureGrp | Tgeo
-Tmodel.measureLike_alternation = Tnum | Tmeasure | TmeasureGrp | Tgeo
-Tmodel.measureLike_sequence = Tnum, Tmeasure, TmeasureGrp, Tgeo
+Tmodel.measureLike = Tnum | Tmeasure | TmeasureGrp | Tunit | Tgeo
+Tmodel.measureLike_alternation =
+  Tnum | Tmeasure | TmeasureGrp | Tunit | Tgeo
+Tmodel.measureLike_sequence = Tnum, Tmeasure, TmeasureGrp, Tunit, Tgeo
 Tmodel.measureLike_sequenceOptional =
-  Tnum?, Tmeasure?, TmeasureGrp?, Tgeo?
+  Tnum?, Tmeasure?, TmeasureGrp?, Tunit?, Tgeo?
 Tmodel.measureLike_sequenceOptionalRepeatable =
-  Tnum*, Tmeasure*, TmeasureGrp*, Tgeo*
+  Tnum*, Tmeasure*, TmeasureGrp*, Tunit*, Tgeo*
 Tmodel.measureLike_sequenceRepeatable =
-  Tnum+, Tmeasure+, TmeasureGrp+, Tgeo+
+  Tnum+, Tmeasure+, TmeasureGrp+, Tunit+, Tgeo+
 Tmodel.egLike = notAllowed
 Tmodel.egLike_alternation = notAllowed
 Tmodel.egLike_sequence = empty
@@ -1399,6 +1380,7 @@ Tmodel.linePart =
   | Tdel
   | Tunclear
   | Tzone
+  | Tpath
   | Tdamage
   | ThandShift
   | Trestore
@@ -1461,6 +1443,7 @@ Tmodel.listLike =
   | TlistPerson
   | TlistPlace
   | TlistRelation
+  | TlistObject
   | TlistNym
   | Ttable
 Tmodel.listLike_alternation =
@@ -1470,6 +1453,7 @@ Tmodel.listLike_alternation =
   | TlistPerson
   | TlistPlace
   | TlistRelation
+  | TlistObject
   | TlistNym
   | Ttable
 Tmodel.listLike_sequence =
@@ -1479,6 +1463,7 @@ Tmodel.listLike_sequence =
   TlistPerson,
   TlistPlace,
   TlistRelation,
+  TlistObject,
   TlistNym,
   Ttable
 Tmodel.listLike_sequenceOptional =
@@ -1488,6 +1473,7 @@ Tmodel.listLike_sequenceOptional =
   TlistPerson?,
   TlistPlace?,
   TlistRelation?,
+  TlistObject?,
   TlistNym?,
   Ttable?
 Tmodel.listLike_sequenceOptionalRepeatable =
@@ -1497,6 +1483,7 @@ Tmodel.listLike_sequenceOptionalRepeatable =
   TlistPerson*,
   TlistPlace*,
   TlistRelation*,
+  TlistObject*,
   TlistNym*,
   Ttable*
 Tmodel.listLike_sequenceRepeatable =
@@ -1506,6 +1493,7 @@ Tmodel.listLike_sequenceRepeatable =
   TlistPerson+,
   TlistPlace+,
   TlistRelation+,
+  TlistObject+,
   TlistNym+,
   Ttable+
 Tmodel.noteLike = Tnote
@@ -1757,6 +1745,7 @@ Tmodel.nameLike =
   | Trs
   | Tidno
   | Tmodel.persNamePart
+  | TobjectName
 Tmodel.nameLike_alternation =
   Tmodel.nameLike.agent_alternation
   | Tmodel.offsetLike_alternation
@@ -1764,34 +1753,39 @@ Tmodel.nameLike_alternation =
   | Trs
   | Tidno
   | Tmodel.persNamePart_alternation
+  | TobjectName
 Tmodel.nameLike_sequence =
   Tmodel.nameLike.agent_sequence,
   Tmodel.offsetLike_sequence,
   Tmodel.placeStateLike_sequence,
   Trs,
   Tidno,
-  Tmodel.persNamePart_sequence
+  Tmodel.persNamePart_sequence,
+  TobjectName
 Tmodel.nameLike_sequenceOptional =
   Tmodel.nameLike.agent_sequenceOptional?,
   Tmodel.offsetLike_sequenceOptional?,
   Tmodel.placeStateLike_sequenceOptional?,
   Trs?,
   Tidno?,
-  Tmodel.persNamePart_sequenceOptional?
+  Tmodel.persNamePart_sequenceOptional?,
+  TobjectName?
 Tmodel.nameLike_sequenceOptionalRepeatable =
   Tmodel.nameLike.agent_sequenceOptionalRepeatable*,
   Tmodel.offsetLike_sequenceOptionalRepeatable*,
   Tmodel.placeStateLike_sequenceOptionalRepeatable*,
   Trs*,
   Tidno*,
-  Tmodel.persNamePart_sequenceOptionalRepeatable*
+  Tmodel.persNamePart_sequenceOptionalRepeatable*,
+  TobjectName*
 Tmodel.nameLike_sequenceRepeatable =
   Tmodel.nameLike.agent_sequenceRepeatable+,
   Tmodel.offsetLike_sequenceRepeatable+,
   Tmodel.placeStateLike_sequenceRepeatable+,
   Trs+,
   Tidno+,
-  Tmodel.persNamePart_sequenceRepeatable+
+  Tmodel.persNamePart_sequenceRepeatable+,
+  TobjectName+
 Tmodel.global =
   Tmodel.global.meta
   | Tmodel.milestoneLike
@@ -1812,6 +1806,7 @@ Tmodel.biblPart =
   | Textent
   | Tavailability
   | TlistRelation
+  | TobjectIdentifier
 Tmodel.frontPart =
   Tmodel.frontPart.drama | TlistBibl | TdivGen | TtitlePage
 Tmodel.addrPart =
@@ -1892,6 +1887,7 @@ Tmodel.correspActionPart =
 Tmodel.correspContextPart = Tmodel.ptrLike | Tmodel.pLike | Tnote
 Tmodel.correspDescPart = Tnote | TcorrespAction | TcorrespContext
 Tmodel.resourceLike = Tfacsimile | TsourceDoc | Ttext
+Tmodel.objectLike = Tobject | TlistObject
 Tatt.personal.attributes =
   Tatt.naming.attributes,
   Tatt.personal.attribute.full,
@@ -1969,7 +1965,8 @@ Tp =
   element p {
     Tmacro.paraContent
     >> sch:pattern [
-         id = "testbasic-p-abstractModel-p-constraint-report-4"
+         id =
+           "testbasic-p-abstractModel-structure-p-constraint-report-5"
          "\x{a}" ~
          "            "
          sch:rule [
@@ -1978,9 +1975,9 @@ Tp =
            "               "
            sch:report [
              test =
-               "not(ancestor::floatingText) and (ancestor::tei:p or ancestor::tei:ab)          and not(parent::tei:exemplum                |parent::tei:item                |parent::tei:note                |parent::tei:q                |parent::tei:quote                |parent::tei:remarks                |parent::tei:said                |parent::tei:sp                |parent::tei:stage                |parent::tei:cell                |parent::tei:figure                )"
+               "not(ancestor::tei:floatingText) and (ancestor::tei:p or ancestor::tei:ab)          and not(parent::tei:exemplum                |parent::tei:item                |parent::tei:note                |parent::tei:q                |parent::tei:quote                |parent::tei:remarks                |parent::tei:said                |parent::tei:sp                |parent::tei:stage                |parent::tei:cell                |parent::tei:figure                )"
              "\x{a}" ~
-             "        Abstract model violation: Paragraphs may not contain other paragraphs or ab elements.\x{a}" ~
+             "        Abstract model violation: Paragraphs may not occur inside other paragraphs or ab elements.\x{a}" ~
              "      "
            ]
            "\x{a}" ~
@@ -1991,7 +1988,7 @@ Tp =
        ]
     >> sch:pattern [
          id =
-           "testbasic-p-abstractModel-structure-l-constraint-report-5"
+           "testbasic-p-abstractModel-structure-l-constraint-report-6"
          "\x{a}" ~
          "            "
          sch:rule [
@@ -2059,10 +2056,9 @@ Tsaid =
   element said {
     Tmacro.specialPara,
     Tatt.global.attributes,
-    Tatt.ascribed.attributes,
+    Tatt.ascribed.directed.attributes,
     
     ## may be used to indicate whether the quoted matter is regarded as having been vocalized or signed.
-    [ a:defaultValue = "unknown" ]
     attribute aloud {
       xsd:boolean
       | (
@@ -2093,6 +2089,7 @@ Tquote =
     Tmacro.specialPara,
     Tatt.global.attributes,
     Tatt.typed.attributes,
+    Tatt.notated.attributes,
     empty
   }
 Tq =
@@ -2101,7 +2098,7 @@ Tq =
   element q {
     Tmacro.specialPara,
     Tatt.global.attributes,
-    Tatt.ascribed.attributes,
+    Tatt.ascribed.directed.attributes,
     
     ## may be used to indicate whether the offset passage is spoken or thought, or to characterize it more finely.
     ## Suggested values include: 1] spoken; 2] thought; 3] written; 4] soCalled; 5] foreign; 6] distinct; 7] term; 8] emph; 9] mentioned
@@ -2163,10 +2160,38 @@ Tdesc =
   
   ## (description) contains a brief description of the object documented by its parent element, typically a documentation element or an entity. [22.4.1. Description of Components]
   element desc {
-    Tmacro.limitedContent,
+    Tmacro.limitedContent
+    >> sch:pattern [
+         id =
+           "testbasic-desc-deprecationInfo-only-in-deprecated-constraint-rule-10"
+         "\x{a}" ~
+         "            "
+         sch:rule [
+           context = "tei:desc[ @type eq 'deprecationInfo']"
+           "\x{a}" ~
+           "	              "
+           sch:assert [
+             test = "../@validUntil"
+             "Information about a\x{a}" ~
+             "	deprecation should only be present in a specification element\x{a}" ~
+             "	that is being deprecated: that is, only an element that has a\x{a}" ~
+             "	@validUntil attribute should have a child <desc\x{a}" ~
+             '	type="deprecationInfo">.'
+           ]
+           "\x{a}" ~
+           "            "
+         ]
+         "\x{a}" ~
+         "         "
+       ],
     Tatt.global.attributes,
     Tatt.translatable.attributes,
-    Tatt.typed.attributes,
+    Tatt.typed.attribute.subtype,
+    
+    ## characterizes the element in some sense, using any convenient classification scheme or typology.
+    attribute type {
+      xsd:token { pattern = "(\p{L}|\p{N}|\p{P}|\p{S})+" }
+    }?,
     empty
   }
 Tgloss =
@@ -2214,7 +2239,7 @@ Tchoice =
   
   ## groups a number of alternative encodings for the same point in a text. [3.4. Simple Editorial Changes]
   element choice {
-    (Tmodel.choicePart | Tchoice)*, Tatt.global.attributes, empty
+    (Tmodel.choicePart | Tchoice)+, Tatt.global.attributes, empty
   }
 Treg =
   
@@ -2240,6 +2265,7 @@ Tgap =
     Tatt.global.attributes,
     Tatt.timed.attributes,
     Tatt.editLike.attributes,
+    Tatt.dimensions.attributes,
     
     ## gives the reason for omission
     ## Suggested values include: 1] cancelled; 2] deleted; 3] editorial; 4] illegible; 5] inaudible; 6] irrelevant; 7] sampling
@@ -2270,9 +2296,6 @@ Tgap =
       }
     }?,
     
-    ## in the case of text omitted from the transcription because of deliberate deletion by an identifiable hand, indicates the hand which made the deletion.
-    attribute hand { xsd:anyURI }?,
-    
     ## in the case of text omitted because of damage, categorizes the cause of the damage, if it can be identified.
     ## Sample values include: 1] rubbing; 2] mildew; 3] smoke
     attribute agent {
@@ -2289,6 +2312,7 @@ Tadd =
     Tatt.transcriptional.attributes,
     Tatt.placement.attributes,
     Tatt.typed.attributes,
+    Tatt.dimensions.attributes,
     empty
   }
 Tdel =
@@ -2299,6 +2323,7 @@ Tdel =
     Tatt.global.attributes,
     Tatt.transcriptional.attributes,
     Tatt.typed.attributes,
+    Tatt.dimensions.attributes,
     empty
   }
 Tunclear =
@@ -2308,16 +2333,30 @@ Tunclear =
     Tmacro.paraContent,
     Tatt.global.attributes,
     Tatt.editLike.attributes,
+    Tatt.dimensions.attributes,
     
     ## indicates why the material is hard to transcribe.
+    ## Suggested values include: 1] illegible; 2] inaudible; 3] faded; 4] background_noise; 5] eccentric_ductus
     attribute reason {
       list {
-        xsd:token { pattern = "(\p{L}|\p{N}|\p{P}|\p{S})+" }+
+        (
+         ##
+         "illegible"
+         | 
+           ##
+           "inaudible"
+         | 
+           ##
+           "faded"
+         | 
+           ##
+           "background_noise"
+         | 
+           ##
+           "eccentric_ductus"
+         | xsd:token { pattern = "(\p{L}|\p{N}|\p{P}|\p{S})+" })+
       }
     }?,
-    
-    ## Where the difficulty in transcription arises from action (partial deletion, etc.) assignable to an identifiable hand, signifies the hand responsible for the action.
-    attribute hand { xsd:anyURI }?,
     
     ## Where the difficulty in transcription arises from damage, categorizes the cause of the damage, if it can be identified.
     ## Sample values include: 1] rubbing; 2] mildew; 3] smoke
@@ -2436,14 +2475,27 @@ TmeasureGrp =
     Tatt.typed.attributes,
     empty
   }
+Tunit =
+  
+  ## contains a symbol, a word or a phrase referring to a unit of measurement in any kind of formal or informal system. [3.5.3. Numbers and
+  ## Measures]
+  element unit {
+    Tmacro.phraseSeq,
+    Tatt.global.attributes,
+    Tatt.typed.attributes,
+    Tatt.measurement.attributes,
+    empty
+  }
 Tdate =
   
-  ## contains a date in any format. [3.5.4. Dates and Times 2.2.4. Publication, Distribution, Licensing, etc. 2.6. The Revision Description 3.11.2.4. Imprint, Size of a Document, and Reprint Information 15.2.3. The Setting Description 13.3.6. Dates and Times]
+  ## contains a date in any format. [3.5.4. Dates and Times 2.2.4. Publication, Distribution, Licensing, etc. 2.6. The Revision Description 3.11.2.4. Imprint, Size of a Document, and Reprint Information 15.2.3. The Setting Description 13.3.7. Dates and Times]
   element date {
     (text | Tmodel.gLike | Tmodel.phrase | Tmodel.global)*,
     Tatt.global.attributes,
+    Tatt.canonical.attributes,
     Tatt.datable.attributes,
     Tatt.editLike.attributes,
+    Tatt.dimensions.attributes,
     Tatt.typed.attributes,
     empty
   }
@@ -2455,6 +2507,7 @@ Ttime =
     Tatt.global.attributes,
     Tatt.datable.attributes,
     Tatt.editLike.attributes,
+    Tatt.dimensions.attributes,
     Tatt.typed.attributes,
     empty
   }
@@ -2488,7 +2541,7 @@ Tptr =
   element ptr {
     empty
     >> sch:pattern [
-         id = "testbasic-ptr-ptrAtts-constraint-report-6"
+         id = "testbasic-ptr-ptrAtts-constraint-report-7"
          "\x{a}" ~
          "            "
          sch:rule [
@@ -2522,7 +2575,7 @@ Tref =
   element ref {
     Tmacro.paraContent
     >> sch:pattern [
-         id = "testbasic-ref-refAtts-constraint-report-7"
+         id = "testbasic-ref-refAtts-constraint-report-8"
          "\x{a}" ~
          "            "
          sch:rule [
@@ -2563,7 +2616,7 @@ Tlist =
      (Tmodel.divBottom, Tmodel.global*)*)
     >> sch:pattern [
          id =
-           "testbasic-list-gloss-list-must-have-labels-constraint-rule-9"
+           "testbasic-list-gloss-list-must-have-labels-constraint-rule-11"
          "\x{a}" ~
          "            "
          sch:rule [
@@ -2758,6 +2811,7 @@ Tgb =
     Tatt.typed.attributes,
     Tatt.spanning.attributes,
     Tatt.breaking.attributes,
+    Tatt.edition.attributes,
     empty
   }
 Tpb =
@@ -2968,7 +3022,12 @@ Timprint =
 Tpublisher =
   
   ## provides the name of the organization responsible for the publication or distribution of a bibliographic item. [3.11.2.4. Imprint, Size of a Document, and Reprint Information 2.2.4. Publication, Distribution, Licensing, etc.]
-  element publisher { Tmacro.phraseSeq, Tatt.global.attributes, empty }
+  element publisher {
+    Tmacro.phraseSeq,
+    Tatt.global.attributes,
+    Tatt.canonical.attributes,
+    empty
+  }
 TbiblScope =
   
   ## (scope of bibliographic reference) defines the scope of a bibliographic reference, for example as a list of page numbers, or a named subdivision of a larger work. [3.11.2.5. Scopes and Ranges in Bibliographic Citations]
@@ -3051,7 +3110,7 @@ TrelatedItem =
     ((Tmodel.biblLike | Tmodel.ptrLike)?)
     >> sch:pattern [
          id =
-           "testbasic-relatedItem-targetorcontent1-constraint-report-8"
+           "testbasic-relatedItem-targetorcontent1-constraint-report-9"
          "\x{a}" ~
          "            "
          sch:rule [
@@ -3074,7 +3133,7 @@ TrelatedItem =
        ]
     >> sch:pattern [
          id =
-           "testbasic-relatedItem-targetorcontent1-constraint-assert-7"
+           "testbasic-relatedItem-targetorcontent1-constraint-assert-8"
          "\x{a}" ~
          "            "
          sch:rule [
@@ -3110,7 +3169,7 @@ Tl =
       | Tmodel.global)*)
     >> sch:pattern [
          id =
-           "testbasic-l-abstractModel-structure-l-constraint-report-9"
+           "testbasic-l-abstractModel-structure-l-constraint-report-10"
          "\x{a}" ~
          "            "
          sch:rule [
@@ -3147,7 +3206,7 @@ Tlg =
       | Tlg)*,
      (Tmodel.divBottom, Tmodel.global*)*)
     >> sch:pattern [
-         id = "testbasic-lg-atleast1oflggapl-constraint-assert-8"
+         id = "testbasic-lg-atleast1oflggapl-constraint-assert-9"
          "\x{a}" ~
          "            "
          sch:rule [
@@ -3168,7 +3227,7 @@ Tlg =
        ]
     >> sch:pattern [
          id =
-           "testbasic-lg-abstractModel-structure-l-constraint-report-10"
+           "testbasic-lg-abstractModel-structure-l-constraint-report-11"
          "\x{a}" ~
          "            "
          sch:rule [
@@ -3208,7 +3267,7 @@ Tsp =
        | Tmodel.qLike),
       Tmodel.global*)+),
     Tatt.global.attributes,
-    Tatt.ascribed.attributes,
+    Tatt.ascribed.directed.attributes,
     empty
   }
 Tspeaker =
@@ -3220,7 +3279,7 @@ Tstage =
   ## (stage direction) contains any kind of stage direction within a dramatic text or fragment. [3.12.2. Core Tags for Drama 3.12. Passages of Verse or Drama 7.2.4. Stage Directions]
   element stage {
     Tmacro.specialPara,
-    Tatt.ascribed.attributes,
+    Tatt.ascribed.directed.attributes,
     Tatt.global.attributes,
     Tatt.placement.attributes,
     
@@ -3270,8 +3329,7 @@ TteiCorpus =
     Tatt.global.attributes,
     Tatt.typed.attributes,
     
-    ## The version of the TEI scheme
-    [ a:defaultValue = "5.0" ]
+    ## specifies the version number of the TEI Guidelines against which this document is valid.
     attribute version {
       xsd:token { pattern = "[\d]+(\.[\d]+){0,2}" }
     }?,
@@ -3413,13 +3471,19 @@ Tdistributor =
   
   ## supplies the name of a person or other agency responsible for the distribution of a text. [2.2.4. Publication, Distribution, Licensing, etc.]
   element distributor {
-    Tmacro.phraseSeq, Tatt.global.attributes, empty
+    Tmacro.phraseSeq,
+    Tatt.global.attributes,
+    Tatt.canonical.attributes,
+    empty
   }
 Tauthority =
   
   ## (release authority) supplies the name of a person or other agency responsible for making a work available, other than a publisher or distributor. [2.2.4. Publication, Distribution, Licensing, etc.]
   element authority {
-    Tmacro.phraseSeq.limited, Tatt.global.attributes, empty
+    Tmacro.phraseSeq.limited,
+    Tatt.global.attributes,
+    Tatt.canonical.attributes,
+    empty
   }
 Tidno =
   
@@ -3453,7 +3517,7 @@ Tidno =
         ## English Short-Title Catalogue number: an identifying number assigned to a document in English printed in the British Isles or North America before 1801.
         "ESTC"
       | 
-        ## union catalog number in WorldCat representing a resource held by one or more of the member libraries in the global cooperative Online Computer Library Center.
+        ## OCLC control number (record number) for the union catalog record in WorldCat, a union catalog for member libraries in the Online Computer Library Center global cooperative.
         "OCLC"
       | xsd:token { pattern = "(\p{L}|\p{N}|\p{P}|\p{S})+" }
     }?,
@@ -3468,7 +3532,6 @@ Tavailability =
     Tatt.declarable.attributes,
     
     ## supplies a code identifying the current availability of the text.
-    [ a:defaultValue = "unknown" ]
     attribute status {
       
       ## the text is freely available.
@@ -3592,7 +3655,6 @@ Tcorrection =
     Tatt.declarable.attributes,
     
     ## indicates the degree of correction applied to the text.
-    [ a:defaultValue = "unknown" ]
     attribute status {
       
       ## the text has been thoroughly checked and proofread.
@@ -3647,7 +3709,7 @@ Tquotation =
     (Tmodel.pLike*)
     >> sch:pattern [
          id =
-           "testbasic-quotation-quotationContents-constraint-report-11"
+           "testbasic-quotation-quotationContents-constraint-report-12"
          "\x{a}" ~
          "            "
          sch:rule [
@@ -3758,13 +3820,13 @@ Tpunctuation =
         "all"
     }?,
     
-    ## indicates whether punctation marks have been captured inside or outside of an adjacent element.
+    ## indicates the positioning of punctuation marks that are associated with marked up text as being encoded within the element surrounding the text or immediately before or after it.
     attribute placement {
       
-      ## punctuation marks are captured inside adjacent elements
+      ## punctuation marks found at the start or end of a marked up text component are included within its surrounding element;
       "internal"
       | 
-        ## punctuation marks are captured outside adjacent elements
+        ## punctuation marks found at the start or end of a marked up text component appear immediately before or after the surrounding element
         "external"
     }?,
     empty
@@ -3931,7 +3993,7 @@ TgeoDecl =
     Tatt.declarable.attributes,
     
     ## supplies a commonly used code name for the datum employed.
-    ## Suggested values include: 1] WGS84(World Geodetic System) ; 2] MGRS(Military Grid Reference System) ; 3] OSGB36(ordnance survey great britain) ; 4] ED50(European Datum coordinate system) 
+    ## Suggested values include: 1] WGS84 (World Geodetic System) ; 2] MGRS (Military Grid Reference System) ; 3] OSGB36 (ordnance survey great britain) ; 4] ED50 (European Datum coordinate system) 
     [ a:defaultValue = "WGS84" ]
     attribute datum {
       
@@ -4492,6 +4554,7 @@ Toffset =
     Tatt.global.attributes,
     Tatt.naming.attributes,
     Tatt.typed.attributes,
+    Tatt.dimensions.attributes,
     empty
   }
 TgeogName =
@@ -4516,6 +4579,7 @@ TgeogFeat =
     Tatt.global.attributes,
     Tatt.naming.attributes,
     Tatt.typed.attributes,
+    Tatt.dimensions.attributes,
     empty
   }
 Taffiliation =
@@ -4545,9 +4609,10 @@ Tage =
     Tatt.editLike.attributes,
     Tatt.datable.attributes,
     Tatt.typed.attribute.subtype,
+    Tatt.dimensions.attributes,
     
     ## characterizes the element in some sense, using any convenient classification scheme or typology.
-    ## Sample values include: 1] western; 2] sui; 3] subjective; 4] objective; 5] inWorld(in world) ; 6] chronological; 7] biological; 8] psychological; 9] functional
+    ## Sample values include: 1] western; 2] sui; 3] subjective; 4] objective; 5] inWorld (in world) ; 6] chronological; 7] biological; 8] psychological; 9] functional
     attribute type {
       xsd:token { pattern = "(\p{L}|\p{N}|\p{P}|\p{S})+" }
     }?,
@@ -4564,11 +4629,12 @@ Tbirth =
     Tatt.global.attributes,
     Tatt.editLike.attributes,
     Tatt.datable.attributes,
+    Tatt.dimensions.attributes,
     Tatt.naming.attributes,
     Tatt.typed.attribute.subtype,
     
     ## characterizes the element in some sense, using any convenient classification scheme or typology.
-    ## Sample values include: 1] caesarean(caesarean section) ; 2] vaginal(vaginal delivery) ; 3] exNihilo(ex nihilo) ; 4] incorporated; 5] founded; 6] established
+    ## Sample values include: 1] caesarean (caesarean section) ; 2] vaginal (vaginal delivery) ; 3] exNihilo (ex nihilo) ; 4] incorporated; 5] founded; 6] established
     attribute type {
       xsd:token { pattern = "(\p{L}|\p{N}|\p{P}|\p{S})+" }
     }?,
@@ -4594,9 +4660,10 @@ Tdeath =
   ## contains information about a person's death, such as its date and place. [15.2.2. The Participant Description]
   element death {
     Tmacro.phraseSeq,
-    Tatt.global.attributes,
-    Tatt.editLike.attributes,
     Tatt.datable.attributes,
+    Tatt.dimensions.attributes,
+    Tatt.editLike.attributes,
+    Tatt.global.attributes,
     Tatt.naming.attributes,
     Tatt.typed.attribute.subtype,
     
@@ -4669,6 +4736,7 @@ Tfloruit =
     Tmacro.phraseSeq,
     Tatt.global.attributes,
     Tatt.datable.attributes,
+    Tatt.dimensions.attributes,
     Tatt.editLike.attributes,
     empty
   }
@@ -4745,9 +4813,7 @@ TlistEvent =
   
   ## (list of events) contains a list of descriptions, each of which provides information about an identifiable event. [13.3.1. Basic Principles]
   element listEvent {
-    (Tmodel.headLike*,
-     (Tevent | TlistEvent)+,
-     (Trelation | TlistRelation)*),
+    (Tmodel.headLike*, Tmodel.eventLike+, (Trelation | TlistRelation)*),
     Tatt.global.attributes,
     Tatt.typed.attributes,
     Tatt.declarable.attributes,
@@ -4995,6 +5061,7 @@ Tpopulation =
     Tatt.editLike.attributes,
     Tatt.naming.attributes,
     Tatt.typed.attributes,
+    Tatt.dimensions.attributes,
     empty
   }
 Trelation =
@@ -5003,7 +5070,7 @@ Trelation =
   element relation {
     (Tdesc?)
     >> sch:pattern [
-         id = "testbasic-relation-reforkeyorname-constraint-assert-9"
+         id = "testbasic-relation-reforkeyorname-constraint-assert-10"
          "\x{a}" ~
          "            "
          sch:rule [
@@ -5021,7 +5088,7 @@ Trelation =
          "         "
        ]
     >> sch:pattern [
-         id = "testbasic-relation-activemutual-constraint-report-12"
+         id = "testbasic-relation-activemutual-constraint-report-13"
          "\x{a}" ~
          "            "
          sch:rule [
@@ -5030,8 +5097,7 @@ Trelation =
            "               "
            sch:report [
              test = "@active and @mutual"
-             "Only one of the attributes\x{a}" ~
-             "@active and @mutual may be supplied"
+             "Only one of the attributes @active and @mutual may be supplied"
            ]
            "\x{a}" ~
            "            "
@@ -5040,7 +5106,7 @@ Trelation =
          "         "
        ]
     >> sch:pattern [
-         id = "testbasic-relation-activepassive-constraint-report-13"
+         id = "testbasic-relation-activepassive-constraint-report-14"
          "\x{a}" ~
          "            "
          sch:rule [
@@ -5049,9 +5115,7 @@ Trelation =
            "               "
            sch:report [
              test = "@passive and not(@active)"
-             "the attribute 'passive'\x{a}" ~
-             "	may be supplied only if the attribute 'active' is\x{a}" ~
-             "	supplied"
+             "the attribute 'passive' may be supplied only if the attribute 'active' is supplied"
            ]
            "\x{a}" ~
            "            "
@@ -5167,6 +5231,7 @@ Tstate =
     Tatt.editLike.attributes,
     Tatt.typed.attributes,
     Tatt.naming.attributes,
+    Tatt.dimensions.attributes,
     empty
   }
 Tterrain =
@@ -5198,11 +5263,81 @@ Ttrait =
     Tatt.editLike.attributes,
     Tatt.naming.attributes,
     Tatt.typed.attributes,
+    Tatt.dimensions.attributes,
+    empty
+  }
+TobjectName =
+  
+  ## (name of an object) contains a proper noun or noun phrase used to refer to an object. [13.2.4. Object Names]
+  element objectName {
+    Tmacro.phraseSeq,
+    Tatt.datable.attributes,
+    Tatt.editLike.attributes,
+    Tatt.global.attributes,
+    Tatt.personal.attributes,
+    Tatt.typed.attributes,
+    empty
+  }
+Tobject =
+  
+  ## contains a description of a single identifiable physical object. [13.3.5. Objects]
+  element object {
+    (TobjectIdentifier+,
+     Tmodel.headLike*,
+     (Tmodel.pLike* | empty),
+     (Tmodel.noteLike | Tmodel.biblLike | TlinkGrp | Tlink)*,
+     Tobject?),
+    Tatt.global.attributes,
+    Tatt.sortable.attributes,
+    Tatt.typed.attributes,
+    Tatt.declaring.attributes,
+    Tatt.docStatus.attributes,
+    Tatt.canonical.attributes,
+    empty
+  }
+TlistObject =
+  
+  ## (list of objects) contains a list of descriptions, each of which provides information about an identifiable physical object. [13.3.5. Objects]
+  element listObject {
+    (Tmodel.headLike*,
+     Tmodel.objectLike+,
+     (Trelation | TlistRelation)*),
+    Tatt.global.attributes,
+    Tatt.typed.attributes,
+    Tatt.declarable.attributes,
+    Tatt.sortable.attributes,
+    empty
+  }
+TobjectIdentifier =
+  
+  ## (object identifier) groups one or more identifiers or pieces of locating information concerning a single object. [13.3.5. Objects]
+  element objectIdentifier {
+    ((Tmodel.placeNamePart | Tidno | TobjectName | Taddress)*)
+    >> sch:pattern [
+         id =
+           "testbasic-objectIdentifier-objectIdentifier_minimal-constraint-report-15"
+         "\x{a}" ~
+         "            "
+         sch:rule [
+           context = "tei:objectIdentifier"
+           "\x{a}" ~
+           "               "
+           sch:report [
+             test = "not(count(*) gt 0)"
+             "An objectIdentifier must contain at minimum a single piece of locating or identifying information."
+           ]
+           "\x{a}" ~
+           "            "
+         ]
+         "\x{a}" ~
+         "         "
+       ],
+    Tatt.global.attributes,
     empty
   }
 Tnym =
   
-  ## (canonical name) contains the definition for a canonical name or name component of any kind. [13.3.5. Names and Nyms]
+  ## (canonical name) contains the definition for a canonical name or name component of any kind. [13.3.6. Names and Nyms]
   element nym {
     (Tmodel.entryPart*, Tmodel.pLike*, Tnym*),
     Tatt.global.attributes,
@@ -5217,7 +5352,7 @@ Tnym =
   }
 TlistNym =
   
-  ## (list of canonical names) contains a list of nyms, that is, standardized names for any thing. [13.3.5. Names and Nyms]
+  ## (list of canonical names) contains a list of nyms, that is, standardized names for any thing. [13.3.6. Names and Nyms]
   element listNym {
     (Tmodel.headLike*,
      (Tnym | TlistNym)+,
@@ -5319,7 +5454,8 @@ Tsurface =
   ## defines a written surface as a two-dimensional coordinate space, optionally grouping one or more graphic representations of that space, zones of interest within that space, and transcriptions of the writing within them. [11.1. Digital Facsimiles 11.2.2. Embedded Transcription]
   element surface {
     ((Tmodel.global | Tmodel.labelLike | Tmodel.graphicLike)*,
-     ((Tzone | Tline | Tsurface | TsurfaceGrp), Tmodel.global*)*),
+     ((Tzone | Tline | Tpath | Tsurface | TsurfaceGrp),
+      Tmodel.global*)*),
     Tatt.global.attributes,
     Tatt.coordinated.attributes,
     Tatt.declaring.attributes,
@@ -5364,13 +5500,101 @@ Tzone =
     attribute rotate { xsd:nonNegativeInteger }?,
     empty
   }
+Tpath =
+  
+  ## defines any line passing through two or more points within a surface element. [11.1. Digital Facsimiles 11.2.2. Embedded Transcription]
+  element path {
+    empty
+    >> sch:pattern [
+         id = "testbasic-path-pathmustnotbeclosed-constraint-rule-12"
+         "\x{a}" ~
+         "            "
+         sch:rule [
+           context = "tei:path[@points]"
+           "\x{a}" ~
+           "        \x{a}" ~
+           "               "
+           sch:let [
+             name = "firstPair"
+             value = "tokenize( normalize-space( @points ), ' ')[1]"
+           ]
+           "\x{a}" ~
+           "               "
+           sch:let [
+             name = "lastPair"
+             value =
+               "tokenize( normalize-space( @points ), ' ')[last()]"
+           ]
+           "\x{a}" ~
+           "               "
+           sch:let [
+             name = "firstX"
+             value = "xs:float( substring-before( $firstPair, ',') )"
+           ]
+           "\x{a}" ~
+           "               "
+           sch:let [
+             name = "firstY"
+             value = "xs:float( substring-after( $firstPair, ',') )"
+           ]
+           "\x{a}" ~
+           "               "
+           sch:let [
+             name = "lastX"
+             value = "xs:float( substring-before( $lastPair, ',') )"
+           ]
+           "\x{a}" ~
+           "               "
+           sch:let [
+             name = "lastY"
+             value = "xs:float( substring-after( $lastPair, ',') )"
+           ]
+           "\x{a}" ~
+           "               "
+           sch:report [
+             test = "$firstX eq $lastX  and  $firstY eq $lastY"
+             "The first and\x{a}" ~
+             "          last elements of this path are the same. To specify a closed polygon, use\x{a}" ~
+             "          the zone element rather than the path element. "
+           ]
+           "\x{a}" ~
+           "            "
+         ]
+         "\x{a}" ~
+         "         "
+       ],
+    Tatt.global.attributes,
+    Tatt.coordinated.attribute.start,
+    Tatt.coordinated.attribute.ulx,
+    Tatt.coordinated.attribute.uly,
+    Tatt.coordinated.attribute.lrx,
+    Tatt.coordinated.attribute.lry,
+    Tatt.typed.attributes,
+    Tatt.written.attributes,
+    
+    ## identifies a line within the container or bounding box specified by the parent element by means of a series of two or more pairs of numbers, each of which gives the x,y coordinates of a point on the line.
+    attribute points {
+      list {
+        xsd:token {
+          pattern = "(\-?[0-9]+\.?[0-9]*,\-?[0-9]+\.?[0-9]*)"
+        },
+        xsd:token {
+          pattern = "(\-?[0-9]+\.?[0-9]*,\-?[0-9]+\.?[0-9]*)"
+        },
+        xsd:token {
+          pattern = "(\-?[0-9]+\.?[0-9]*,\-?[0-9]+\.?[0-9]*)"
+        }*
+      }
+    }?,
+    empty
+  }
 TaddSpan =
   
   ## (added span of text) marks the beginning of a longer sequence of text added by an author, scribe, annotator or corrector (see also add). [11.3.1.4. Additions and Deletions]
   element addSpan {
     empty
     >> sch:pattern [
-         id = "testbasic-addSpan-spanTo-constraint-assert-10"
+         id = "testbasic-addSpan-spanTo-constraint-assert-11"
          "\x{a}" ~
          "            "
          sch:rule [
@@ -5390,7 +5614,7 @@ TaddSpan =
          "         "
        ]
     >> sch:pattern [
-         id = "testbasic-addSpan-spanTo_fr-constraint-assert-11"
+         id = "testbasic-addSpan-spanTo_fr-constraint-assert-12"
          "\x{a}" ~
          "            "
          sch:rule [
@@ -5412,6 +5636,7 @@ TaddSpan =
     Tatt.placement.attributes,
     Tatt.typed.attributes,
     Tatt.spanning.attributes,
+    Tatt.dimensions.attributes,
     empty
   }
 Tdamage =
@@ -5430,7 +5655,7 @@ TdamageSpan =
   element damageSpan {
     empty
     >> sch:pattern [
-         id = "testbasic-damageSpan-spanTo-constraint-assert-12"
+         id = "testbasic-damageSpan-spanTo-constraint-assert-13"
          "\x{a}" ~
          "            "
          sch:rule [
@@ -5451,7 +5676,7 @@ TdamageSpan =
          "         "
        ]
     >> sch:pattern [
-         id = "testbasic-damageSpan-spanTo_fr-constraint-assert-13"
+         id = "testbasic-damageSpan-spanTo_fr-constraint-assert-14"
          "\x{a}" ~
          "            "
          sch:rule [
@@ -5480,7 +5705,7 @@ TdelSpan =
   element delSpan {
     empty
     >> sch:pattern [
-         id = "testbasic-delSpan-spanTo-constraint-assert-14"
+         id = "testbasic-delSpan-spanTo-constraint-assert-15"
          "\x{a}" ~
          "            "
          sch:rule [
@@ -5500,7 +5725,7 @@ TdelSpan =
          "         "
        ]
     >> sch:pattern [
-         id = "testbasic-delSpan-spanTo_fr-constraint-assert-15"
+         id = "testbasic-delSpan-spanTo_fr-constraint-assert-16"
          "\x{a}" ~
          "            "
          sch:rule [
@@ -5521,6 +5746,7 @@ TdelSpan =
     Tatt.transcriptional.attributes,
     Tatt.typed.attributes,
     Tatt.spanning.attributes,
+    Tatt.dimensions.attributes,
     empty
   }
 Tex =
@@ -5530,6 +5756,7 @@ Tex =
     Tmacro.xtext,
     Tatt.global.attributes,
     Tatt.editLike.attributes,
+    Tatt.dimensions.attributes,
     empty
   }
 Tfw =
@@ -5542,7 +5769,7 @@ Tfw =
     Tatt.written.attributes,
     
     ## classifies the material encoded according to some useful typology.
-    ## Sample values include: 1] header; 2] footer; 3] pageNum(page number) ; 4] lineNum(line number) ; 5] sig(signature) ; 6] catch(catchword) 
+    ## Sample values include: 1] header; 2] footer; 3] pageNum (page number) ; 4] lineNum (line number) ; 5] sig (signature) ; 6] catch (catchword) 
     attribute type {
       xsd:token { pattern = "(\p{L}|\p{N}|\p{P}|\p{S})+" }
     }?,
@@ -5582,6 +5809,7 @@ Trestore =
     Tatt.global.attributes,
     Tatt.transcriptional.attributes,
     Tatt.typed.attributes,
+    Tatt.dimensions.attributes,
     empty
   }
 Tspace =
@@ -5629,7 +5857,7 @@ Tsubst =
   element subst {
     ((Tadd | Tdel | Tmodel.milestoneLike)+)
     >> sch:pattern [
-         id = "testbasic-subst-substContents1-constraint-assert-16"
+         id = "testbasic-subst-substContents1-constraint-assert-17"
          "\x{a}" ~
          "            "
          sch:rule [
@@ -5651,6 +5879,7 @@ Tsubst =
        ],
     Tatt.global.attributes,
     Tatt.transcriptional.attributes,
+    Tatt.dimensions.attributes,
     empty
   }
 TsubstJoin =
@@ -5661,6 +5890,7 @@ TsubstJoin =
     Tatt.global.attributes,
     Tatt.pointing.attributes,
     Tatt.transcriptional.attributes,
+    Tatt.dimensions.attributes,
     empty
   }
 Tsupplied =
@@ -5670,6 +5900,7 @@ Tsupplied =
     Tmacro.paraContent,
     Tatt.global.attributes,
     Tatt.editLike.attributes,
+    Tatt.dimensions.attributes,
     
     ## one or more words indicating why the text has had to be supplied, e.g. overbinding, faded-ink, lost-folio, omitted-in-original.
     attribute reason {
@@ -5686,6 +5917,7 @@ Tsurplus =
     Tmacro.paraContent,
     Tatt.global.attributes,
     Tatt.editLike.attributes,
+    Tatt.dimensions.attributes,
     
     ## one or more words indicating why this text is believed to be superfluous, e.g. repeated, interpolated etc.
     attribute reason {
@@ -5702,6 +5934,7 @@ Tsecl =
     Tmacro.paraContent,
     Tatt.global.attributes,
     Tatt.editLike.attributes,
+    Tatt.dimensions.attributes,
     
     ## one or more words indicating why this text has been secluded, e.g. interpolated etc.
     attribute reason {
@@ -5755,6 +5988,7 @@ Tmod =
     Tatt.transcriptional.attributes,
     Tatt.typed.attributes,
     Tatt.spanning.attributes,
+    Tatt.dimensions.attributes,
     empty
   }
 Tredo =
@@ -5765,6 +5999,7 @@ Tredo =
     Tatt.global.attributes,
     Tatt.spanning.attributes,
     Tatt.transcriptional.attributes,
+    Tatt.dimensions.attributes,
     
     ## points to one or more elements representing the interventions which are being reasserted.
     attribute target {
@@ -5780,6 +6015,7 @@ Tretrace =
     Tatt.global.attributes,
     Tatt.spanning.attributes,
     Tatt.transcriptional.attributes,
+    Tatt.dimensions.attributes,
     empty
   }
 Ttranspose =
@@ -5794,6 +6030,7 @@ Tundo =
     Tatt.global.attributes,
     Tatt.spanning.attributes,
     Tatt.transcriptional.attributes,
+    Tatt.dimensions.attributes,
     
     ## points to one or more elements representing the interventions which are to be reverted or undone.
     attribute target {
@@ -5801,6 +6038,32 @@ Tundo =
     }?,
     empty
   }
+Tatt.tableDecoration.attributes =
+  Tatt.tableDecoration.attribute.role,
+  Tatt.tableDecoration.attribute.rows,
+  Tatt.tableDecoration.attribute.cols
+Tatt.tableDecoration.attribute.role =
+  
+  ## indicates the kind of information held in this cell or in each cell of this row.
+  ## Suggested values include: 1] label; 2] data
+  [ a:defaultValue = "data" ]
+  attribute role {
+    
+    ## labelling or descriptive information only.
+    "label"
+    | 
+      ## data values.
+      "data"
+    | xsd:token { pattern = "(\p{L}|\p{N}|\p{P}|\p{S})+" }
+  }?
+Tatt.tableDecoration.attribute.rows =
+  
+  ## indicates the number of rows occupied by this cell or row.
+  [ a:defaultValue = "1" ] attribute rows { xsd:nonNegativeInteger }?
+Tatt.tableDecoration.attribute.cols =
+  
+  ## (columns) indicates the number of columns occupied by this cell or row.
+  [ a:defaultValue = "1" ] attribute cols { xsd:nonNegativeInteger }?
 Ttable =
   
   ## contains text displayed in tabular form, in rows and columns. [14.1.1. TEI Tables]
@@ -5872,6 +6135,7 @@ Tfigure =
     Tatt.global.attributes,
     Tatt.placement.attributes,
     Tatt.typed.attributes,
+    Tatt.written.attributes,
     empty
   }
 TfigDesc =
@@ -5886,7 +6150,7 @@ Tlink =
   element link {
     empty
     >> sch:pattern [
-         id = "testbasic-link-linkTargets3-constraint-assert-17"
+         id = "testbasic-link-linkTargets3-constraint-assert-18"
          "\x{a}" ~
          "            "
          sch:rule [
@@ -5927,7 +6191,7 @@ Tab =
     Tmacro.paraContent
     >> sch:pattern [
          id =
-           "testbasic-ab-abstractModel-structure-p-constraint-report-14"
+           "testbasic-ab-abstractModel-structure-ab-constraint-report-17"
          "\x{a}" ~
          "            "
          sch:rule [
@@ -5936,9 +6200,9 @@ Tab =
            "               "
            sch:report [
              test =
-               "not(ancestor::floatingText) and (ancestor::tei:p or ancestor::tei:ab)          and not(parent::tei:exemplum         |parent::tei:item         |parent::tei:note         |parent::tei:q         |parent::tei:quote         |parent::tei:remarks         |parent::tei:said         |parent::tei:sp         |parent::tei:stage         |parent::tei:cell         |parent::tei:figure)"
+               "not(ancestor::tei:floatingText) and (ancestor::tei:p or ancestor::tei:ab)          and not(parent::tei:exemplum         |parent::tei:item         |parent::tei:note         |parent::tei:q         |parent::tei:quote         |parent::tei:remarks         |parent::tei:said         |parent::tei:sp         |parent::tei:stage         |parent::tei:cell         |parent::tei:figure)"
              "\x{a}" ~
-             "        Abstract model violation: ab may not contain paragraphs or other ab elements.\x{a}" ~
+             "        Abstract model violation: ab may not occur inside paragraphs or other ab elements.\x{a}" ~
              "      "
            ]
            "\x{a}" ~
@@ -5949,7 +6213,7 @@ Tab =
        ]
     >> sch:pattern [
          id =
-           "testbasic-ab-abstractModel-structure-l-constraint-report-15"
+           "testbasic-ab-abstractModel-structure-l-constraint-report-18"
          "\x{a}" ~
          "            "
          sch:rule [
@@ -5990,6 +6254,7 @@ Tseg =
     Tatt.segLike.attributes,
     Tatt.typed.attributes,
     Tatt.written.attributes,
+    Tatt.notated.attributes,
     empty
   }
 Twhen =
@@ -6012,7 +6277,7 @@ Twhen =
     }?,
     
     ## specifies the unit of time in which the interval value is expressed, if this is not inherited from the parent timeline.
-    ## Suggested values include: 1] d(days) ; 2] h(hours) ; 3] min(minutes) ; 4] s(seconds) ; 5] ms(milliseconds) 
+    ## Suggested values include: 1] d (days) ; 2] h (hours) ; 3] min (minutes) ; 4] s (seconds) ; 5] ms (milliseconds) 
     attribute unit {
       
       ## (days) 
@@ -6061,7 +6326,7 @@ Ttimeline =
     attribute origin { xsd:anyURI }?,
     
     ## specifies the unit of time corresponding to the interval value of the timeline or of its constituent points in time.
-    ## Suggested values include: 1] d(days) ; 2] h(hours) ; 3] min(minutes) ; 4] s(seconds) ; 5] ms(milliseconds) 
+    ## Suggested values include: 1] d (days) ; 2] h (hours) ; 3] min (minutes) ; 4] s (seconds) ; 5] ms (milliseconds) 
     attribute unit {
       
       ## (days) 
@@ -6102,7 +6367,7 @@ Tjoin =
   element join {
     ((Tmodel.descLike | Tmodel.certLike)*)
     >> sch:pattern [
-         id = "testbasic-join-joinTargets3-constraint-assert-18"
+         id = "testbasic-join-joinTargets3-constraint-assert-19"
          "\x{a}" ~
          "            "
          sch:rule [
@@ -6219,7 +6484,7 @@ TTEI =
     Tatt.global.attributes,
     Tatt.typed.attributes,
     
-    ## specifies the major version number of the TEI Guidelines against which this document is valid.
+    ## specifies the version number of the TEI Guidelines against which this document is valid.
     attribute version {
       xsd:token { pattern = "[\d]+(\.[\d]+){0,2}" }
     }?,
@@ -6295,7 +6560,7 @@ Tdiv =
       (Tmodel.divBottom, Tmodel.global*)*)?)
     >> sch:pattern [
          id =
-           "testbasic-div-abstractModel-structure-l-constraint-report-16"
+           "testbasic-div-abstractModel-structure-l-constraint-report-19"
          "\x{a}" ~
          "            "
          sch:rule [
@@ -6316,7 +6581,7 @@ Tdiv =
        ]
     >> sch:pattern [
          id =
-           "testbasic-div-abstractModel-structure-p-constraint-report-17"
+           "testbasic-div-abstractModel-structure-p-constraint-report-20"
          "\x{a}" ~
          "            "
          sch:rule [
@@ -6500,7 +6765,7 @@ TtitlePart =
     Tatt.global.attributes,
     
     ## specifies the role of this subdivision of the title.
-    ## Suggested values include: 1] main; 2] sub(subordinate) ; 3] alt(alternate) ; 4] short; 5] desc(descriptive) 
+    ## Suggested values include: 1] main; 2] sub (subordinate) ; 3] alt (alternate) ; 4] short; 5] desc (descriptive) 
     [ a:defaultValue = "main" ]
     attribute type {
       
@@ -6703,7 +6968,7 @@ Tplatypus =
      ##
      attribute bill { "duck" }?)
     >> sch:pattern [
-         id = "testbasic-platypus-bill-silly-test-constraint-report-19"
+         id = "testbasic-platypus-bill-silly-test-constraint-report-22"
          "\x{a}" ~
          "            "
          sch:rule [
@@ -6736,7 +7001,7 @@ TMenu =
   }
 start = TTEI | Tdiv
 sch:pattern [
-  id = "testbasic-outerconstraint-constraint-rule-10"
+  id = "testbasic-outerconstraint-constraint-rule-13"
   "\x{a}" ~
   "      "
   sch:rule [
