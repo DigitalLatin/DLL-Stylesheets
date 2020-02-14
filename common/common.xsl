@@ -185,6 +185,9 @@ of this software, even if advised of the possibility of such damage.
        </xsl:when>
        <xsl:when test="tei:match(@rend,'inline')">
 	 <xsl:value-of select="$preQuote"/>
+         <!-- SJH: Adding to handle quotations with line breaks in them. -->
+         <xsl:call-template name="lbno"/>
+         <xsl:call-template name="lb"/>
 	 <xsl:apply-templates/>
 	 <xsl:value-of select="$postQuote"/>
        </xsl:when>

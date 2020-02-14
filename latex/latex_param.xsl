@@ -126,6 +126,12 @@ the beginning of the document</desc>
 \usepackage{marginnote}
 
 </xsl:text>
+<!-- SJH: Added calls to templates to handle some LDLT requirements. -->
+<xsl:call-template name="section-numbering"/>
+<xsl:call-template name="format-citations"/>
+<xsl:call-template name="remove-color-hyperlinks"/>
+<xsl:call-template name="url-font"/>
+<xsl:call-template name="noLabel"></xsl:call-template>
 <xsl:if test="not($marginFont='')">
 \renewcommand*{\marginfont}{<xsl:value-of select="$marginFont"/>}
 </xsl:if>
@@ -152,10 +158,11 @@ the beginning of the document</desc>
       <xsl:text>
   \pagestyle{</xsl:text><xsl:value-of select="$pageStyle"/><xsl:text>}
 </xsl:text>
-\usepackage[pdftitle={<xsl:sequence select="tei:generateSimpleTitle(.)"/>},
+<!-- SJH: This block causes errors in processing. 
+ \usepackage[pdftitle={<xsl:sequence select="tei:generateSimpleTitle(.)"/>},
  pdfauthor={<xsl:sequence
  select="replace(string-join(tei:generateAuthor(.),''),'\\[A-z]+','')"/>}]{hyperref}
-\hyperbaseurl{<xsl:value-of select="$baseURL"/>}
+\hyperbaseurl{<xsl:value-of select="$baseURL"/>}-->
 <xsl:if test="count(key('APP',1))&gt;0">
 \usepackage{reledmac}
 <xsl:call-template name="ledmacOptions"/>
@@ -314,7 +321,10 @@ characters. The normal characters remain active for LaTeX commands.
 \def\orig{}
 \def\reg{}
 \def\ref{}
-\def\sic{}
+<!-- SJH: Added rules for editorial symbols. -->
+\def\sic#1{†#1†}
+\def\supplied#1{\anglefont ⟨#1\anglefont ⟩}
+\def\surplus#1{\{#1\}}
 \def\persName{}\def\name{}
 \def\placeName{}
 \def\orgName{}
@@ -484,7 +494,8 @@ characters. The normal characters remain active for LaTeX commands.
   \setcounter{chapter}{0}
   \setcounter{section}{0}
   \pagenumbering{arabic}
-  \setcounter{secnumdepth}{6}
+  <!-- SJH: Changed secnumdepth to 0 from 6, to avoid automatic section numbering, -->
+  \setcounter{secnumdepth}{0}
   \def\@chapapp{\chaptername}%
   \def\theHchapter{\arabic{chapter}}
   \def\thesection{\@arabic\c@section}
@@ -567,7 +578,10 @@ characters. The normal characters remain active for LaTeX commands.
    </doc>
 <xsl:template name="ledmacOptions">
 <xsl:text>
-\renewcommand{\notenumfont}{\bfseries}
+<!-- SJH: This block does not accomplish the objective of making the note numbers bold.   
+\renewcommand{\notenumfont}{\bfseries}-->
+<!-- SJH: Replacing above with: -->
+\Xnotenumfont{\normalfont\bfseries}
 \lineation{section}
 \linenummargin{inner}
 \Xarrangement[A]{paragraph}
@@ -625,8 +639,104 @@ characters. The normal characters remain active for LaTeX commands.
 \fancyfoot[RE]{\TheID}
 \hypersetup{</xsl:text><xsl:value-of select="$hyperSetup"/><xsl:text>}
 \fancypagestyle{plain}{\fancyhead{}\renewcommand{\headrulewidth}{0pt}}</xsl:text>
+<xsl:call-template name="fallback-characters"/>
    </xsl:template>
 
+<!-- SJH: Added this block to remove numbers from sections. --> 
+  <doc xmlns="http://www.oxygenxml.com/ns/doc/xsl" class="layout">
+    <desc>Remove numbers from sections</desc>
+  </doc>
+  <xsl:template name="section-numbering">
+% Remove numbers from sections
+\setcounter{secnumdepth}{0}
+\usepackage{titlesec}
+\usepackage{titletoc}
+  </xsl:template>
+  
+<!-- SJH: Added. -->  
+  <doc xmlns="http://www.oxygenxml.com/ns/doc/xsl" class="layout">
+    <desc>Format citations in the notes without brackets around them.</desc>
+  </doc>
+  <xsl:template name="format-citations">
+    <xsl:text>
+% This is how to format citations in the notes without brackets around them.
+\usepackage{cite}
+\renewcommand\citeleft{}
+\renewcommand\citeright{}</xsl:text>
+  </xsl:template>
+
+<!-- SJH: Added. -->
+  <doc xmlns="http://www.oxygenxml.com/ns/doc/xsl" class="layout">
+    <desc>Format URLs in the same font as the rest of the document.</desc>
+  </doc>
+  <xsl:template name="url-font">
+  <xsl:text>
+% Set the font for URLs to the regular font for the document.
+\urlstyle{same}</xsl:text>
+  </xsl:template>
+
+<!-- SJH: Added. --> 
+  <doc xmlns="http://www.oxygenxml.com/ns/doc/xsl" class="layout">
+    <desc>Prevent labels from being printed in the bibliography.</desc>
+  </doc>
+<xsl:template name="noLabel">
+% Prevent labels from being printed in the bibliography.
+\makeatletter
+\renewcommand{\@biblabel}[1]{}
+\renewenvironment{thebibliography}[1]
+  {\section*{\refname}%
+  \@mkboth{\MakeUppercase\refname}{\MakeUppercase\refname}%
+  \list{}%
+    {\labelwidth=0pt
+     \labelsep=0pt
+      \leftmargin1.5em
+      \itemindent=-1.5em
+      \advance\leftmargin\labelsep
+      \@openbib@code
+      }%
+  \sloppy
+  \clubpenalty4000
+  \@clubpenalty \clubpenalty
+  \widowpenalty4000%
+  \sfcode`\.\@m}
+\makeatother
+</xsl:template>
+<!-- SJH: Added. -->
+  <doc xmlns="http://www.oxygenxml.com/ns/doc/xsl" class="style">
+    <desc>Remove colors and borders from hyperlinks.</desc>
+  </doc>
+<xsl:template name="remove-color-hyperlinks">
+\usepackage[linktoc=all,colorlinks=true,linkcolor=black,anchorcolor=black,citecolor=black,filecolor=black,menucolor=black,runcolor=black,urlcolor=black]{hyperref}
+</xsl:template>
+
+<!-- SJH: Fallback characters. Tip of the hat to Andrew Dunning. -->
+  <doc xmlns="http://www.oxygenxml.com/ns/doc/xsl" class="layout">
+    <desc>
+      <p>Add fallback characters for special characters.</p>
+    </desc>
+  </doc>
+<xsl:template name="fallback-characters">
+  <xsl:text>
+% Fallback characters
+\usepackage{newunicodechar}
+\newfontfamily{\fallbackfontMUFI}{Junicode}
+\DeclareTextFontCommand{\textfallbackMUFI}{\fallbackfontMUFI}
+\newunicodechar{⸝}{\textfallbackMUFI{⸝}}
+\newunicodechar{⸵}{\textfallbackMUFI{}} % MUFI PUA
+\newunicodechar{⍪}{\textfallbackMUFI{}} % MUFI PUA
+\newfontfamily{\siglumcharacter}{Zapf Dingbats}
+\DeclareTextFontCommand{\textsiglumcharacter}{\siglumcharacter}
+\newunicodechar{✠}{\textsiglumcharacter{✠}}
+% Characters for angle brackets for supplied text.
+\newfontfamily{\anglefont}{Junicode}
+\newunicodechar{⟨}{{\anglefont ⟨}}
+\newunicodechar{⟩}{{\anglefont ⟩}}
+% Stigma
+\newfontfamily{\fallbackfontStigma}{KadmosU}
+\DeclareTextFontCommand{\textfallbackStigma}{\fallbackfontStigma}
+\newunicodechar{ϛ}{\textfallbackStigma{ϛ}}
+</xsl:text>
+</xsl:template>
    <doc xmlns="http://www.oxygenxml.com/ns/doc/xsl" class="layout">
       <desc>
          <p>LaTeX setup at end of document</p>

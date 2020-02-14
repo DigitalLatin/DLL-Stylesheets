@@ -55,4 +55,19 @@ of this software, even if advised of the possibility of such damage.
 
   <xsl:template match="tei:facsimile"/>
 
+<!-- SJH: Added. -->
+  <doc xmlns="http://www.oxygenxml.com/ns/doc/xsl">
+    <desc>Process tei:g to produce specific glyphs.</desc>
+  </doc>
+  <xsl:template match="//tei:g">
+    <xsl:choose>
+      <xsl:when test="@ref='punctEl'">
+        <xsl:text>⸵</xsl:text>
+      </xsl:when>
+      <xsl:when test="@ref='sigillvm'">
+        <xsl:text>✠</xsl:text>
+      </xsl:when>
+    </xsl:choose>  
+  </xsl:template>
+
 </xsl:stylesheet>

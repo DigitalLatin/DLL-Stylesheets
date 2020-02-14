@@ -71,9 +71,10 @@ of this software, even if advised of the possibility of such damage.
     <xsl:apply-templates select="tei:head"/>
 
 \beginnumbering
-\pstart
+<!-- SJH: This appears to be redundant with template for paragraphs in latex_core.xsl: 
+\pstart -->
     <xsl:apply-templates select="tei:head/following-sibling::*"/>
-\pend
+<!-- SJH: This also appears to be redundant with template for paragraphs in latex_core.xsl: \pend -->
 \endnumbering
   </xsl:template>
   
@@ -174,4 +175,17 @@ of this software, even if advised of the possibility of such damage.
     </xsl:choose>
   </xsl:template>
 
+<!-- SJH: Added, -->
+  <doc xmlns="http://www.oxygenxml.com/ns/doc/xsl">
+    <desc>
+      <p>Process with witStart/witEnd</p>
+    </desc>
+  </doc>
+<xsl:template match="tei:witStart">
+  <xsl:text>\textit{hinc adest} </xsl:text><xsl:value-of select="translate(ancestor::rdg[1]/@wit,'#','')"/>
+</xsl:template>
+  
+  <xsl:template match="tei:witEnd">
+    <xsl:text>\textit{hinc deest} </xsl:text><xsl:value-of select="translate(ancestor::rdg[1]/@wit,'#','')"/>
+  </xsl:template>
 </xsl:stylesheet>
