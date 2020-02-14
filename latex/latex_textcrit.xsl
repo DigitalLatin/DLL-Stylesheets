@@ -59,7 +59,7 @@ of this software, even if advised of the possibility of such damage.
    <xsl:template name="makeAppEntry">
      <xsl:param name="lemma"/>
      <xsl:text>\edtext</xsl:text><xsl:text>{</xsl:text><xsl:apply-templates
-       select="tei:lem[not(@rend='none')]"/><xsl:text>}{</xsl:text><xsl:if
+       select="tei:lem[not(@rend='none')]"/><xsl:text> </xsl:text><xsl:call-template name="appLemmaWitness"/><xsl:text>}{</xsl:text><xsl:if
          test="tei:lem[@rend='none']"><xsl:text>\lemma{</xsl:text><xsl:value-of
            select="tei:lem"/><xsl:text>}</xsl:text></xsl:if><xsl:text>\Afootnote</xsl:text><xsl:if
              test="tei:lem[@rend='none']"><xsl:text>[nosep]</xsl:text></xsl:if><xsl:text>{</xsl:text>
@@ -86,7 +86,7 @@ of this software, even if advised of the possibility of such damage.
   <xsl:template match="tei:rdgGrp[parent::tei:app//(tei:l|tei:p)]"/>
   
   <xsl:template match="tei:abbr[@type='siglum']">
-    <xsl:apply-templates/>
+    <xsl:text>\textit{</xsl:text><xsl:apply-templates/><xsl:text>}</xsl:text>
   </xsl:template>
   
   <xsl:template match="tei:l[ancestor::tei:app and not(@processed)]">
@@ -168,6 +168,16 @@ of this software, even if advised of the possibility of such damage.
     </xsl:choose>
   </xsl:template>-->
 
+<!-- SJH: Added. -->
+  <doc xmlns="http://www.oxygenxml.com/ns/doc/xsl">
+    <desc>
+      <p>Render apparatus notes in italics.</p>
+    </desc>
+  </doc>
+  <xsl:template match="tei:app/tei:note/text()">
+  <xsl:text>\textit{</xsl:text><xsl:value-of select="."/><xsl:text>}</xsl:text>
+</xsl:template>
+
   <xsl:template match="tei:witDetail[not(*|text())]">
     <xsl:choose>
       <xsl:when test="@type='correction-altered'">p.c.</xsl:when>
@@ -175,7 +185,7 @@ of this software, even if advised of the possibility of such damage.
     </xsl:choose>
   </xsl:template>
 
-<!-- SJH: Added, -->
+<!-- SJH: Added. -->
   <doc xmlns="http://www.oxygenxml.com/ns/doc/xsl">
     <desc>
       <p>Process with witStart/witEnd</p>
