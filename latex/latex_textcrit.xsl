@@ -58,11 +58,23 @@ of this software, even if advised of the possibility of such damage.
    </doc>
    <xsl:template name="makeAppEntry">
      <xsl:param name="lemma"/>
-     <xsl:text>\edtext</xsl:text><xsl:text>{</xsl:text><xsl:apply-templates
-       select="tei:lem[not(@rend='none')]"/><xsl:text> </xsl:text><xsl:call-template name="appLemmaWitness"/><xsl:text>}{</xsl:text><xsl:if
+     <xsl:choose><xsl:when test="tei:lem[not(@wit and @source)]">
+       <xsl:text>\edtext</xsl:text><xsl:text>{</xsl:text><xsl:apply-templates
+       select="tei:lem[not(@rend='none')]"/><xsl:text>}{</xsl:text><xsl:if
          test="tei:lem[@rend='none']"><xsl:text>\lemma{</xsl:text><xsl:value-of
            select="tei:lem"/><xsl:text>}</xsl:text></xsl:if><xsl:text>\Afootnote</xsl:text><xsl:if
-             test="tei:lem[@rend='none']"><xsl:text>[nosep]</xsl:text></xsl:if><xsl:text>{</xsl:text>
+             test="tei:lem[@rend='none']"><xsl:text>[nosep]\Xlemmaseparator[  ]</xsl:text></xsl:if><xsl:text>{</xsl:text>
+     </xsl:when>
+     <xsl:otherwise>
+       <xsl:text>\edtext</xsl:text><xsl:text>{</xsl:text><xsl:apply-templates
+         select="tei:lem[not(@rend='none')]"/><xsl:text>}{</xsl:text><xsl:if
+           test="tei:lem[@rend='none']"><xsl:text>\lemma{</xsl:text><xsl:value-of
+             select="tei:lem"/><xsl:text>}</xsl:text></xsl:if><xsl:text>\Afootnote[nosep]</xsl:text><xsl:if
+               test="tei:lem[@rend='none']"><xsl:text>[nosep]</xsl:text></xsl:if><xsl:text>{</xsl:text>
+     </xsl:otherwise>
+     </xsl:choose>
+     <!-- SJH: Added call to template appLemmaWitness so that the witnesses would be rendered. -->
+     <xsl:text>\textit{</xsl:text><xsl:call-template name="appLemmaWitness"/><xsl:text>}</xsl:text>
      <xsl:call-template name="appReadings"/>
      <xsl:text>}}</xsl:text>
    </xsl:template>
@@ -86,7 +98,7 @@ of this software, even if advised of the possibility of such damage.
   <xsl:template match="tei:rdgGrp[parent::tei:app//(tei:l|tei:p)]"/>
   
   <xsl:template match="tei:abbr[@type='siglum']">
-    <xsl:text>\textit{</xsl:text><xsl:apply-templates/><xsl:text>}</xsl:text>
+    <xsl:apply-templates/>
   </xsl:template>
   
   <xsl:template match="tei:l[ancestor::tei:app and not(@processed)]">
@@ -174,9 +186,9 @@ of this software, even if advised of the possibility of such damage.
       <p>Render apparatus notes in italics.</p>
     </desc>
   </doc>
-  <xsl:template match="tei:app/tei:note/text()">
+  <xsl:template match="tei:app/tei:note">
   <xsl:text>\textit{</xsl:text><xsl:value-of select="."/><xsl:text>}</xsl:text>
-</xsl:template>
+  </xsl:template>
 
   <xsl:template match="tei:witDetail[not(*|text())]">
     <xsl:choose>
