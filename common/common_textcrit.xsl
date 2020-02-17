@@ -140,34 +140,64 @@ of this software, even if advised of the possibility of such damage.
     <xsl:value-of select="tei:getWitness(tei:lem/@wit, .)"/><xsl:if test="@wit and
       @source"><xsl:text> </xsl:text></xsl:if> <xsl:value-of
       select="tei:getWitness(tei:lem/@source, ., ' ')"/>
+    <!-- … now we look for a note that follows it. If there is one, we print it. -->
   </xsl:template>
 
    <xsl:template name="appLemma">
 	   <xsl:if test="tei:lem"><xsl:value-of select="tei:lem"/></xsl:if>
    </xsl:template>
+  
+  <xsldoc:doc xmlns:xsldoc="http://www.oxygenxml.com/ns/doc/xsl">
+    <xsldoc:desc>If a note follows a lemma, render it, followed by a colon. If there isn't a note, just insert a colon after the lemma witnesses.</xsldoc:desc>
+  </xsldoc:doc>
+  <xsl:template name="appLemmaNote">
+    <xsl:choose>
+      <xsl:when test="tei:lem/following-sibling::*[1][self::tei:note]">
+        <xsl:value-of select="tei:lem/following-sibling::*[1][self::tei:note]"/>
+        <xsl:if test="tei:lem/following-sibling::*[2][self::tei:rdg]"><xsl:text> \normalfont{:} </xsl:text></xsl:if>
+      </xsl:when>
+      <xsl:otherwise>
+        <xsl:if test="tei:lem/following-sibling::*[2][self::tei:rdg]"><xsl:text> \normalfont{:} </xsl:text></xsl:if>
+      </xsl:otherwise>
+    </xsl:choose>
+  </xsl:template>
 
    <xsl:template name="appReadings">
       <!-- SJH: This original method treats rdg and note as unrelated elements, which makes it difficult to insert a delimiter before the next rdg.
         <xsl:for-each select="tei:rdg|tei:wit|tei:note"> -->
      <!-- SJH: We select just the rdg … -->
-     <xsl:for-each select="tei:rdg">
-      	<xsl:apply-templates/><xsl:text> </xsl:text>
-        <xsl:value-of select="tei:getWitness(@wit, .)"/><xsl:if test="@wit and
-          @source"><xsl:text> </xsl:text></xsl:if><xsl:value-of select="tei:getWitness(@source, ., 
-          ' ')"/>
+     <xsl:for-each select="tei:rdg"><xsl:choose>
+       <xsl:when test="$outputTarget='latex'">
+         <xsl:apply-templates/><xsl:text> \textit{</xsl:text>
+         <xsl:value-of select="tei:getWitness(@wit, .)"/><xsl:text>}</xsl:text><xsl:if test="@wit and
+           @source"><xsl:text> </xsl:text></xsl:if><xsl:text> \textit{</xsl:text><xsl:value-of select="tei:getWitness(@source, ., 
+             ' ')"/><xsl:text>}</xsl:text>
        <!-- … now we look for a note that follows it. If there is one, we print it. -->
        <xsl:if test="following-sibling::*[1][self::tei:note]">
          <xsl:apply-templates select="following-sibling::*[1][self::tei:note]"/>
        </xsl:if>
        <!-- SJH: If the combination of rdg and note is not the last one, put a colon before the next one. -->
        <xsl:if test="not(position() = last())"><xsl:text> : </xsl:text></xsl:if>
+     </xsl:when>
+       <xsl:otherwise>
+         <xsl:apply-templates/><xsl:text> </xsl:text>
+         <xsl:value-of select="tei:getWitness(@wit, .)"/><xsl:if test="@wit and
+           @source"><xsl:text> </xsl:text></xsl:if><xsl:value-of select="tei:getWitness(@source, ., 
+             ' ')"/>
+         <!-- … now we look for a note that follows it. If there is one, we print it. -->
+         <xsl:if test="following-sibling::*[1][self::tei:note]">
+           <xsl:apply-templates select="following-sibling::*[1][self::tei:note]"/>
+         </xsl:if>
+         <!-- SJH: If the combination of rdg and note is not the last one, put a colon before the next one. -->
+         <xsl:if test="not(position() = last())"><xsl:text> : </xsl:text></xsl:if>
+       </xsl:otherwise></xsl:choose>
       </xsl:for-each>
     </xsl:template>
 
    <xsl:template name="makeAppEntry">
      <xsl:param name="lemma"/>
      <xsl:call-template name="appLemma"/>
-     <!-- <xsl:text>] </xsl:text>-->
+     <!-- <xsl:text>] </xsl:text> -->
      <xsl:call-template name="appLemmaWitness"/>
      <xsl:call-template name="appReadings"/>
    </xsl:template>

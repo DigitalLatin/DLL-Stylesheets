@@ -58,23 +58,26 @@ of this software, even if advised of the possibility of such damage.
    </doc>
    <xsl:template name="makeAppEntry">
      <xsl:param name="lemma"/>
-     <xsl:choose><xsl:when test="tei:lem[not(@wit and @source)]">
+     <xsl:choose><xsl:when test="tei:lem[not(@wit) and not(@source) and not(following-sibling::*[1][self::tei:note])]">
        <xsl:text>\edtext</xsl:text><xsl:text>{</xsl:text><xsl:apply-templates
        select="tei:lem[not(@rend='none')]"/><xsl:text>}{</xsl:text><xsl:if
          test="tei:lem[@rend='none']"><xsl:text>\lemma{</xsl:text><xsl:value-of
            select="tei:lem"/><xsl:text>}</xsl:text></xsl:if><xsl:text>\Afootnote</xsl:text><xsl:if
-             test="tei:lem[@rend='none']"><xsl:text>[nosep]\Xlemmaseparator[  ]</xsl:text></xsl:if><xsl:text>{</xsl:text>
+             test="tei:lem[@rend='none']"><xsl:text></xsl:text></xsl:if><xsl:text>{</xsl:text>
      </xsl:when>
      <xsl:otherwise>
        <xsl:text>\edtext</xsl:text><xsl:text>{</xsl:text><xsl:apply-templates
          select="tei:lem[not(@rend='none')]"/><xsl:text>}{</xsl:text><xsl:if
            test="tei:lem[@rend='none']"><xsl:text>\lemma{</xsl:text><xsl:value-of
              select="tei:lem"/><xsl:text>}</xsl:text></xsl:if><xsl:text>\Afootnote[nosep]</xsl:text><xsl:if
-               test="tei:lem[@rend='none']"><xsl:text>[nosep]</xsl:text></xsl:if><xsl:text>{</xsl:text>
+               test="tei:lem[@rend='none']"><xsl:text>[nosep]\Xlemmaseparator[: ]</xsl:text></xsl:if><xsl:text>{</xsl:text>
+       <!-- SJH: Added call to template appLemmaWitness so that the witnesses would be rendered. The colon is to separate the lema from the next reading. -->
+       <xsl:text>\textit{</xsl:text>
+       <xsl:call-template name="appLemmaWitness"/>
+       <xsl:call-template name="appLemmaNote"/>
+       <xsl:text>}</xsl:text>
      </xsl:otherwise>
      </xsl:choose>
-     <!-- SJH: Added call to template appLemmaWitness so that the witnesses would be rendered. -->
-     <xsl:text>\textit{</xsl:text><xsl:call-template name="appLemmaWitness"/><xsl:text>}</xsl:text>
      <xsl:call-template name="appReadings"/>
      <xsl:text>}}</xsl:text>
    </xsl:template>
