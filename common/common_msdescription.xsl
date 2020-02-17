@@ -53,7 +53,7 @@ of this software, even if advised of the possibility of such damage.
   </xsl:template>
   <xsl:template match="tei:additional">
     <xsl:call-template name="makeSection">
-      <xsl:with-param name="level">2</xsl:with-param>
+      <xsl:with-param name="level">4</xsl:with-param>
       <xsl:with-param name="heading">
         <xsl:text>Additional</xsl:text>
       </xsl:with-param>
@@ -69,7 +69,7 @@ of this software, even if advised of the possibility of such damage.
   </xsl:template>
   <xsl:template match="tei:msContents">
     <xsl:call-template name="makeSection">
-      <xsl:with-param name="level">1</xsl:with-param>
+      <xsl:with-param name="level">4</xsl:with-param>
       <xsl:with-param name="heading">
         <xsl:text>Contents</xsl:text>
       </xsl:with-param>
@@ -82,7 +82,7 @@ of this software, even if advised of the possibility of such damage.
   </xsl:template>
   <xsl:template match="tei:history">
     <xsl:call-template name="makeSection">
-      <xsl:with-param name="level">1</xsl:with-param>
+      <xsl:with-param name="level">4</xsl:with-param>
       <xsl:with-param name="heading">
         <xsl:text>History</xsl:text>
       </xsl:with-param>
@@ -90,7 +90,7 @@ of this software, even if advised of the possibility of such damage.
   </xsl:template>
   <xsl:template match="tei:provenance">
     <xsl:call-template name="makeSection">
-      <xsl:with-param name="level">2</xsl:with-param>
+      <xsl:with-param name="level">4</xsl:with-param>
       <xsl:with-param name="heading">
         <xsl:text>Provenance</xsl:text>
       </xsl:with-param>
@@ -98,7 +98,7 @@ of this software, even if advised of the possibility of such damage.
   </xsl:template>
   <xsl:template match="tei:acquisition">
     <xsl:call-template name="makeSection">
-      <xsl:with-param name="level">2</xsl:with-param>
+      <xsl:with-param name="level">4</xsl:with-param>
       <xsl:with-param name="heading">
         <xsl:text>Acquisition</xsl:text>
       </xsl:with-param>
@@ -106,7 +106,7 @@ of this software, even if advised of the possibility of such damage.
   </xsl:template>
   <xsl:template match="tei:origin">
     <xsl:call-template name="makeSection">
-      <xsl:with-param name="level">2</xsl:with-param>
+      <xsl:with-param name="level">4</xsl:with-param>
       <xsl:with-param name="heading">
         <xsl:text>Origin</xsl:text>
       </xsl:with-param>
@@ -117,7 +117,7 @@ of this software, even if advised of the possibility of such damage.
   </xsl:template>
   <xsl:template match="tei:msIdentifier">
     <xsl:call-template name="makeSection">
-      <xsl:with-param name="level">1</xsl:with-param>
+      <xsl:with-param name="level">4</xsl:with-param>
       <xsl:with-param name="heading">
         <xsl:text>Identification</xsl:text>
       </xsl:with-param>
@@ -125,7 +125,7 @@ of this software, even if advised of the possibility of such damage.
   </xsl:template>
   <xsl:template match="tei:handDesc">
     <xsl:call-template name="makeSection">
-      <xsl:with-param name="level">3</xsl:with-param>
+      <xsl:with-param name="level">4</xsl:with-param>
       <xsl:with-param name="heading">
         <xsl:text>Hands</xsl:text>
       </xsl:with-param>
@@ -133,7 +133,7 @@ of this software, even if advised of the possibility of such damage.
   </xsl:template>
   <xsl:template match="tei:layoutDesc">
     <xsl:call-template name="makeSection">
-      <xsl:with-param name="level">3</xsl:with-param>
+      <xsl:with-param name="level">4</xsl:with-param>
       <xsl:with-param name="heading">
         <xsl:text>Layout</xsl:text>
       </xsl:with-param>
@@ -141,7 +141,7 @@ of this software, even if advised of the possibility of such damage.
   </xsl:template>
   <xsl:template match="tei:decoDesc">
     <xsl:call-template name="makeSection">
-      <xsl:with-param name="level">3</xsl:with-param>
+      <xsl:with-param name="level">4</xsl:with-param>
       <xsl:with-param name="heading">
         <xsl:text>Decoration</xsl:text>
       </xsl:with-param>
@@ -157,7 +157,7 @@ of this software, even if advised of the possibility of such damage.
   </xsl:template>
   <xsl:template match="tei:objectDesc">
     <xsl:call-template name="makeSection">
-      <xsl:with-param name="level">2</xsl:with-param>
+      <xsl:with-param name="level">4</xsl:with-param>
       <xsl:with-param name="heading">
         <xsl:text>Object</xsl:text>
       </xsl:with-param>
@@ -165,7 +165,7 @@ of this software, even if advised of the possibility of such damage.
   </xsl:template>
   <xsl:template match="tei:physDesc">
     <xsl:call-template name="makeSection">
-      <xsl:with-param name="level">1</xsl:with-param>
+      <xsl:with-param name="level">4</xsl:with-param>
       <xsl:with-param name="heading">
         <xsl:text>Physical description</xsl:text>
       </xsl:with-param>

@@ -467,15 +467,9 @@ of this software, even if advised of the possibility of such damage.
   <doc xmlns="http://www.oxygenxml.com/ns/doc/xsl">
       <desc>Process element listBibl/tei:bibl</desc>
    </doc>
-  
-<!-- SJH: This might need to be changed. A different version has this block:
-    <xsl:template match="tei:listBibl/tei:bibl">
-    <xsl:text>\bibitem [</xsl:text>
-    <xsl:value-of select="tei:abbr[@type='siglum']"/><xsl:text>]{</xsl:text>
-    <xsl:value-of select="@xml:id"/><xsl:text>}</xsl:text>
-    <xsl:apply-templates/>
-    <xsl:text>&#10;</xsl:text> -->
-  <xsl:template match="tei:listBibl/tei:bibl"> \bibitem {<xsl:choose>
+  <xsl:template match="tei:listBibl/tei:bibl">
+      <xsl:text> \bibitem {</xsl:text>
+      <xsl:choose>
          <xsl:when test="@xml:id">
 	           <xsl:value-of select="@xml:id"/>
          </xsl:when>
@@ -483,7 +477,6 @@ of this software, even if advised of the possibility of such damage.
          </xsl:otherwise>
       </xsl:choose>
       <xsl:text>}</xsl:text>
-      <xsl:sequence select="tei:makeHyperTarget(@xml:id)"/>
       <xsl:choose>
          <xsl:when test="parent::tei:listBibl/@xml:lang='zh-TW' or @xml:lang='zh-TW'">
 	           <xsl:text>{\textChinese </xsl:text>
@@ -605,6 +598,8 @@ of this software, even if advised of the possibility of such damage.
     <xsl:if test="$numberParagraphs='true'">
       <xsl:call-template name="numberParagraph"/>
     </xsl:if>
+    <xsl:if test="@n"><xsl:text>\textbf{\textsuperscript{</xsl:text><xsl:value-of
+      select="@n"/>.<xsl:text>}}</xsl:text></xsl:if>
     <xsl:apply-templates/>
     <xsl:if test="ancestor::tei:div[@type='edition']">
 	<xsl:text>&#10;\pend&#10;</xsl:text>
@@ -733,6 +728,12 @@ of this software, even if advised of the possibility of such damage.
    </doc>
   <xsl:template match="tei:ref[@type='cite']">
       <xsl:apply-templates/>
+  </xsl:template>
+  
+  <xsl:template match="tei:seg">
+    <xsl:if test="@n"><xsl:text>\textbf{\textsuperscript{</xsl:text><xsl:value-of
+      select="@n"/><xsl:text>}}\,</xsl:text></xsl:if>
+    <xsl:apply-templates/>
   </xsl:template>
 
   <!-- SJH: Insert a number in superscript to indicate the beginning of a seg, using value of @n-->

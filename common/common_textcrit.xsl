@@ -144,7 +144,7 @@ of this software, even if advised of the possibility of such damage.
   </xsl:template>
 
    <xsl:template name="appLemma">
-	   <xsl:if test="tei:lem"><xsl:value-of select="tei:lem"/></xsl:if>
+	   <xsl:if test="tei:lem"><xsl:choose><xsl:when test="not(tei:lem/node())">om.</xsl:when><xsl:otherwise><xsl:value-of select="tei:lem"/></xsl:otherwise></xsl:choose></xsl:if>
    </xsl:template>
   
   <xsldoc:doc xmlns:xsldoc="http://www.oxygenxml.com/ns/doc/xsl">
@@ -168,7 +168,7 @@ of this software, even if advised of the possibility of such damage.
      <!-- SJH: We select just the rdg … -->
      <xsl:for-each select="tei:rdg"><xsl:choose>
        <xsl:when test="$outputTarget='latex'">
-         <xsl:apply-templates/><xsl:text> \textit{</xsl:text>
+         <xsl:choose><xsl:when test="not(node())">om.</xsl:when><xsl:otherwise><xsl:apply-templates/></xsl:otherwise></xsl:choose><xsl:text> \textit{</xsl:text>
          <xsl:value-of select="tei:getWitness(@wit, .)"/><xsl:text>}</xsl:text><xsl:if test="@wit and
            @source"><xsl:text> </xsl:text></xsl:if><xsl:text> \textit{</xsl:text><xsl:value-of select="tei:getWitness(@source, ., 
              ' ')"/><xsl:text>}</xsl:text>
@@ -180,7 +180,7 @@ of this software, even if advised of the possibility of such damage.
        <xsl:if test="not(position() = last())"><xsl:text> : </xsl:text></xsl:if>
      </xsl:when>
        <xsl:otherwise>
-         <xsl:apply-templates/><xsl:text> </xsl:text>
+         <xsl:choose><xsl:when test="not(node())">om.</xsl:when><xsl:otherwise><xsl:apply-templates/></xsl:otherwise></xsl:choose><xsl:text> </xsl:text>
          <xsl:value-of select="tei:getWitness(@wit, .)"/><xsl:if test="@wit and
            @source"><xsl:text> </xsl:text></xsl:if><xsl:value-of select="tei:getWitness(@source, ., 
              ' ')"/>

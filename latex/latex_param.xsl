@@ -125,6 +125,8 @@ the beginning of the document</desc>
 \usepackage{graphicx}
 \usepackage{marginnote}
 
+\renewcommand{\@cite}[1]{#1}
+
 </xsl:text>
 <!-- SJH: Added calls to templates to handle some LDLT requirements. -->
 <xsl:call-template name="section-numbering"/>
@@ -217,7 +219,7 @@ as a proportion of the page width.</desc>
    <doc xmlns="http://www.oxygenxml.com/ns/doc/xsl" class="userpackage" type="string">
       <desc>Configuration to pass to hypersetup.</desc>
    </doc>
-   <xsl:param name="hyperSetup">linkbordercolor=0.75 0.75 0.75,urlbordercolor=0.75 0.75 0.75,bookmarksnumbered=true</xsl:param>
+   <xsl:param name="hyperSetup">citebordercolor=0.75 0.75 0.75,linkbordercolor=0.75 0.75 0.75,urlbordercolor=0.75 0.75 0.75,bookmarksnumbered=true</xsl:param>
 
    <doc xmlns="http://www.oxygenxml.com/ns/doc/xsl" class="userpackage" type="string">
       <desc>Depth of nesting of reference documentation when processing ODD</desc>
@@ -394,7 +396,7 @@ characters. The normal characters remain active for LaTeX commands.
 <doc xmlns="http://www.oxygenxml.com/ns/doc/xsl" class="style" type="string"><desc>Font for sans-serif</desc>   </doc>
 <xsl:param name="sansFont">Noto Sans</xsl:param>
 <doc xmlns="http://www.oxygenxml.com/ns/doc/xsl" class="style" type="string"><desc>Font for serif</desc>   </doc>
-<xsl:param name="romanFont">Baskerville</xsl:param>
+<xsl:param name="romanFont">New Athena Unicode</xsl:param>
 <doc xmlns="http://www.oxygenxml.com/ns/doc/xsl" class="style" type="string"><desc>Font for gothic</desc>   </doc>
 <xsl:param name="gothicFont">Lucida Blackletter</xsl:param>
 <doc xmlns="http://www.oxygenxml.com/ns/doc/xsl" class="style" type="string"><desc>Font for calligraphic</desc>   </doc>
@@ -560,7 +562,7 @@ characters. The normal characters remain active for LaTeX commands.
   {\end{list}\end{raggedright}}
 \newenvironment{specHead}[2]%
  {\vspace{20pt}\hrule\vspace{10pt}%
-  \label{#1}\markright{#2}%
+  \phantomsection\label{#1}\markright{#2}%
 <xsl:text>
   \pdfbookmark[</xsl:text>
       <xsl:value-of select="$specLinkDepth"/>
@@ -578,10 +580,7 @@ characters. The normal characters remain active for LaTeX commands.
    </doc>
 <xsl:template name="ledmacOptions">
 <xsl:text>
-<!-- SJH: This block does not accomplish the objective of making the note numbers bold.   
-\renewcommand{\notenumfont}{\bfseries}-->
-<!-- SJH: Replacing above with: -->
-\Xnotenumfont{\normalfont\bfseries}
+\renewcommand{\Xnotenumfont}{\bfseries}
 \lineation{section}
 \linenummargin{inner}
 \Xarrangement[A]{paragraph}

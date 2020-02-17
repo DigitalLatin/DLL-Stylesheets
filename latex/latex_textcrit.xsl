@@ -84,13 +84,23 @@ of this software, even if advised of the possibility of such damage.
   
   <xsl:template match="tei:div[@type='edition']/tei:div">
     <xsl:apply-templates select="tei:head"/>
-
+<xsl:choose>
+  <!-- poetry -->
+  <xsl:when test="tei:l|tei:lg">
 \beginnumbering
-<!-- SJH: This appears to be redundant with template for paragraphs in latex_core.xsl: 
-\pstart -->
-    <xsl:apply-templates select="tei:head/following-sibling::*"/>
-<!-- SJH: This also appears to be redundant with template for paragraphs in latex_core.xsl: \pend -->
+\pstart
+<xsl:apply-templates select="*[not(self::tei:head)]"/>
+\pend
+\endnumbering    
+  </xsl:when>
+  <!-- prose -->
+  <xsl:when test="tei:p|tei:ab">
+\beginnumbering
+    <xsl:apply-templates select="*[not(self::tei:head)]"/>
 \endnumbering
+  </xsl:when>
+</xsl:choose>
+
   </xsl:template>
   
   
