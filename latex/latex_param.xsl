@@ -384,7 +384,7 @@ characters. The normal characters remain active for LaTeX commands.
 <doc xmlns="http://www.oxygenxml.com/ns/doc/xsl" class="style" type="string"><desc>Font for sans-serif</desc>   </doc>
 <xsl:param name="sansFont">Noto Sans</xsl:param>
 <doc xmlns="http://www.oxygenxml.com/ns/doc/xsl" class="style" type="string"><desc>Font for serif</desc>   </doc>
-<xsl:param name="romanFont">Baskerville</xsl:param>
+<xsl:param name="romanFont">New Athena Unicode</xsl:param>
 <doc xmlns="http://www.oxygenxml.com/ns/doc/xsl" class="style" type="string"><desc>Font for gothic</desc>   </doc>
 <xsl:param name="gothicFont">Lucida Blackletter</xsl:param>
 <doc xmlns="http://www.oxygenxml.com/ns/doc/xsl" class="style" type="string"><desc>Font for calligraphic</desc>   </doc>
@@ -567,7 +567,7 @@ characters. The normal characters remain active for LaTeX commands.
    </doc>
 <xsl:template name="ledmacOptions">
 <xsl:text>
-\renewcommand{\notenumfont}{\bfseries}
+\renewcommand{\Xnotenumfont}{\bfseries}
 \lineation{section}
 \linenummargin{inner}
 \Xarrangement[A]{paragraph}

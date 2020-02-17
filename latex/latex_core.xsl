@@ -597,6 +597,8 @@ of this software, even if advised of the possibility of such damage.
     <xsl:if test="$numberParagraphs='true'">
       <xsl:call-template name="numberParagraph"/>
     </xsl:if>
+    <xsl:if test="@n"><xsl:text>\textbf{\textsuperscript{</xsl:text><xsl:value-of
+      select="@n"/>.<xsl:text>}}</xsl:text></xsl:if>
     <xsl:apply-templates/>
     <xsl:if test="ancestor::tei:div[@type='edition']">
 	<xsl:text>&#10;\pend&#10;</xsl:text>
@@ -721,6 +723,12 @@ of this software, even if advised of the possibility of such damage.
    </doc>
   <xsl:template match="tei:ref[@type='cite']">
       <xsl:apply-templates/>
+  </xsl:template>
+  
+  <xsl:template match="tei:seg">
+    <xsl:if test="@n"><xsl:text>\textbf{\textsuperscript{</xsl:text><xsl:value-of
+      select="@n"/><xsl:text>}}\,</xsl:text></xsl:if>
+    <xsl:apply-templates/>
   </xsl:template>
 
 

@@ -156,7 +156,7 @@ of this software, even if advised of the possibility of such damage.
   <doc xmlns="http://www.oxygenxml.com/ns/doc/xsl">
       <desc/>
    </doc>
-  <xsl:template match="tei:body/tei:div[@type='edition']">
+  <xsl:template match="tei:body">
     <xsl:if test="not(ancestor::tei:floatingText) and not(preceding::tei:body) and preceding::tei:front">
       <xsl:text>\mainmatter </xsl:text>
     </xsl:if>
