@@ -541,18 +541,18 @@ of this software, even if advised of the possibility of such damage.
       <desc>Process a plain note element</desc>
    </doc>
   <xsl:template name="plainNote">
-    <xsl:text> {\small\itshape [</xsl:text>
+  
     <xsl:choose>
       <xsl:when test="@n">
         <xsl:value-of select="@n"/>
       </xsl:when>
       <xsl:otherwise>
-        <xsl:sequence select="tei:i18n('Note')"/>
-        <xsl:text>: </xsl:text>
+        <!-- SJH: Removing this since "Note:" before everything is problematic. 
+          <xsl:sequence select="tei:i18n('Note')"/>
+        <xsl:text>: </xsl:text>-->
       </xsl:otherwise>
     </xsl:choose>
     <xsl:apply-templates/>
-    <xsl:text>]} </xsl:text>
   </xsl:template>
 
   <doc xmlns="http://www.oxygenxml.com/ns/doc/xsl">
@@ -598,8 +598,8 @@ of this software, even if advised of the possibility of such damage.
     <xsl:if test="$numberParagraphs='true'">
       <xsl:call-template name="numberParagraph"/>
     </xsl:if>
-    <xsl:if test="@n"><xsl:text>\textbf{\textsuperscript{</xsl:text><xsl:value-of
-      select="@n"/>.<xsl:text>}}</xsl:text></xsl:if>
+    <xsl:if test="@n"><xsl:text>\textbf{</xsl:text><xsl:value-of
+      select="@n"/><xsl:text>}</xsl:text></xsl:if>
     <xsl:apply-templates/>
     <xsl:if test="ancestor::tei:div[@type='edition']">
 	<xsl:text>&#10;\pend&#10;</xsl:text>
@@ -730,11 +730,12 @@ of this software, even if advised of the possibility of such damage.
       <xsl:apply-templates/>
   </xsl:template>
   
+  <!-- SJH: This is duplicated by the next entry.
   <xsl:template match="tei:seg">
     <xsl:if test="@n"><xsl:text>\textbf{\textsuperscript{</xsl:text><xsl:value-of
       select="@n"/><xsl:text>}}\,</xsl:text></xsl:if>
     <xsl:apply-templates/>
-  </xsl:template>
+  </xsl:template>-->
 
   <!-- SJH: Insert a number in superscript to indicate the beginning of a seg, using value of @n-->
   <doc xmlns="http://www.oxygenxml.com/ns/doc/xsl">

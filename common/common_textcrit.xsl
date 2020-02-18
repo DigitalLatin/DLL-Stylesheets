@@ -146,21 +146,6 @@ of this software, even if advised of the possibility of such damage.
    <xsl:template name="appLemma">
 	   <xsl:if test="tei:lem"><xsl:choose><xsl:when test="not(tei:lem/node())">om.</xsl:when><xsl:otherwise><xsl:value-of select="tei:lem"/></xsl:otherwise></xsl:choose></xsl:if>
    </xsl:template>
-  
-  <xsldoc:doc xmlns:xsldoc="http://www.oxygenxml.com/ns/doc/xsl">
-    <xsldoc:desc>If a note follows a lemma, render it, followed by a colon. If there isn't a note, just insert a colon after the lemma witnesses.</xsldoc:desc>
-  </xsldoc:doc>
-  <xsl:template name="appLemmaNote">
-    <xsl:choose>
-      <xsl:when test="tei:lem/following-sibling::*[1][self::tei:note]">
-        <xsl:value-of select="tei:lem/following-sibling::*[1][self::tei:note]"/>
-        <xsl:if test="tei:lem/following-sibling::*[2][self::tei:rdg]"><xsl:text> \normalfont{:} </xsl:text></xsl:if>
-      </xsl:when>
-      <xsl:otherwise>
-        <xsl:if test="tei:lem/following-sibling::*[2][self::tei:rdg]"><xsl:text> \normalfont{:} </xsl:text></xsl:if>
-      </xsl:otherwise>
-    </xsl:choose>
-  </xsl:template>
 
    <xsl:template name="appReadings">
       <!-- SJH: This original method treats rdg and note as unrelated elements, which makes it difficult to insert a delimiter before the next rdg.
@@ -174,7 +159,7 @@ of this software, even if advised of the possibility of such damage.
              ' ')"/><xsl:text>}</xsl:text>
        <!-- … now we look for a note that follows it. If there is one, we print it. -->
        <xsl:if test="following-sibling::*[1][self::tei:note]">
-         <xsl:apply-templates select="following-sibling::*[1][self::tei:note]"/>
+         <xsl:text>\textit{</xsl:text><xsl:apply-templates select="following-sibling::*[1][self::tei:note]"/><xsl:text>}</xsl:text>
        </xsl:if>
        <!-- SJH: If the combination of rdg and note is not the last one, put a colon before the next one. -->
        <xsl:if test="not(position() = last())"><xsl:text> : </xsl:text></xsl:if>

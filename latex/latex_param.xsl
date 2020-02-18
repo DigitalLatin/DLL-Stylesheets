@@ -115,6 +115,7 @@ the beginning of the document</desc>
       <xsl:value-of select="$latexGeometryOptions"/>
       <xsl:text>]{geometry}
 \usepackage{framed}
+\usepackage{microtype}
 </xsl:text>
 <xsl:text>
 \definecolor{shadecolor}{gray}{0.95}
@@ -580,7 +581,7 @@ characters. The normal characters remain active for LaTeX commands.
    </doc>
 <xsl:template name="ledmacOptions">
 <xsl:text>
-\renewcommand{\Xnotenumfont}{\bfseries}
+\Xnotenumfont{\normalfont\bfseries}
 \lineation{section}
 \linenummargin{inner}
 \Xarrangement[A]{paragraph}

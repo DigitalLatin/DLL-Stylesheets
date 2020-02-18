@@ -73,9 +73,8 @@ of this software, even if advised of the possibility of such damage.
                test="tei:lem[@rend='none']"><xsl:text>[nosep]\Xlemmaseparator[: ]</xsl:text></xsl:if><xsl:text>{</xsl:text>
        <!-- SJH: Added call to template appLemmaWitness so that the witnesses would be rendered. The colon is to separate the lema from the next reading. -->
        <xsl:text>\textit{</xsl:text>
-       <xsl:call-template name="appLemmaWitness"/>
+       <xsl:call-template name="appLemmaWitness"/><xsl:text>}</xsl:text>
        <xsl:call-template name="appLemmaNote"/>
-       <xsl:text>}</xsl:text>
      </xsl:otherwise>
      </xsl:choose>
      <xsl:call-template name="appReadings"/>
@@ -193,15 +192,40 @@ of this software, even if advised of the possibility of such damage.
     </xsl:choose>
   </xsl:template>-->
 
-<!-- SJH: Added. -->
+<!-- SJH: I added this. But now it appears not to matter. 
   <doc xmlns="http://www.oxygenxml.com/ns/doc/xsl">
     <desc>
       <p>Render apparatus notes in italics.</p>
     </desc>
   </doc>
   <xsl:template match="tei:app/tei:note">
-  <xsl:text>\textit{</xsl:text><xsl:value-of select="."/><xsl:text>}</xsl:text>
+  <xsl:text>\textit{</xsl:text><xsl:apply-templates/><xsl:text>}</xsl:text>
+  </xsl:template>-->
+  
+  <xsldoc:doc xmlns:xsldoc="http://www.oxygenxml.com/ns/doc/xsl">
+    <xsldoc:desc>If a note follows a lemma, render it, followed by a colon. If there isn't a note, just insert a colon after the lemma witnesses.</xsldoc:desc>
+  </xsldoc:doc>
+  <xsl:template name="appLemmaNote">
+    <xsl:choose>
+      <xsl:when test="tei:lem/following-sibling::*[1][self::tei:note]">
+        <xsl:text>\textit{</xsl:text><xsl:apply-templates select="tei:lem/following-sibling::*[1][self::tei:note]"/><xsl:text>}</xsl:text>
+        <xsl:if test="tei:lem/following-sibling::*[2][self::tei:rdg]"><xsl:text> \normalfont{:} </xsl:text></xsl:if>
+      </xsl:when>
+      <xsl:otherwise>
+        <xsl:if test="tei:lem/following-sibling::*[2][self::tei:rdg]"><xsl:text> \normalfont{:} </xsl:text></xsl:if>
+      </xsl:otherwise>
+    </xsl:choose>
   </xsl:template>
+
+  <doc xmlns="http://www.oxygenxml.com/ns/doc/xsl">
+    <desc>
+      <p>Handle text within a note in the apparatus that must be rendered in a roman font (e.g., Latin text).</p>
+    </desc>
+  </doc>
+<xsl:template match="tei:app/tei:note/tei:hi[@rend='normal']">
+  <xsl:text>{\normalfont </xsl:text><xsl:apply-templates/><xsl:text>}</xsl:text>
+</xsl:template>
+
 
   <xsl:template match="tei:witDetail[not(*|text())]">
     <xsl:choose>
