@@ -63,7 +63,7 @@ of this software, even if advised of the possibility of such damage.
       <xsl:apply-templates/>
   </xsl:template>
   
-  <!-- SJH: Adding instructions for dealine with a persName or placeName element. -->
+  <!-- SJH: Adding instructions for dealing with a persName or placeName element. -->
   <doc xmlns="http://www.oxygenxml.com/ns/doc/xsl">
     <desc>Process persName or placeName element.</desc>
   </doc>

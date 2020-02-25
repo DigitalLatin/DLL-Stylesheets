@@ -598,6 +598,7 @@ of this software, even if advised of the possibility of such damage.
     <xsl:if test="$numberParagraphs='true'">
       <xsl:call-template name="numberParagraph"/>
     </xsl:if>
+    <!-- SJH: Removing superscript from paragraph numbers. -->
     <xsl:if test="@n"><xsl:text>\textbf{</xsl:text><xsl:value-of
       select="@n"/><xsl:text>}</xsl:text></xsl:if>
     <xsl:apply-templates/>

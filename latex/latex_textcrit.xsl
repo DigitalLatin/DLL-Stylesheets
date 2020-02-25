@@ -58,23 +58,27 @@ of this software, even if advised of the possibility of such damage.
    </doc>
    <xsl:template name="makeAppEntry">
      <xsl:param name="lemma"/>
+     <!-- SJH: Changed the test, since entries differ depending on the presence of @wit and @source. -->
      <xsl:choose><xsl:when test="tei:lem[not(@wit) and not(@source) and not(following-sibling::*[1][self::tei:note])]">
        <xsl:text>\edtext</xsl:text><xsl:text>{</xsl:text><xsl:apply-templates
        select="tei:lem[not(@rend='none')]"/><xsl:text>}{</xsl:text><xsl:if
          test="tei:lem[@rend='none']"><xsl:text>\lemma{</xsl:text><xsl:value-of
            select="tei:lem"/><xsl:text>}</xsl:text></xsl:if><xsl:text>\Afootnote</xsl:text><xsl:if
-             test="tei:lem[@rend='none']"><xsl:text></xsl:text></xsl:if><xsl:text>{</xsl:text>
+             test="tei:lem[@rend='none']"><xsl:text><!-- SJH: [nosep] used to be here. --></xsl:text></xsl:if><xsl:text>{</xsl:text>
      </xsl:when>
      <xsl:otherwise>
        <xsl:text>\edtext</xsl:text><xsl:text>{</xsl:text><xsl:apply-templates
          select="tei:lem[not(@rend='none')]"/><xsl:text>}{</xsl:text><xsl:if
            test="tei:lem[@rend='none']"><xsl:text>\lemma{</xsl:text><xsl:value-of
-             select="tei:lem"/><xsl:text>}</xsl:text></xsl:if><xsl:text>\Afootnote[nosep]</xsl:text><xsl:if
+             select="tei:lem"/><xsl:text>}</xsl:text></xsl:if><xsl:text>\Afootnote</xsl:text><xsl:if
                test="tei:lem[@rend='none']"><xsl:text>[nosep]\Xlemmaseparator[: ]</xsl:text></xsl:if><xsl:text>{</xsl:text>
        <!-- SJH: Added call to template appLemmaWitness so that the witnesses would be rendered. The colon is to separate the lema from the next reading. -->
-       <xsl:text>\textit{</xsl:text>
-       <xsl:call-template name="appLemmaWitness"/><xsl:text>}</xsl:text>
-       <xsl:call-template name="appLemmaNote"/>
+       <xsl:if test="tei:lem[@wit]|tei:lem[@source]">
+         <xsl:text>\textit{</xsl:text><xsl:call-template name="appLemmaWitness"/><xsl:text>}</xsl:text>
+       </xsl:if>
+       <xsl:if test="tei:lem/following-sibling::*[1][self::tei:note]">
+         <xsl:call-template name="appLemmaNote"/>
+       </xsl:if>
      </xsl:otherwise>
      </xsl:choose>
      <xsl:call-template name="appReadings"/>
