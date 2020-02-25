@@ -62,4 +62,41 @@ of this software, even if advised of the possibility of such damage.
       <xsl:text>\mbox{}\\ </xsl:text>
       <xsl:apply-templates/>
   </xsl:template>
+  
+  <!-- SJH: Adding instructions for dealing with a persName or placeName element. -->
+  <doc xmlns="http://www.oxygenxml.com/ns/doc/xsl">
+    <desc>Process persName or placeName element.</desc>
+  </doc>
+  
+  <xsl:template match="//tei:geogName|tei:persName|tei:placeName">
+    <xsl:choose>
+      <xsl:when test="@ref">
+        <xsl:text>\href{</xsl:text>
+        <xsl:value-of select="@ref"/>
+        <xsl:text>}{</xsl:text>
+        <xsl:choose>
+          <xsl:when test="tei:app/tei:lem">
+            <xsl:choose>
+              <xsl:when test="*">
+                <xsl:apply-templates/>
+              </xsl:when>
+              <xsl:otherwise>
+                <xsl:value-of select="text()"/>
+              </xsl:otherwise>
+            </xsl:choose>            
+          </xsl:when>
+          <xsl:otherwise>
+            <xsl:apply-templates/>
+          </xsl:otherwise>
+        </xsl:choose>
+        <xsl:text>}</xsl:text>  
+      </xsl:when>
+      <xsl:when test="*">
+        <xsl:apply-templates/>
+      </xsl:when>
+      <xsl:otherwise>
+        <xsl:value-of select="text()"/>
+      </xsl:otherwise></xsl:choose>
+    
+  </xsl:template>
 </xsl:stylesheet>

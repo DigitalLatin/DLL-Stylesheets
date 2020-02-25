@@ -541,18 +541,18 @@ of this software, even if advised of the possibility of such damage.
       <desc>Process a plain note element</desc>
    </doc>
   <xsl:template name="plainNote">
-    <xsl:text> {\small\itshape [</xsl:text>
+  
     <xsl:choose>
       <xsl:when test="@n">
         <xsl:value-of select="@n"/>
       </xsl:when>
       <xsl:otherwise>
-        <xsl:sequence select="tei:i18n('Note')"/>
-        <xsl:text>: </xsl:text>
+        <!-- SJH: Removing this since "Note:" before everything is problematic. 
+          <xsl:sequence select="tei:i18n('Note')"/>
+        <xsl:text>: </xsl:text>-->
       </xsl:otherwise>
     </xsl:choose>
     <xsl:apply-templates/>
-    <xsl:text>]} </xsl:text>
   </xsl:template>
 
   <doc xmlns="http://www.oxygenxml.com/ns/doc/xsl">
@@ -598,8 +598,9 @@ of this software, even if advised of the possibility of such damage.
     <xsl:if test="$numberParagraphs='true'">
       <xsl:call-template name="numberParagraph"/>
     </xsl:if>
-    <xsl:if test="@n"><xsl:text>\textbf{\textsuperscript{</xsl:text><xsl:value-of
-      select="@n"/>.<xsl:text>}}</xsl:text></xsl:if>
+    <!-- SJH: Removing superscript from paragraph numbers. -->
+    <xsl:if test="@n"><xsl:text>\textbf{</xsl:text><xsl:value-of
+      select="@n"/><xsl:text>}</xsl:text></xsl:if>
     <xsl:apply-templates/>
     <xsl:if test="ancestor::tei:div[@type='edition']">
 	<xsl:text>&#10;\pend&#10;</xsl:text>
@@ -700,6 +701,10 @@ of this software, even if advised of the possibility of such damage.
 	  <xsl:apply-templates/>
 	  <xsl:text>\end{</xsl:text><xsl:value-of select="$quoteEnv"/><xsl:text>}</xsl:text>
 	</xsl:when>
+        <!-- SJH: Avoid having line breaks interrupt the quotation. This was an issue in Dunning's text. -->
+        <xsl:when test="child::tei:lb">
+          <xsl:text>`</xsl:text><xsl:apply-templates/><xsl:text>’</xsl:text>
+        </xsl:when>
 	<xsl:otherwise>
 	   <xsl:call-template name="makeQuote"/>
 	</xsl:otherwise>
@@ -839,4 +844,42 @@ of this software, even if advised of the possibility of such damage.
       <xsl:text>\end{center}&#10;</xsl:text>
   </xsl:template>
 
+<!-- SJH: Omit linebreaks with @break='no', which occurs in Dunning's edition. -->
+  <doc xmlns="http://www.oxygenxml.com/ns/doc/xsl">
+    <desc>Omit any linebreak element with @break="no".</desc>
+  </doc>
+<xsl:template match="//tei:lb[@break='no']" name="lbno"/> 
+<!-- Since there are many linebreaks in Dunning's edition, let's just omit all of them. -->
+<xsl:template match="//tei:lb" name="lb"/>
+  
+ <xsl:template match="//tei:quote/tei:lb"/>
+   
+<!-- SJH: Templates for handling editorial symbols. -->   
+  <doc xmlns="http://www.oxygenxml.com/ns/doc/xsl">
+    <desc>Handle expansions.</desc>
+  </doc>
+<xsl:template match="//tei:expan">
+  <xsl:value-of select="text()[1]"/><xsl:text>(</xsl:text><xsl:value-of select="tei:ex"/><xsl:text>)</xsl:text><xsl:if test="text()[2]"><xsl:value-of select="text()[2]"/></xsl:if>
+</xsl:template>
+  
+  <doc xmlns="http://www.oxygenxml.com/ns/doc/xsl">
+    <desc>Handle sic.</desc>
+  </doc>
+  <xsl:template match="//tei:sic">
+    <xsl:text>\sic{</xsl:text><xsl:apply-templates/><xsl:text>}</xsl:text>
+  </xsl:template>
+  
+  <doc xmlns="http://www.oxygenxml.com/ns/doc/xsl">
+    <desc>Handle supplied.</desc>
+  </doc>
+  <xsl:template match="//tei:supplied">
+    <xsl:text>\supplied{</xsl:text><xsl:apply-templates/><xsl:text>}</xsl:text>
+  </xsl:template>
+  
+  <doc xmlns="http://www.oxygenxml.com/ns/doc/xsl">
+    <desc>Handle surplus.</desc>
+  </doc>
+  <xsl:template match="//tei:surplus">
+    <xsl:text>\surplus{</xsl:text><xsl:apply-templates/><xsl:text>}</xsl:text>
+  </xsl:template>
 </xsl:stylesheet>
