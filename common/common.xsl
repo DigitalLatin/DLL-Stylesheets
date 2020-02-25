@@ -174,39 +174,36 @@ of this software, even if advised of the possibility of such damage.
   
 
   <doc xmlns="http://www.oxygenxml.com/ns/doc/xsl">
-      <desc>[common] whether to put quotes around something. check the
+    <desc>[common] whether to put quotes around something. check the
       quotation element, @rend, @rendition etc</desc>
-   </doc>
-   <xsl:template name="makeQuote">
-     <xsl:choose>
-       <xsl:when
-	   test="/*/tei:teiHeader//tei:editorialDecl/tei:quotation[@marks='all']">
-	 <xsl:apply-templates/>
-       </xsl:when>
-       <xsl:when test="tei:match(@rend,'inline')">
-	 <xsl:value-of select="$preQuote"/>
-         <!-- SJH: Adding to handle quotations with line breaks in them. -->
-         <xsl:call-template name="lbno"/>
-         <xsl:call-template name="lb"/>
-	 <xsl:apply-templates/>
-	 <xsl:value-of select="$postQuote"/>
-       </xsl:when>
-       <xsl:when test="$outputTarget='latex'">
-	 <xsl:value-of select="$preQuote"/>
-	 <xsl:apply-templates/>
-	 <xsl:value-of select="$postQuote"/>
-       </xsl:when>
-       <xsl:when test="@rend or @rendition or
-		       key('TAGREND',local-name(.))">
-	 <xsl:apply-templates/>
-       </xsl:when>
-       <xsl:otherwise>
-         <xsl:value-of select="$preQuote"/>
-      	 <xsl:apply-templates/>
-      	 <xsl:value-of select="$postQuote"/>
-       </xsl:otherwise>
-     </xsl:choose>
-   </xsl:template>
+  </doc>
+  <xsl:template name="makeQuote">
+    <xsl:choose>
+      <xsl:when
+        test="/*/tei:teiHeader//tei:editorialDecl/tei:quotation[@marks='all']">
+        <xsl:apply-templates/>
+      </xsl:when>
+      <xsl:when test="tei:match(@rend,'inline')">
+        <xsl:value-of select="$preQuote"/>
+        <xsl:apply-templates/>
+        <xsl:value-of select="$postQuote"/>
+      </xsl:when>
+      <xsl:when test="$outputTarget='latex'">
+        <xsl:value-of select="$preQuote"/>
+        <xsl:apply-templates/>
+        <xsl:value-of select="$postQuote"/>
+      </xsl:when>
+      <xsl:when test="@rend or @rendition or
+        key('TAGREND',local-name(.))">
+        <xsl:apply-templates/>
+      </xsl:when>
+      <xsl:otherwise>
+        <xsl:value-of select="$preQuote"/>
+        <xsl:apply-templates/>
+        <xsl:value-of select="$postQuote"/>
+      </xsl:otherwise>
+    </xsl:choose>
+  </xsl:template>
    
   <xsl:template name="makeText">
     <xsl:param name="letters"/>
