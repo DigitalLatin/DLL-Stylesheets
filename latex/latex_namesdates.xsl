@@ -54,8 +54,13 @@ of this software, even if advised of the possibility of such damage.
       \end{enumerate}
   </xsl:template>
 
-  <xsl:template match="tei:person">
-    \item <xsl:apply-templates/>
+  <xsl:template match="tei:listPerson/tei:person">
+    <xsl:text>\item \label{</xsl:text><xsl:value-of select="tei:persName/tei:abbr[@type='siglum']"/><xsl:text>} </xsl:text>
+    <!-- SJH: This isn't quite doing the trick. Try applying the templates and excluding the abbr. --><xsl:value-of select="tei:persName[not(tei:persName/tei:abbr)]/text()"/>
+    <xsl:if test="tei:note">
+      <xsl:text> </xsl:text><xsl:value-of select="tei:note"/>
+    </xsl:if>
+    <xsl:text>&#10;</xsl:text>
   </xsl:template>
 
   <xsl:template match="tei:affiliation|tei:email">

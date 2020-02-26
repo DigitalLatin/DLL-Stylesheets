@@ -167,18 +167,18 @@ of this software, even if advised of the possibility of such damage.
 		       <xsl:text>}}</xsl:text>
 		     </xsl:when>
 		     <xsl:otherwise>
-		       <!-- SJH: Using cite instead of hyperref makes the links easier to control.  
-		       <xsl:text>\hyperref[</xsl:text>-->
-		       <xsl:text>\cite{</xsl:text>
+		       <!-- SJH: Using cite instead of hyperref makes the links easier to control.  -->
+		       <xsl:text>\hyperref[</xsl:text>
+		      <!-- <xsl:text>\cite{</xsl:text> -->
 		       <xsl:value-of select="$dest"/>
 		       <xsl:text>}</xsl:text>
-		       <!-- SJH: The following original block is for using hyperref, not cite. 
+		        
 		       <xsl:text>]{</xsl:text>
 		       <xsl:value-of select="$body"/>
 		       <xsl:apply-templates mode="xref" select=".">
 			 <xsl:with-param name="minimal" select="$minimalCrossRef"/>
 		       </xsl:apply-templates>
-		       <xsl:text>}</xsl:text>-->
+		       <xsl:text>}</xsl:text>
 		     </xsl:otherwise>
 		   </xsl:choose>
 		 </xsl:for-each>

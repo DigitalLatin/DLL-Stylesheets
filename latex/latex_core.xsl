@@ -463,20 +463,20 @@ of this software, even if advised of the possibility of such damage.
      </xsl:choose>
    </xsl:template>
 
-
+  <xsl:template match="tei:listBibl/tei:bibl/tei:abbr[@type='siglum']/text()"/>
   <doc xmlns="http://www.oxygenxml.com/ns/doc/xsl">
       <desc>Process element listBibl/tei:bibl</desc>
    </doc>
   <xsl:template match="tei:listBibl/tei:bibl">
-      <xsl:text> \bibitem {</xsl:text>
+      <xsl:text>\bibitem[</xsl:text><xsl:value-of select="tei:abbr[@type='siglum']"/><xsl:text>]{</xsl:text>
       <xsl:choose>
-         <xsl:when test="@xml:id">
-	           <xsl:value-of select="@xml:id"/>
+         <xsl:when test="tei:abbr[@type='siglum']">
+           <xsl:value-of select="tei:abbr[@type='siglum']"/>
          </xsl:when>
          <xsl:otherwise>bibitem-<xsl:number level="any"/>
          </xsl:otherwise>
       </xsl:choose>
-      <xsl:text>}</xsl:text>
+      <xsl:text>} </xsl:text>
       <xsl:choose>
          <xsl:when test="parent::tei:listBibl/@xml:lang='zh-TW' or @xml:lang='zh-TW'">
 	           <xsl:text>{\textChinese </xsl:text>
@@ -495,6 +495,7 @@ of this software, even if advised of the possibility of such damage.
       <xsl:text>&#10;</xsl:text>
   </xsl:template>
 
+  
   <doc xmlns="http://www.oxygenxml.com/ns/doc/xsl">
       <desc>Process a note element which has a @place attribute
       pointing to margin</desc>

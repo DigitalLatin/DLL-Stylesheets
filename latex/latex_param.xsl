@@ -131,9 +131,7 @@ the beginning of the document</desc>
 </xsl:text>
 <!-- SJH: Added calls to templates to handle some LDLT requirements. -->
 <xsl:call-template name="section-numbering"/>
-<xsl:call-template name="format-citations"/>
-<xsl:call-template name="remove-color-hyperlinks"/>
-<xsl:call-template name="url-font"/>
+<!--<xsl:call-template name="format-citations"/>-->
 <xsl:call-template name="noLabel"></xsl:call-template>
 <xsl:if test="not($marginFont='')">
 \renewcommand*{\marginfont}{<xsl:value-of select="$marginFont"/>}
@@ -637,9 +635,9 @@ characters. The normal characters remain active for LaTeX commands.
 \fancyfoot[LE]{}
 \fancyfoot[CE]{\thepage}
 \fancyfoot[RE]{\TheID}
-\hypersetup{</xsl:text><xsl:value-of select="$hyperSetup"/><xsl:text>}
 \fancypagestyle{plain}{\fancyhead{}\renewcommand{\headrulewidth}{0pt}}</xsl:text>
 <xsl:call-template name="fallback-characters"/>
+<xsl:call-template name="hyperref"/>
    </xsl:template>
 
 <!-- SJH: Added this block to remove numbers from sections. --> 
@@ -653,8 +651,8 @@ characters. The normal characters remain active for LaTeX commands.
 \usepackage{titletoc}
   </xsl:template>
   
-<!-- SJH: Added. -->  
-  <doc xmlns="http://www.oxygenxml.com/ns/doc/xsl" class="layout">
+<!-- SJH: Deleted so that I can revert to using hyperref. -->  
+  <!--<doc xmlns="http://www.oxygenxml.com/ns/doc/xsl" class="layout">
     <desc>Format citations in the notes without brackets around them.</desc>
   </doc>
   <xsl:template name="format-citations">
@@ -663,24 +661,14 @@ characters. The normal characters remain active for LaTeX commands.
 \usepackage{cite}
 \renewcommand\citeleft{}
 \renewcommand\citeright{}</xsl:text>
-  </xsl:template>
-
-<!-- SJH: Added. -->
-  <doc xmlns="http://www.oxygenxml.com/ns/doc/xsl" class="layout">
-    <desc>Format URLs in the same font as the rest of the document.</desc>
-  </doc>
-  <xsl:template name="url-font">
-  <xsl:text>
-% Set the font for URLs to the regular font for the document.
-\urlstyle{same}</xsl:text>
-  </xsl:template>
+  </xsl:template>-->
 
 <!-- SJH: Added. --> 
   <doc xmlns="http://www.oxygenxml.com/ns/doc/xsl" class="layout">
     <desc>Prevent labels from being printed in the bibliography.</desc>
   </doc>
 <xsl:template name="noLabel">
-% Prevent labels from being printed in the bibliography.
+<!-- % Prevent labels from being printed in the bibliography.
 \makeatletter
 \renewcommand{\@biblabel}[1]{}
 \renewenvironment{thebibliography}[1]
@@ -700,14 +688,7 @@ characters. The normal characters remain active for LaTeX commands.
   \widowpenalty4000%
   \sfcode`\.\@m}
 \makeatother
-</xsl:template>
-<!-- SJH: Added. -->
-  <doc xmlns="http://www.oxygenxml.com/ns/doc/xsl" class="style">
-    <desc>Remove colors and borders from hyperlinks.</desc>
-  </doc>
-<xsl:template name="remove-color-hyperlinks">
-\usepackage[linktoc=all,colorlinks=true,linkcolor=black,anchorcolor=black,citecolor=black,filecolor=black,menucolor=black,runcolor=black,urlcolor=black]{hyperref}
-</xsl:template>
+</xsl:template> --></xsl:template>
 
 <!-- SJH: Fallback characters. Tip of the hat to Andrew Dunning. -->
   <doc xmlns="http://www.oxygenxml.com/ns/doc/xsl" class="layout">
@@ -737,6 +718,20 @@ characters. The normal characters remain active for LaTeX commands.
 \newunicodechar{ϛ}{\textfallbackStigma{ϛ}}
 </xsl:text>
 </xsl:template>
+  
+  <doc xmlns="http://www.oxygenxml.com/ns/doc/xsl" class="style">
+    <desc>
+      <p>Set up hyperref.</p>
+    </desc>
+  </doc>
+<xsl:template name="hyperref">
+  <xsl:text>
+\usepackage[linktoc=all,colorlinks=true,linkcolor=black,anchorcolor=black,citecolor=black,filecolor=black,menucolor=black,runcolor=black,urlcolor=black]{hyperref}
+\hypersetup{</xsl:text><xsl:value-of select="$hyperSetup"/><xsl:text>}
+% Set the font for URLs to the regular font for the document.
+\urlstyle{same}</xsl:text>  
+</xsl:template> 
+  
    <doc xmlns="http://www.oxygenxml.com/ns/doc/xsl" class="layout">
       <desc>
          <p>LaTeX setup at end of document</p>
