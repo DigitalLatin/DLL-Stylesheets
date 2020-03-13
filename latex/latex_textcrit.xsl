@@ -112,10 +112,7 @@ of this software, even if advised of the possibility of such damage.
   <xsl:template match="tei:wit[parent::tei:app//(tei:l|tei:p)]"/>
   <xsl:template match="tei:rdg[parent::tei:app//(tei:l|tei:p)]"/>
   <xsl:template match="tei:rdgGrp[parent::tei:app//(tei:l|tei:p)]"/>
-  
-  <xsl:template match="tei:abbr[@type='siglum']">
-    <xsl:apply-templates/>
-  </xsl:template>
+  <xsl:template match="tei:abbr[@type='siglum']"/>
   
   <xsl:template match="tei:l[ancestor::tei:app and not(@processed)]">
     <xsl:variable name="self" select="."/>

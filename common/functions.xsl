@@ -1385,7 +1385,7 @@ of this software, even if advised of the possibility of such damage.
             <xsl:when test="starts-with($wit,'#') and
               id(substring($wit,2))">
               <xsl:for-each select="id(substring($wit,2))">
-                <xsl:apply-templates select="if (tei:abbr[@type='siglum']) then tei:abbr[@type='siglum'][1]
+                <xsl:apply-templates select="if (tei:abbr[@type='siglum']) then tei:abbr[@type='siglum'][1]/node()
                   else if (@n) then @n else @xml:id"/>
                 <xsl:variable name="detail" select="if ($context) then key('WITDETAIL',
                   concat('#', $context/@xml:id))[@wit = $wit] else false()"/>
