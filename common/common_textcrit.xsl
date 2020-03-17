@@ -140,7 +140,6 @@ of this software, even if advised of the possibility of such damage.
     <xsl:value-of select="tei:getWitness(tei:lem/@wit, .)"/><xsl:if test="@wit and
       @source"><xsl:text> </xsl:text></xsl:if> <xsl:value-of
       select="tei:getWitness(tei:lem/@source, ., ' ')"/>
-    <!-- … now we look for a note that follows it. If there is one, we print it. -->
   </xsl:template>
 
    <xsl:template name="appLemma">
@@ -155,8 +154,8 @@ of this software, even if advised of the possibility of such damage.
        <xsl:when test="$outputTarget='latex'">
          <xsl:choose><xsl:when test="not(node())">om.</xsl:when><xsl:otherwise><xsl:apply-templates/></xsl:otherwise></xsl:choose><xsl:text> \textit{</xsl:text>
          <xsl:value-of select="tei:getWitness(@wit, .)"/><xsl:text>}</xsl:text><xsl:if test="@wit and
-           @source"><xsl:text> </xsl:text></xsl:if><xsl:text> \textit{</xsl:text><xsl:value-of select="tei:getWitness(@source, ., 
-             ' ')"/><xsl:text>}</xsl:text>
+           @source"><xsl:text> </xsl:text></xsl:if><xsl:if test="@source"><xsl:text>\textit{</xsl:text><xsl:value-of select="tei:getWitness(@source, ., 
+             ' ')"/><xsl:text>}</xsl:text></xsl:if>
        <!-- … now we look for a note that follows it. If there is one, we print it. -->
        <xsl:if test="following-sibling::*[1][self::tei:note]">
          <xsl:text>\textit{</xsl:text><xsl:apply-templates select="following-sibling::*[1][self::tei:note]"/><xsl:text>}</xsl:text>

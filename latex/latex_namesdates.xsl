@@ -68,6 +68,7 @@ of this software, even if advised of the possibility of such damage.
     <xsl:text>\textbf{</xsl:text><xsl:value-of select="descendant::tei:persName/tei:abbr[@type='siglum']"/><xsl:text>}: </xsl:text>
     <xsl:value-of select="descendant::tei:persName/text()"/>
     <xsl:text>. </xsl:text><xsl:apply-templates select="descendant::tei:note"/>
+    <xsl:text>&#10;</xsl:text>
   </xsl:template>
 
   <!--<xsl:template match="tei:listPerson/tei:person">

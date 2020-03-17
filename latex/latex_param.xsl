@@ -506,7 +506,7 @@ characters. The normal characters remain active for LaTeX commands.
   \cleardoublepage
   \setcounter{chapter}{0}
   \setcounter{section}{0}
-  \setcounter{secnumdepth}{2}
+  \setcounter{secnumdepth}{0}<!-- SJH: changed to 0 to prevent automatic numbering -->
   \def\@chapapp{\appendixname}%
   \def\thechapter{\@Alph\c@chapter}
   \def\theHchapter{\Alph{chapter}}
@@ -530,7 +530,25 @@ characters. The normal characters remain active for LaTeX commands.
   {\def\@noitemerr
     {\@latex@warning{Empty `bibitemlist' environment}}%
     \endlist}
-
+<!-- SJH: Added this to cope with different requirements for manuscript items. -->
+\newenvironment{msitemlist}[1]{%
+  \list{}%
+  {\settowidth\labelwidth{\@biblabel{#1}}%
+    \leftmargin\labelwidth
+    \advance\leftmargin\labelsep
+    \@openbib@code
+    \usecounter{enumiv}%
+    \let\p@enumiv\@empty
+    \renewcommand\theenumiv{\@arabic\c@enumiv}%
+    }%
+    \sloppy
+    \clubpenalty4000
+    \@clubpenalty \clubpenalty
+    \widowpenalty4000%
+    \sfcode`\.\@m}%
+    {\def\@noitemerr
+    {\@latex@warning{Empty `bibitemlist' environment}}%
+    \endlist}
 \def\tableofcontents{\section*{\contentsname}\@starttoc{toc}}
 \parskip<xsl:value-of select="$parSkip"/>
 \parindent<xsl:value-of select="$parIndent"/>
@@ -580,7 +598,7 @@ characters. The normal characters remain active for LaTeX commands.
 <xsl:template name="ledmacOptions">
 <xsl:text>
 \Xnotenumfont{\normalfont\bfseries}
-\lineation{section}
+\lineation{page}
 \linenummargin{inner}
 \Xarrangement[A]{paragraph}
 \Xnumberonlyfirstinline[A]

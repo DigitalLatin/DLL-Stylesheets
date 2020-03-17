@@ -466,7 +466,7 @@ of this software, even if advised of the possibility of such damage.
   <doc xmlns="http://www.oxygenxml.com/ns/doc/xsl">
       <desc>Process element listBibl/tei:bibl</desc>
    </doc>
-  <xsl:template match="tei:listBibl/tei:bibl|tei:listWit/tei:witness/tei:bibl">
+  <xsl:template match="tei:listBibl/tei:bibl">
       <xsl:text>\bibitem[</xsl:text><xsl:value-of select="tei:abbr[@type='siglum']"/><xsl:text>]{</xsl:text>
       <xsl:value-of select="@xml:id"/><xsl:text>} </xsl:text>
       <xsl:choose>
@@ -485,7 +485,53 @@ of this software, even if advised of the possibility of such damage.
          </xsl:otherwise>
       </xsl:choose>
       <xsl:text>&#10;</xsl:text>
+  </xsl:template>  
+  
+  <doc xmlns="http://www.oxygenxml.com/ns/doc/xsl">
+    <desc>Process element tei:bibl within a tei:witness (for early editions)</desc>
+  </doc>
+  <xsl:template match="tei:listWit/tei:witness/tei:bibl">
+    <xsl:text> </xsl:text><xsl:apply-templates/>
+    <xsl:text>&#10;</xsl:text>
   </xsl:template>
+  
+  <doc xmlns="http://www.oxygenxml.com/ns/doc/xsl">
+    <desc>
+      <p>Process listWit.</p>
+    </desc>
+  </doc>
+  <xsl:template match="tei:listWit">
+    <xsl:choose>
+      <xsl:when test="parent::tei:div[@xml:id='bibliography-manuscripts']">
+        <xsl:text>\textbf{</xsl:text><xsl:value-of select="child::tei:head"/><xsl:text>}</xsl:text>
+        <xsl:text>\begin{msitemlist}{1}</xsl:text>
+        <xsl:for-each select="tei:witness">
+          <xsl:text> \bibitem[</xsl:text><xsl:value-of select="tei:abbr[@type='siglum']"/><xsl:text>]{</xsl:text>
+          <xsl:value-of select="@xml:id"/><xsl:text>} </xsl:text><xsl:apply-templates/>
+        </xsl:for-each>
+        <xsl:text>\end{msitemlist}</xsl:text>
+      </xsl:when>
+      <xsl:when test="parent::tei:listWit">
+        <xsl:text>&#10;</xsl:text>
+        <xsl:text>\subsubsection*{</xsl:text><xsl:value-of select="child::tei:head"/><xsl:text>}</xsl:text>
+        <xsl:text>\begin{msitemlist}{1}</xsl:text>
+        <xsl:for-each select="tei:witness">
+          <xsl:text> \bibitem[</xsl:text><xsl:value-of select="tei:abbr[@type='siglum']"/><xsl:text>]{</xsl:text>
+          <xsl:value-of select="@xml:id"/><xsl:text>} </xsl:text><xsl:apply-templates/>
+        </xsl:for-each>
+        <xsl:text>\end{msitemlist}</xsl:text>
+      </xsl:when>
+      <xsl:when test="parent::tei:div[@xml:id='bibliography-early-editions']">
+        <xsl:text>&#10;</xsl:text>
+        <xsl:text>\subsubsection*{</xsl:text><xsl:value-of select="child::tei:head"/><xsl:text>}\begin{bibitemlist}{1}</xsl:text>
+        <xsl:for-each select="tei:witness">
+          <xsl:text> \bibitem[</xsl:text><xsl:value-of select="tei:abbr[@type='siglum']"/><xsl:text>]{</xsl:text>
+          <xsl:value-of select="@xml:id"/><xsl:text>} </xsl:text><xsl:apply-templates/>
+        </xsl:for-each>
+        <xsl:text>\end{bibitemlist}</xsl:text>
+      </xsl:when>
+    </xsl:choose>
+  </xsl:template>  
   
   <doc xmlns="http://www.oxygenxml.com/ns/doc/xsl">
     <desc>Process abbr so that it does appear in apparatus, but not in the bibliography.</desc>
@@ -888,4 +934,6 @@ of this software, even if advised of the possibility of such damage.
   <xsl:template match="//tei:surplus">
     <xsl:text>\surplus{</xsl:text><xsl:apply-templates/><xsl:text>}</xsl:text>
   </xsl:template>
+  
+  
 </xsl:stylesheet>

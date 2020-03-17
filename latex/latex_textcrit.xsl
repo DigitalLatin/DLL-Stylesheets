@@ -50,30 +50,6 @@ of this software, even if advised of the possibility of such damage.
          <p>Copyright: 2013, TEI Consortium</p>
       </desc>
    </doc>
-  
-  <doc xmlns="http://www.oxygenxml.com/ns/doc/xsl">
-    <desc>
-      <p>Process listWit.</p>
-    </desc>
-  </doc>
-  <xsl:template match="tei:listWit">
-    <xsl:choose>
-      <xsl:when test="parent::tei:div[@xml:id='bibliography-manuscripts']">
-        <xsl:text>\textbf{</xsl:text><xsl:value-of select="child::tei:head"/><xsl:text>}</xsl:text>
-      </xsl:when>
-      <xsl:when test="parent::tei:listWit">
-        <xsl:text>\subsubsection*{</xsl:text><xsl:value-of select="child::tei:head"/><xsl:text>}</xsl:text>
-      </xsl:when>
-      <xsl:when test="parent::tei:div[@xml:id='bibliography-early-editions']">
-        <xsl:text>\subsubsection*{</xsl:text><xsl:value-of select="child::tei:head"/><xsl:text>}\begin{bibitemlist}{1}</xsl:text>
-        <xsl:for-each select="tei:witness">
-        <xsl:text> \bibitem[</xsl:text><xsl:value-of select="tei:abbr[@type='siglum']"/><xsl:text>]{</xsl:text>
-          <xsl:value-of select="@xml:id"/><xsl:text>} </xsl:text><xsl:apply-templates/>
-        </xsl:for-each>
-        <xsl:text>\end{bibitemlist}</xsl:text>
-      </xsl:when>
-    </xsl:choose>
-  </xsl:template>
 
   <doc xmlns="http://www.oxygenxml.com/ns/doc/xsl">
       <desc>
@@ -83,31 +59,67 @@ of this software, even if advised of the possibility of such damage.
    <xsl:template name="makeAppEntry">
      <xsl:param name="lemma"/>
      <!-- SJH: Changed the test, since entries differ depending on the presence of @wit and @source. -->
-     <xsl:choose><xsl:when test="tei:lem[not(@wit) and not(@source) and not(following-sibling::*[1][self::tei:note])]">
-       <xsl:text>\edtext</xsl:text><xsl:text>{</xsl:text><xsl:apply-templates
-       select="tei:lem[not(@rend='none')]"/><xsl:text>}{</xsl:text><xsl:if
-         test="tei:lem[@rend='none']"><xsl:text>\lemma{</xsl:text><xsl:value-of
-           select="tei:lem"/><xsl:text>}</xsl:text></xsl:if><xsl:text>\Afootnote</xsl:text><xsl:if
+     <xsl:choose>
+       <!-- SJH: If there is a ptr within the lem, render it with a symbol that points to the target, but only in the apparatus, not in the edition text. -->
+       
+       <!-- SJH: If there aren't any witnesses or sources, and no notes, following the lem, then just print a ] after the lemma -->
+       <xsl:when test="tei:lem[not(@wit) and not(@source) and not(following-sibling::*[1][self::tei:note])]">
+         <xsl:choose>
+           <xsl:when test="tei:lem/tei:ptr">
+             <xsl:text>\edtext{</xsl:text><xsl:apply-templates select="tei:lem[not(@rend='none')]"/>
+             <xsl:text>} \Afootnote</xsl:text><xsl:if
+               test="tei:lem[@rend='none']"><xsl:text><!-- SJH: [nosep] used to be here. --></xsl:text></xsl:if><xsl:text>{</xsl:text>
+           </xsl:when>
+           <xsl:otherwise>
+             <xsl:text>\edtext</xsl:text><xsl:text>{</xsl:text><xsl:apply-templates
+             select="tei:lem[not(@rend='none')]"/><xsl:text>}{</xsl:text><xsl:if
+               test="tei:lem[@rend='none']"><xsl:text>\lemma{</xsl:text><xsl:value-of
+                 select="tei:lem"/><xsl:text>}</xsl:text></xsl:if>
+           <xsl:text>\Afootnote</xsl:text><xsl:if
              test="tei:lem[@rend='none']"><xsl:text><!-- SJH: [nosep] used to be here. --></xsl:text></xsl:if><xsl:text>{</xsl:text>
-     </xsl:when>
+           </xsl:otherwise>
+         </xsl:choose>
+       </xsl:when>
      <xsl:otherwise>
-       <xsl:text>\edtext</xsl:text><xsl:text>{</xsl:text><xsl:apply-templates
+       <xsl:choose>
+         <xsl:when test="tei:lem/tei:ptr">
+           <xsl:text>\edtext</xsl:text><xsl:text>{</xsl:text><xsl:apply-templates
+             select="tei:lem[not(@rend='none')]"/>
+           <xsl:text>} \Afootnote</xsl:text><xsl:if
+                   test="tei:lem[@rend='none']"><xsl:text>[nosep]\Xlemmaseparator[: ]</xsl:text></xsl:if><xsl:text>{</xsl:text>
+           <!-- SJH: Added call to template appLemmaWitness so that the witnesses would be rendered. The colon is to separate the lema from the next reading. -->
+           <xsl:if test="tei:lem[@wit]|tei:lem[@source]">
+             <xsl:text>\textit{</xsl:text><xsl:call-template name="appLemmaWitness"/><xsl:text>}</xsl:text>
+           </xsl:if>
+           <xsl:if test="tei:lem/following-sibling::*[1][self::tei:note]">
+             <xsl:call-template name="appLemmaNote"/>
+           </xsl:if>
+         </xsl:when>
+         <xsl:otherwise>
+           <xsl:text>\edtext</xsl:text><xsl:text>{</xsl:text><xsl:apply-templates
          select="tei:lem[not(@rend='none')]"/><xsl:text>}{</xsl:text><xsl:if
            test="tei:lem[@rend='none']"><xsl:text>\lemma{</xsl:text><xsl:value-of
              select="tei:lem"/><xsl:text>}</xsl:text></xsl:if><xsl:text>\Afootnote</xsl:text><xsl:if
                test="tei:lem[@rend='none']"><xsl:text>[nosep]\Xlemmaseparator[: ]</xsl:text></xsl:if><xsl:text>{</xsl:text>
        <!-- SJH: Added call to template appLemmaWitness so that the witnesses would be rendered. The colon is to separate the lema from the next reading. -->
        <xsl:if test="tei:lem[@wit]|tei:lem[@source]">
-         <xsl:text>\textit{</xsl:text><xsl:call-template name="appLemmaWitness"/><xsl:text>}</xsl:text>
+         <xsl:text>\textit{</xsl:text><xsl:call-template name="appLemmaWitness"/><xsl:text>} </xsl:text>
        </xsl:if>
        <xsl:if test="tei:lem/following-sibling::*[1][self::tei:note]">
          <xsl:call-template name="appLemmaNote"/>
-       </xsl:if>
+       </xsl:if></xsl:otherwise></xsl:choose>
      </xsl:otherwise>
      </xsl:choose>
      <xsl:call-template name="appReadings"/>
      <xsl:text>}}</xsl:text>
    </xsl:template>
+  
+  <xsl:template match="tei:lem/tei:ptr">
+    <xsl:value-of select=".."/><xsl:text>}</xsl:text>
+    <xsl:text>{\lemma{\hyperref[</xsl:text>
+    <xsl:value-of select="translate(@target,'#','')"/>
+    <xsl:text>]{◊} </xsl:text>
+  </xsl:template>
   
   <xsl:template match="tei:div[@type='edition']/tei:div">
     <xsl:apply-templates select="tei:head"/>
@@ -217,16 +229,6 @@ of this software, even if advised of the possibility of such damage.
     </xsl:choose>
   </xsl:template>-->
 
-<!-- SJH: I added this. But now it appears not to matter. 
-  <doc xmlns="http://www.oxygenxml.com/ns/doc/xsl">
-    <desc>
-      <p>Render apparatus notes in italics.</p>
-    </desc>
-  </doc>
-  <xsl:template match="tei:app/tei:note">
-  <xsl:text>\textit{</xsl:text><xsl:apply-templates/><xsl:text>}</xsl:text>
-  </xsl:template>-->
-  
   <xsldoc:doc xmlns:xsldoc="http://www.oxygenxml.com/ns/doc/xsl">
     <xsldoc:desc>If a note follows a lemma, render it, followed by a colon. If there isn't a note, just insert a colon after the lemma witnesses.</xsldoc:desc>
   </xsldoc:doc>

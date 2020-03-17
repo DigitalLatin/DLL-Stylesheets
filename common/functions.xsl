@@ -1405,7 +1405,8 @@ of this software, even if advised of the possibility of such damage.
         </xsl:for-each>
         <xsl:if test="not($last)"><xsl:value-of select="$separator"/></xsl:if>
       </xsl:for-each>
-      <xsl:text> </xsl:text>
+      <!-- SJH: Removing this space, since it is causing some problems in the apparatus of the PDF version. -->
+      <!--<xsl:text> </xsl:text>-->
     </xsl:variable>
     <xsl:value-of select="$r"/>
   </xsl:function>
