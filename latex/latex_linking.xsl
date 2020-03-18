@@ -222,4 +222,10 @@ of this software, even if advised of the possibility of such damage.
     <xsl:number level="any"/>
   </xsl:template>
   
+  <doc xmlns="http://www.oxygenxml.com/ns/doc/xsl">
+    <desc>Process cross-ref to footnote with @type='xref'.</desc>
+  </doc>
+  <xsl:template match="//tei:ref[@type='xref']">
+    <xsl:text>\ref{</xsl:text><xsl:value-of select="translate(@target,'#','')"/><xsl:text>}</xsl:text>
+  </xsl:template>
 </xsl:stylesheet>

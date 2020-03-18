@@ -623,6 +623,12 @@ of this software, even if advised of the possibility of such damage.
 	</xsl:otherwise>
       </xsl:choose>
   </xsl:template>
+  
+  <xsl:template match="//tei:div[@type='commentary']//tei:note">
+    <xsl:text>\footnote{</xsl:text>
+    <xsl:apply-templates/>
+    <xsl:text>\label{</xsl:text><xsl:value-of select="@xml:id"/><xsl:text>}}</xsl:text>
+  </xsl:template>
 
   <doc xmlns="http://www.oxygenxml.com/ns/doc/xsl">
     <desc>Process element &lt;p&gt;</desc>
@@ -895,6 +901,15 @@ of this software, even if advised of the possibility of such damage.
       <xsl:apply-templates/>
       <xsl:text>\end{center}&#10;</xsl:text>
   </xsl:template>
+  
+  <!-- SJH: Handling back matter (commentary, etc.) -->
+  <doc xmlns="http://www.oxygenxml.com/ns/doc/xsl">
+    <desc>Back matter.</desc>
+  </doc>
+  <xsl:template match="tei:div[@type='commentary']">
+    <xsl:text>\setcounter{footnote}{0}</xsl:text>
+    <xsl:text>\newpage</xsl:text>
+  </xsl:template>
 
 <!-- SJH: Omit linebreaks with @break='no', which occurs in Dunning's edition. -->
   <doc xmlns="http://www.oxygenxml.com/ns/doc/xsl">
@@ -934,6 +949,4 @@ of this software, even if advised of the possibility of such damage.
   <xsl:template match="//tei:surplus">
     <xsl:text>\surplus{</xsl:text><xsl:apply-templates/><xsl:text>}</xsl:text>
   </xsl:template>
-  
-  
 </xsl:stylesheet>

@@ -190,7 +190,19 @@ of this software, even if advised of the possibility of such damage.
    </doc>
   <xsl:template
       match="tei:div|tei:div1|tei:div2|tei:div3|tei:div4|tei:div5">
-    <xsl:apply-templates/>
+    <xsl:choose>
+        <xsl:when test="parent::tei:div[@type='commentary']">
+            <!-- SJH: Handling back matter (commentary, etc.) -->
+            <xsl:apply-templates/>
+            <xsl:if test="not(position() = last())">
+                <xsl:text>&#10;\setcounter{footnote}{0}</xsl:text>
+                <xsl:text>&#10;\newpage</xsl:text>
+            </xsl:if>
+        </xsl:when>
+        <xsl:otherwise>
+            <xsl:apply-templates/>
+        </xsl:otherwise>
+    </xsl:choose>
   </xsl:template>
 
   <doc xmlns="http://www.oxygenxml.com/ns/doc/xsl">

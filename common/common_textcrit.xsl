@@ -158,6 +158,7 @@ of this software, even if advised of the possibility of such damage.
              ' ')"/><xsl:text>}</xsl:text></xsl:if>
        <!-- … now we look for a note that follows it. If there is one, we print it. -->
        <xsl:if test="following-sibling::*[1][self::tei:note]">
+         <xsl:text> </xsl:text>
          <xsl:text>\textit{</xsl:text><xsl:apply-templates select="following-sibling::*[1][self::tei:note]"/><xsl:text>}</xsl:text>
        </xsl:if>
        <!-- SJH: If the combination of rdg and note is not the last one, put a colon before the next one. -->
@@ -170,6 +171,7 @@ of this software, even if advised of the possibility of such damage.
              ' ')"/>
          <!-- … now we look for a note that follows it. If there is one, we print it. -->
          <xsl:if test="following-sibling::*[1][self::tei:note]">
+           <xsl:text> </xsl:text>
            <xsl:apply-templates select="following-sibling::*[1][self::tei:note]"/>
          </xsl:if>
          <!-- SJH: If the combination of rdg and note is not the last one, put a colon before the next one. -->
