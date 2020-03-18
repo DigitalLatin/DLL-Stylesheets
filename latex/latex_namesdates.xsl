@@ -56,29 +56,19 @@ of this software, even if advised of the possibility of such damage.
       </xsl:for-each>
       <xsl:text>}} </xsl:text>
     </xsl:if>
-    \begin{enumerate}
+    \begin{bibitemlist}{1}
     <xsl:for-each select="tei:person">
-      <xsl:text>\item[ ] </xsl:text><xsl:call-template name="person"/>      
+      <xsl:text>\bibitem</xsl:text><xsl:call-template name="person"/>      
     </xsl:for-each>
-      \end{enumerate}
+      \end{bibitemlist}
   </xsl:template>
   
   <xsl:template match="tei:listPerson/tei:person" name="person">
-    <xsl:text>\label{</xsl:text><xsl:value-of select="@xml:id"/><xsl:text>}  </xsl:text>
-    <xsl:text>\textbf{</xsl:text><xsl:value-of select="descendant::tei:persName/tei:abbr[@type='siglum']"/><xsl:text>}: </xsl:text>
+    <xsl:text>[</xsl:text><xsl:value-of select="descendant::tei:persName/tei:abbr[@type='siglum']"/><xsl:text>]{</xsl:text><xsl:value-of select="@xml:id"/><xsl:text>}  </xsl:text>
     <xsl:value-of select="descendant::tei:persName/text()"/>
     <xsl:text>. </xsl:text><xsl:apply-templates select="descendant::tei:note"/>
     <xsl:text>&#10;</xsl:text>
   </xsl:template>
-
-  <!--<xsl:template match="tei:listPerson/tei:person">
-    <xsl:text>\item 
-    <xsl:apply-templates select="tei:listPerson/tei:person[not(tei:abbr[@type='siglum'])]/text()"/>
-    <xsl:if test="tei:note">
-      <xsl:text> </xsl:text><xsl:apply-templates select="tei:note"/>
-    </xsl:if>
-    <xsl:text>&#10;</xsl:text>
-  </xsl:template>-->
 
   <xsl:template match="tei:affiliation|tei:email">
       <xsl:text>\mbox{}\\ </xsl:text>
