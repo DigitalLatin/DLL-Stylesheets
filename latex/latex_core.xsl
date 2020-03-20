@@ -59,7 +59,7 @@ of this software, even if advised of the possibility of such damage.
       <desc>Process element bibl</desc>
    </doc>
   <xsl:template match="tei:bibl" mode="cite">
-      <xsl:apply-templates select="text()[1]"/>
+    <xsl:apply-templates select="text()[1]"/>
   </xsl:template>
 
 
@@ -481,7 +481,7 @@ of this software, even if advised of the possibility of such damage.
 	           <xsl:text>}</xsl:text>
          </xsl:when>
          <xsl:otherwise>
-            <xsl:apply-templates/>
+            <xsl:apply-templates mode="biblio"/>
          </xsl:otherwise>
       </xsl:choose>
       <xsl:text>&#10;</xsl:text>
@@ -506,7 +506,7 @@ of this software, even if advised of the possibility of such damage.
         <xsl:text>\textbf{</xsl:text><xsl:value-of select="child::tei:head"/><xsl:text>}</xsl:text>
         <xsl:text>\begin{msitemlist}{1}</xsl:text>
         <xsl:for-each select="tei:witness">
-          <xsl:text> \bibitem[</xsl:text><xsl:value-of select="tei:abbr[@type='siglum']"/><xsl:text>]{</xsl:text>
+          <xsl:text>\bibitem[</xsl:text><xsl:value-of select="tei:abbr[@type='siglum']"/><xsl:text>]{</xsl:text>
           <xsl:value-of select="@xml:id"/><xsl:text>} </xsl:text><xsl:apply-templates/>
         </xsl:for-each>
         <xsl:text>\end{msitemlist}</xsl:text>
@@ -516,27 +516,38 @@ of this software, even if advised of the possibility of such damage.
         <xsl:text>\subsubsection*{</xsl:text><xsl:value-of select="child::tei:head"/><xsl:text>}</xsl:text>
         <xsl:text>\begin{msitemlist}{1}</xsl:text>
         <xsl:for-each select="tei:witness">
-          <xsl:text> \bibitem[</xsl:text><xsl:value-of select="tei:abbr[@type='siglum']"/><xsl:text>]{</xsl:text>
+          <xsl:text>\bibitem[</xsl:text><xsl:value-of select="tei:abbr[@type='siglum']"/><xsl:text>]{</xsl:text>
           <xsl:value-of select="@xml:id"/><xsl:text>} </xsl:text><xsl:apply-templates/>
         </xsl:for-each>
         <xsl:text>\end{msitemlist}</xsl:text>
+      </xsl:when>
+      <xsl:when test="parent::tei:witness">
+        <xsl:text>\hfill \break</xsl:text>
+        <xsl:text>\newline</xsl:text>
+        <xsl:text>\textbf{</xsl:text><xsl:value-of select="child::tei:head"/><xsl:text>}</xsl:text>
+        <xsl:text>\begin{msitemlist}{1}</xsl:text>
+        <xsl:for-each select="tei:witness">
+          <xsl:text> \bibitem[</xsl:text><xsl:apply-templates select="tei:abbr"/><xsl:text>]{</xsl:text>
+          <xsl:value-of select="@xml:id"/><xsl:text>} </xsl:text><xsl:apply-templates mode="biblio"/>
+        </xsl:for-each>
+        <xsl:text>\end{msitemlist}</xsl:text>
+        <xsl:text>&#10;</xsl:text>
       </xsl:when>
       <xsl:when test="parent::tei:div[@xml:id='bibliography-early-editions']">
         <xsl:text>&#10;</xsl:text>
         <xsl:text>\subsubsection*{</xsl:text><xsl:value-of select="child::tei:head"/><xsl:text>}\begin{bibitemlist}{1}</xsl:text>
         <xsl:for-each select="tei:witness">
           <xsl:text> \bibitem[</xsl:text><xsl:value-of select="tei:abbr[@type='siglum']"/><xsl:text>]{</xsl:text>
-          <xsl:value-of select="@xml:id"/><xsl:text>} </xsl:text><xsl:apply-templates/>
+          <xsl:value-of select="@xml:id"/><xsl:text>} </xsl:text><xsl:apply-templates mode="biblio"/>
         </xsl:for-each>
         <xsl:text>\end{bibitemlist}</xsl:text>
       </xsl:when>
     </xsl:choose>
-  </xsl:template>  
+  </xsl:template>
   
   <doc xmlns="http://www.oxygenxml.com/ns/doc/xsl">
     <desc>Process abbr so that it does appear in apparatus, but not in the bibliography.</desc>
   </doc>
-
 <xsl:template match="tei:abbr[@type='siglum']" mode="biblio"/>
   
   <doc xmlns="http://www.oxygenxml.com/ns/doc/xsl">
@@ -774,19 +785,14 @@ of this software, even if advised of the possibility of such damage.
   <doc xmlns="http://www.oxygenxml.com/ns/doc/xsl">
       <desc>Process element q with tei:match(@rend,'display')</desc>
    </doc>
+  
+  
   <doc xmlns="http://www.oxygenxml.com/ns/doc/xsl">
       <desc>Process element ref[@type='cite']</desc>
    </doc>
   <xsl:template match="tei:ref[@type='cite']">
       <xsl:apply-templates/>
   </xsl:template>
-  
-  <!-- SJH: This is duplicated by the next entry.
-  <xsl:template match="tei:seg">
-    <xsl:if test="@n"><xsl:text>\textbf{\textsuperscript{</xsl:text><xsl:value-of
-      select="@n"/><xsl:text>}}\,</xsl:text></xsl:if>
-    <xsl:apply-templates/>
-  </xsl:template>-->
 
   <!-- SJH: Insert a number in superscript to indicate the beginning of a seg, using value of @n-->
   <doc xmlns="http://www.oxygenxml.com/ns/doc/xsl">

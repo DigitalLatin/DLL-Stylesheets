@@ -166,12 +166,10 @@ of this software, even if advised of the possibility of such damage.
 		       </xsl:apply-templates>
 		       <xsl:text>}}</xsl:text>
 		     </xsl:when>
-		     <xsl:otherwise>
-		       <!-- SJH: Using cite instead of hyperref makes the links easier to control.  -->
+		     <xsl:otherwise> 
 		       <xsl:text>\hyperref[</xsl:text>
-		      <!-- <xsl:text>\cite{</xsl:text> -->
 		       <xsl:value-of select="$dest"/>
-		       <xsl:text>}</xsl:text>
+		       <xsl:text>]</xsl:text>
 		        
 		       <xsl:text>]{</xsl:text>
 		       <xsl:value-of select="$body"/>
@@ -215,17 +213,11 @@ of this software, even if advised of the possibility of such damage.
       </xsl:choose>
   </xsl:template>
 
-  <doc xmlns="http://www.oxygenxml.com/ns/doc/xsl">
+ <doc xmlns="http://www.oxygenxml.com/ns/doc/xsl">
       <desc>Process cross-ref to note</desc>
    </doc>
   <xsl:template match="tei:note" mode="xref">
     <xsl:number level="any"/>
   </xsl:template>
-  
-  <doc xmlns="http://www.oxygenxml.com/ns/doc/xsl">
-    <desc>Process cross-ref to footnote with @type='xref'.</desc>
-  </doc>
-  <xsl:template match="//tei:ref[@type='xref']">
-    <xsl:text>\ref{</xsl:text><xsl:value-of select="translate(@target,'#','')"/><xsl:text>}</xsl:text>
-  </xsl:template>
+ 
 </xsl:stylesheet>
