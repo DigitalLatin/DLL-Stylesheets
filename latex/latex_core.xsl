@@ -220,9 +220,20 @@ of this software, even if advised of the possibility of such damage.
             or (ancestor::tei:front and  $numberFrontHeadings='')">*</xsl:when>
           <xsl:otherwise>[{<xsl:value-of select="tei:escapeChars(.,.)"/>}]</xsl:otherwise>
         </xsl:choose>
-        <xsl:text>{</xsl:text>
-        <xsl:apply-templates/>
-        <xsl:text>}</xsl:text>
+        <!-- SJH: Use the soul package to adjust tracking for all caps and small caps in subsection and subsubsections -->
+        <xsl:choose>
+          <xsl:when test="$depth=2">
+            <xsl:text>{\so{</xsl:text>
+            <xsl:apply-templates/>
+            <xsl:text>}}</xsl:text>
+          </xsl:when>
+          <xsl:otherwise>
+            <xsl:text>{</xsl:text>
+            <xsl:apply-templates/>
+            <xsl:text>}
+            </xsl:text>
+          </xsl:otherwise>
+        </xsl:choose>
         <xsl:if test="../@xml:id">
           <xsl:text>\label{</xsl:text>
           <xsl:value-of select="../@xml:id"/>
@@ -466,9 +477,39 @@ of this software, even if advised of the possibility of such damage.
   <doc xmlns="http://www.oxygenxml.com/ns/doc/xsl">
       <desc>Process element listBibl/tei:bibl</desc>
    </doc>
+  <doc xmlns="http://www.oxygenxml.com/ns/doc/xsl">
+    <desc>Process element listBibl/tei:bibl</desc>
+  </doc>
   <xsl:template match="tei:listBibl/tei:bibl">
-      <xsl:text>\bibitem[</xsl:text><xsl:value-of select="tei:abbr[@type='siglum']"/><xsl:text>]{</xsl:text>
-      <xsl:value-of select="@xml:id"/><xsl:text>} </xsl:text>
+    <xsl:text> \bibitem {</xsl:text>
+    <xsl:choose>
+      <xsl:when test="@xml:id">
+        <xsl:value-of select="@xml:id"/>
+      </xsl:when>
+      <xsl:otherwise>bibitem-<xsl:number level="any"/>
+      </xsl:otherwise>
+    </xsl:choose>
+    <xsl:text>}</xsl:text>
+    <xsl:choose>
+      <xsl:when test="parent::tei:listBibl/@xml:lang='zh-TW' or @xml:lang='zh-TW'">
+        <xsl:text>{\textChinese </xsl:text>
+        <xsl:apply-templates/>
+        <xsl:text>}</xsl:text>
+      </xsl:when>
+      <xsl:when test="parent::tei:listBibl/@xml:lang='ja' or @xml:lang='ja'">
+        <xsl:text>{\textJapanese </xsl:text>
+        <xsl:apply-templates/>
+        <xsl:text>}</xsl:text>
+      </xsl:when>
+      <xsl:otherwise>
+        <xsl:apply-templates/>
+      </xsl:otherwise>
+    </xsl:choose>
+    <xsl:text>&#10;</xsl:text>
+  </xsl:template>
+  
+  <xsl:template match="tei:listBibl/tei:bibl">
+    <xsl:text>\bibitem</xsl:text>
       <xsl:choose>
          <xsl:when test="parent::tei:listBibl/@xml:lang='zh-TW' or @xml:lang='zh-TW'">
 	           <xsl:text>{\textChinese </xsl:text>
@@ -481,7 +522,7 @@ of this software, even if advised of the possibility of such damage.
 	           <xsl:text>}</xsl:text>
          </xsl:when>
          <xsl:otherwise>
-            <xsl:apply-templates mode="biblio"/>
+            <xsl:apply-templates/>
          </xsl:otherwise>
       </xsl:choose>
       <xsl:text>&#10;</xsl:text>
@@ -492,53 +533,54 @@ of this software, even if advised of the possibility of such damage.
   </doc>
   <xsl:template match="tei:listWit/tei:witness/tei:bibl">
     <xsl:text> </xsl:text><xsl:apply-templates/>
-    <xsl:text>&#10;</xsl:text>
   </xsl:template>
   
   <doc xmlns="http://www.oxygenxml.com/ns/doc/xsl">
     <desc>
-      <p>Process listWit.</p>
+      <p>Process listWit. The big issue here is turning each witness into a \bibitem, so that cross references work as expected.</p>
     </desc>
   </doc>
   <xsl:template match="tei:listWit">
     <xsl:choose>
       <xsl:when test="parent::tei:div[@xml:id='bibliography-manuscripts']">
         <xsl:text>\textbf{</xsl:text><xsl:value-of select="child::tei:head"/><xsl:text>}</xsl:text>
+        <xsl:text>&#10;</xsl:text>
         <xsl:text>\begin{msitemlist}{1}</xsl:text>
         <xsl:for-each select="tei:witness">
-          <xsl:text>\bibitem[</xsl:text><xsl:value-of select="tei:abbr[@type='siglum']"/><xsl:text>]{</xsl:text>
-          <xsl:value-of select="@xml:id"/><xsl:text>} </xsl:text><xsl:apply-templates/>
+          <xsl:text>\bibitem</xsl:text><xsl:apply-templates/>
+          <xsl:text>&#10;</xsl:text>
         </xsl:for-each>
         <xsl:text>\end{msitemlist}</xsl:text>
       </xsl:when>
       <xsl:when test="parent::tei:listWit">
         <xsl:text>&#10;</xsl:text>
-        <xsl:text>\subsubsection*{</xsl:text><xsl:value-of select="child::tei:head"/><xsl:text>}</xsl:text>
+        <!--<xsl:text>\subsubsection*{</xsl:text><xsl:value-of select="child::tei:head"/><xsl:text>}</xsl:text>-->
+        <xsl:text>&#10;</xsl:text>
         <xsl:text>\begin{msitemlist}{1}</xsl:text>
         <xsl:for-each select="tei:witness">
-          <xsl:text>\bibitem[</xsl:text><xsl:value-of select="tei:abbr[@type='siglum']"/><xsl:text>]{</xsl:text>
-          <xsl:value-of select="@xml:id"/><xsl:text>} </xsl:text><xsl:apply-templates/>
+          <xsl:text>\bibitem</xsl:text><xsl:apply-templates/>
+          <xsl:text>&#10;</xsl:text>
         </xsl:for-each>
         <xsl:text>\end{msitemlist}</xsl:text>
       </xsl:when>
       <xsl:when test="parent::tei:witness">
-        <xsl:text>\hfill \break</xsl:text>
-        <xsl:text>\newline</xsl:text>
-        <xsl:text>\textbf{</xsl:text><xsl:value-of select="child::tei:head"/><xsl:text>}</xsl:text>
+        <!--<xsl:text>&#10;\hfill \break</xsl:text>-->
+        <!--<xsl:text>\textbf{</xsl:text><xsl:value-of select="child::tei:head"/><xsl:text>}</xsl:text>-->
+        <xsl:text>&#10;</xsl:text>
         <xsl:text>\begin{msitemlist}{1}</xsl:text>
         <xsl:for-each select="tei:witness">
-          <xsl:text> \bibitem[</xsl:text><xsl:apply-templates select="tei:abbr"/><xsl:text>]{</xsl:text>
-          <xsl:value-of select="@xml:id"/><xsl:text>} </xsl:text><xsl:apply-templates mode="biblio"/>
+          <xsl:text> \bibitem</xsl:text><xsl:apply-templates/>
+          <xsl:text>&#10;</xsl:text>
         </xsl:for-each>
         <xsl:text>\end{msitemlist}</xsl:text>
-        <xsl:text>&#10;</xsl:text>
       </xsl:when>
       <xsl:when test="parent::tei:div[@xml:id='bibliography-early-editions']">
-        <xsl:text>&#10;</xsl:text>
-        <xsl:text>\subsubsection*{</xsl:text><xsl:value-of select="child::tei:head"/><xsl:text>}\begin{bibitemlist}{1}</xsl:text>
+        <!--<xsl:text>\subsubsection*{</xsl:text><xsl:value-of select="child::tei:head"/>
+        <xsl:text>&#10;</xsl:text>-->
+        <xsl:text>\begin{bibitemlist}{1}</xsl:text>
         <xsl:for-each select="tei:witness">
-          <xsl:text> \bibitem[</xsl:text><xsl:value-of select="tei:abbr[@type='siglum']"/><xsl:text>]{</xsl:text>
-          <xsl:value-of select="@xml:id"/><xsl:text>} </xsl:text><xsl:apply-templates mode="biblio"/>
+          <xsl:text> \bibitem</xsl:text><xsl:apply-templates/>
+          <xsl:text>&#10;</xsl:text>
         </xsl:for-each>
         <xsl:text>\end{bibitemlist}</xsl:text>
       </xsl:when>

@@ -82,9 +82,11 @@ of this software, even if advised of the possibility of such damage.
       <xsl:call-template name="latexLayout"/>
       <xsl:call-template name="latexOther"/>
       <xsl:text>&#10;\begin{document}&#10;</xsl:text>
-      <xsl:if test="not(tei:text/tei:front/tei:titlePage)">
+      <!-- Taking this out because the LDLT has its own title page.
+          <xsl:if test="not(tei:text/tei:front/tei:titlePage)">
          <xsl:call-template name="printTitleAndLogo"/>
-      </xsl:if>
+      </xsl:if>-->
+      <xsl:call-template name="titlePage"/>
       <xsl:call-template name="beginDocumentHook"/>
       <!-- certainly don't touch this line -->
       <xsl:text disable-output-escaping="yes">\let\tabcellsep&amp;</xsl:text>
@@ -138,11 +140,141 @@ of this software, even if advised of the possibility of such damage.
       <desc>Processing teiHeader elements</desc>
    </doc>
    <xsl:template match="tei:teiHeader"/>
-  
+    
+    <doc xmlns="http://www.oxygenxml.com/ns/doc/xsl">
+        <desc>Processing front matter</desc>
+    </doc>
   <xsl:template match="tei:front">
     <xsl:text>\frontmatter </xsl:text>
     <xsl:apply-templates/>
   </xsl:template>
+    
+    <!-- SJH: Added -->
+    <doc xmlns="http://www.oxygenxml.com/ns/doc/xsl">
+        <desc>Make the title page</desc>
+    </doc>
+    <xsl:template name="titlePage">
+<xsl:text>
+\begin{titlepage} % Suppresses headers and footers on the title page
+\centering % Centre everything on the title page
+\scshape % Use small caps for all text on the title page
+        
+        %------------------------------------------------
+        %	Title
+        %------------------------------------------------
+\vspace*{\baselineskip} % White space at the top of the page
+        
+\rule{\textwidth}{1.6pt}\vspace*{-\baselineskip}\vspace*{2pt} % Thick horizontal rule
+\rule{\textwidth}{0.4pt} % Thin horizontal rule
+        
+\vspace{1\baselineskip} % Whitespace above the title
+        
+\textsc{\Huge </xsl:text>
+<xsl:value-of select="//tei:titleStmt/tei:title"/>
+        <xsl:text>} % Title
+
+\vspace{2.25\baselineskip} % Whitespace below the title 
+
+%------------------------------------------------
+%	Editor(s)
+%------------------------------------------------
+
+Edited By
+
+\vspace{0.5\baselineskip} % Whitespace before the editors
+
+{\scshape\LARGE </xsl:text>
+        <xsl:value-of select="//tei:titleStmt/tei:editor"/>
+        <xsl:text>} % Editor list
+        
+\vspace{0.5\baselineskip} % Whitespace below the editor list
+\rule{\textwidth}{0.4pt}\vspace*{-\baselineskip}\vspace{3.2pt} % Thin horizontal rule
+\rule{\textwidth}{1.6pt} % Thick horizontal rule
+
+%------------------------------------------------
+%	Series
+%------------------------------------------------
+\vspace{8\baselineskip} % Whitespace below the title and editor block
+
+{\scshape\Large </xsl:text>
+        <xsl:value-of select="//tei:titleStmt/tei:sponsor"/>
+        <xsl:text>}\\
+\medskip % Whitespace
+{\scshape\Large </xsl:text>
+        <xsl:value-of select="//tei:seriesStmt/tei:title"/>
+        <xsl:text>}\\
+\vspace{2\baselineskip} % Whitespace
+
+{\scshape \normalsize </xsl:text>
+        <xsl:value-of select="//tei:seriesStmt/tei:respStmt/tei:name"/>
+        <xsl:text>, General Editor}\\
+                        
+\vspace{2\baselineskip} % Whitespace
+{\large Volume </xsl:text>
+        <xsl:value-of select="//tei:seriesStmt/tei:biblScope"/>
+        <xsl:text>}\\
+\vfill % Whitespace between editor names and publisher logo
+        
+%------------------------------------------------
+%	Publisher
+%------------------------------------------------
+
+\begin{figure}[h] % Position the logo here on the page.
+\includegraphics[scale=0.60]{DLL.eps} % Logo of DLL
+\centering % Center the logo.
+\end{figure}
+
+{\normalsize </xsl:text>
+        <xsl:value-of select="//tei:publicationStmt/tei:date"/>
+        <xsl:text>}        
+\end{titlepage}
+%----------------------------------------------------------------------------------------
+% Copyright Page
+%----------------------------------------------------------------------------------------
+
+\vspace*{\baselineskip} % White space at the top of the page
+\vspace{12\baselineskip} % Whitespace
+\centering
+{\scshape \LARGE </xsl:text>
+        <xsl:value-of select="//tei:publicationStmt/tei:publisher"/>
+        <xsl:text>}\\</xsl:text>
+        <xsl:value-of select="//tei:publicationStmt/tei:address/tei:street"/>
+        <xsl:text>, </xsl:text>
+        <xsl:value-of select="//tei:publicationStmt/tei:address/tei:addrLine"/>
+        <xsl:text>, </xsl:text>
+        <xsl:value-of select="//tei:publicationStmt/tei:address/tei:settlement"/>
+        <xsl:text>, </xsl:text>
+        <xsl:value-of select="//tei:publicationStmt/tei:address/tei:name"/>
+        <xsl:text>  </xsl:text>
+        <xsl:value-of select="//tei:publicationStmt/tei:address/tei:postCode"/>
+        <xsl:text>, </xsl:text>
+        <xsl:value-of select="//tei:publicationStmt/tei:address/tei:country"/>
+        <xsl:text>
+\vspace{\baselineskip} % Whitespace
+
+\flushleft
+\small
+{\scshape </xsl:text><xsl:value-of select="//tei:publicationStmt/tei:publisher"/><xsl:text>} publishes the \textit{</xsl:text><xsl:value-of select="//tei:seriesStmt/tei:title"/><xsl:text>} under the authority of </xsl:text><xsl:value-of select="//tei:publicationStmt/tei:authority"/><xsl:text>. Individual volumes are reviewed and sponsored by the Society for Classical Studies, the Medieval Academy of America, or the Renaissance Society of America, depending on the era of the text(s).
+
+\vspace{2\baselineskip} % Whitespace
+
+Volumes are published under the </xsl:text><xsl:value-of select="//tei:publicationStmt/tei:availability/tei:licence"/><xsl:text>: \url{</xsl:text><xsl:value-of select="//tei:publicationStmt/tei:availability/tei:licence/@target"/><xsl:text>}.
+
+\vspace{2\baselineskip} % Whitespace
+
+\textcopyright  </xsl:text><xsl:value-of select="//tei:titleStmt/tei:editor"/><xsl:text>, </xsl:text><xsl:value-of select="//tei:publicationStmt/tei:date"/><xsl:text>.
+
+\vspace{2\baselineskip} % Whitespace
+
+</xsl:text>
+        <xsl:for-each select="//tei:titleStmt/tei:respStmt">
+            <xsl:value-of select="tei:resp"/><xsl:text> </xsl:text><xsl:value-of select="tei:name"/><xsl:text>.</xsl:text>
+            <xsl:text>&#10;\newline&#10;</xsl:text>
+        </xsl:for-each>
+<xsl:text>
+\newpage
+</xsl:text>
+</xsl:template>
 
   <doc xmlns="http://www.oxygenxml.com/ns/doc/xsl">
       <desc/>

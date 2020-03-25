@@ -135,7 +135,10 @@ of this software, even if advised of the possibility of such damage.
   <xsl:template match="tei:wit[parent::tei:app//(tei:l|tei:p)]"/>
   <xsl:template match="tei:rdg[parent::tei:app//(tei:l|tei:p)]"/>
   <xsl:template match="tei:rdgGrp[parent::tei:app//(tei:l|tei:p)]"/>
- <!-- <xsl:template match="tei:abbr[@type='siglum']"/>-->
+  
+  <!-- Dealing with the problem of rendering the siglum as expected, without repeating it in the bibliography. -->
+ <xsl:template match="tei:abbr[@type='siglum']"><xsl:apply-templates/></xsl:template>
+ <xsl:template match="tei:bibl/tei:abbr[@type='siglum']|tei:witness/tei:abbr[@type='siglum']">[<xsl:apply-templates/>]<xsl:text>{</xsl:text><xsl:value-of select="../@xml:id"/><xsl:text>} </xsl:text></xsl:template> 
   
   <xsl:template match="tei:l[ancestor::tei:app and not(@processed)]">
     <xsl:variable name="self" select="."/>

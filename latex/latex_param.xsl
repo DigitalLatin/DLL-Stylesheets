@@ -116,6 +116,7 @@ the beginning of the document</desc>
       <xsl:text>]{geometry}
 \usepackage{framed}
 \usepackage{microtype}
+\usepackage{soul}
 </xsl:text>
 <xsl:text>
 \definecolor{shadecolor}{gray}{0.95}
@@ -124,6 +125,7 @@ the beginning of the document</desc>
 \usepackage{fancyvrb}
 \usepackage{fancyhdr}
 \usepackage{graphicx}
+\graphicspath{ {./images/} }
 \usepackage{marginnote}
 
 \renewcommand{\@cite}[1]{#1}
@@ -444,18 +446,18 @@ characters. The normal characters remain active for LaTeX commands.
 \vbadness=4000
 \widowpenalty=10000
 <xsl:if test="not($documentclass='letter')">
-\renewcommand\section{\@startsection {section}{1}{\z@}%
-     {-1.75ex \@plus -0.5ex \@minus -.2ex}%
-     {0.5ex \@plus .2ex}%
-     {\reset@font\Large\bfseries\sffamily}}
-\renewcommand\subsection{\@startsection{subsection}{2}{\z@}%
-     {-1.75ex\@plus -0.5ex \@minus- .2ex}%
-     {0.5ex \@plus .2ex}%
-     {\reset@font\Large\sffamily}}
-\renewcommand\subsubsection{\@startsection{subsubsection}{3}{\z@}%
-     {-1.5ex\@plus -0.35ex \@minus -.2ex}%
-     {0.5ex \@plus .2ex}%
-     {\reset@font\large\sffamily}}
+  \renewcommand\section{\@startsection {section}{1}{\z@}%
+  {-1.75ex \@plus -0.5ex \@minus -.2ex}%
+  {0.5ex \@plus .2ex}%
+  {\reset@font\fontfamily{lmr}\Huge\mdseries}}
+  \renewcommand\subsection{\@startsection{subsection}{2}{\z@}%
+  {-1.75ex\@plus -0.5ex \@minus- .2ex}%
+  {0.5ex \@plus .2ex}%
+  {\reset@font\fontfamily{lmr}\large\uppercase}}
+  \renewcommand\subsubsection{\@startsection{subsubsection}{3}{\z@}%
+  {-1.5ex\@plus -0.35ex \@minus -.2ex}%
+  {0.5ex \@plus .2ex}%
+  {\reset@font\fontfamily{lmr}\normalsize\scshape\selectfont}}
 \renewcommand\paragraph{\@startsection{paragraph}{4}{\z@}%
      {-1ex \@plus-0.35ex \@minus -0.2ex}%
      {0.5ex \@plus .2ex}%
