@@ -352,6 +352,7 @@ characters. The normal characters remain active for LaTeX commands.
 \newenvironment{msItem}{\vskip 6pt}{\par}
 \newenvironment{rubric}{}{}
 \newenvironment{titlePart}{}{\par }
+\newenvironment{copyrightPage}{}{}
 <xsl:text disable-output-escaping="yes">
 \newcolumntype{L}[1]{){\raggedright\arraybackslash}p{#1}}
 \newcolumntype{C}[1]{){\centering\arraybackslash}p{#1}}
@@ -446,27 +447,31 @@ characters. The normal characters remain active for LaTeX commands.
 \vbadness=4000
 \widowpenalty=10000
 <xsl:if test="not($documentclass='letter')">
-  \renewcommand\section{\@startsection {section}{1}{\z@}%
-  {-1.75ex \@plus -0.5ex \@minus -.2ex}%
-  {0.5ex \@plus .2ex}%
+\renewcommand\section{\@startsection {section}{1}{\z@}%
+    {-1.75ex \@plus -0.5ex \@minus -.2ex}%
+    {0.5ex \@plus .2ex}%
   {\reset@font\fontfamily{lmr}\Huge\mdseries}}
-  \renewcommand\subsection{\@startsection{subsection}{2}{\z@}%
+\renewcommand\section{\@startsection {section}{1}{\z@}%
+  {-2ex \@plus -0.5ex \@minus -.2ex}%
+  {3ex \@plus .2ex}%
+  {\reset@font\fontfamily{lmr}\Huge\mdseries}}
+\renewcommand\subsection{\@startsection{subsection}{2}{\z@}%
   {-1.75ex\@plus -0.5ex \@minus- .2ex}%
-  {0.5ex \@plus .2ex}%
-  {\reset@font\fontfamily{lmr}\large\uppercase}}
-  \renewcommand\subsubsection{\@startsection{subsubsection}{3}{\z@}%
-  {-1.5ex\@plus -0.35ex \@minus -.2ex}%
-  {0.5ex \@plus .2ex}%
-  {\reset@font\fontfamily{lmr}\normalsize\scshape\selectfont}}
+  {2.5ex \@plus .2ex}%
+  {\reset@font\fontfamily{lmr}\LARGE\uppercase}}
+\renewcommand\subsubsection{\@startsection{subsubsection}{3}{\z@}%
+  {4ex\@plus -0.35ex \@minus -.2ex}%
+  {2ex \@plus .2ex}%
+  {\reset@font\fontfamily{lmr}\Large\scshape\selectfont}}
 \renewcommand\paragraph{\@startsection{paragraph}{4}{\z@}%
-     {-1ex \@plus-0.35ex \@minus -0.2ex}%
-     {0.5ex \@plus .2ex}%
-     {\reset@font\normalsize\sffamily}}
+  {-1ex \@plus-0.35ex \@minus -0.2ex}%
+  {0.5ex \@plus .2ex}%
+  {\reset@font\normalsize\sffamily}}
 \renewcommand\subparagraph{\@startsection{subparagraph}{5}{\parindent}%
-     {1.5ex \@plus1ex \@minus .2ex}%
-     {-1em}%
-     {\reset@font\normalsize\bfseries}}
-
+  {1.5ex \@plus1ex \@minus .2ex}%
+  {-1em}%
+  {\reset@font\normalsize\bfseries}}
+  
 </xsl:if>
 \def\l@section#1#2{\addpenalty{\@secpenalty} \addvspace{1.0em plus 1pt}
  \@tempdima 1.5em \begingroup

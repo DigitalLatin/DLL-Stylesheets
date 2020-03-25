@@ -182,7 +182,9 @@ of this software, even if advised of the possibility of such damage.
       <xsl:when test="parent::tei:list"/>
       <xsl:when test="parent::tei:lg"> \subsection*{<xsl:apply-templates/>} </xsl:when>
       <xsl:when test="parent::tei:front or parent::tei:body or parent::tei:back or
-        parent::tei:div[@type='edition']"> \section*{<xsl:apply-templates/>} </xsl:when>
+        parent::tei:div[@type='edition']"> \section*{<xsl:apply-templates/>}</xsl:when>
+      <xsl:when test="parent::tei:div[@xml:id='preface']">\section*{<xsl:apply-templates/>}<xsl:text>&#10;\pagestyle{fancy}</xsl:text></xsl:when>
+      <xsl:when test="ancestor::tei:div[@type='edition']"><xsl:text>\subsection[{</xsl:text><xsl:apply-templates/><xsl:text>}]{</xsl:text><xsl:apply-templates/><xsl:text>}\label{</xsl:text><xsl:value-of select="parent::tei:div/@xml:id"/><xsl:text>}&#10;\pagestyle{fancy}</xsl:text></xsl:when>
       <xsl:when test="parent::tei:table"/>
       <xsl:otherwise>
         <xsl:variable name="depth">
@@ -219,10 +221,9 @@ of this software, even if advised of the possibility of such damage.
             or (not($numberHeadings='true') and ancestor::tei:body)
             or (ancestor::tei:front and  $numberFrontHeadings='')">*</xsl:when>
           <xsl:otherwise>[{<xsl:value-of select="tei:escapeChars(.,.)"/>}]</xsl:otherwise>
-        </xsl:choose>
-        <!-- SJH: Use the soul package to adjust tracking for all caps and small caps in subsection and subsubsections -->
+        </xsl:choose><!-- SJH: Use the soul package to adjust tracking for all caps and small caps in subsection and subsubsections -->
         <xsl:choose>
-          <xsl:when test="$depth=2">
+          <xsl:when test="$depth=1">
             <xsl:text>{\so{</xsl:text>
             <xsl:apply-templates/>
             <xsl:text>}}</xsl:text>
@@ -543,7 +544,7 @@ of this software, even if advised of the possibility of such damage.
   <xsl:template match="tei:listWit">
     <xsl:choose>
       <xsl:when test="parent::tei:div[@xml:id='bibliography-manuscripts']">
-        <xsl:text>\textbf{</xsl:text><xsl:value-of select="child::tei:head"/><xsl:text>}</xsl:text>
+        <xsl:if test="child::tei:head"><xsl:text>\textbf{</xsl:text><xsl:value-of select="child::tei:head"/><xsl:text>}</xsl:text></xsl:if>
         <xsl:text>&#10;</xsl:text>
         <xsl:text>\begin{msitemlist}{1}</xsl:text>
         <xsl:for-each select="tei:witness">
@@ -554,7 +555,6 @@ of this software, even if advised of the possibility of such damage.
       </xsl:when>
       <xsl:when test="parent::tei:listWit">
         <xsl:text>&#10;</xsl:text>
-        <!--<xsl:text>\subsubsection*{</xsl:text><xsl:value-of select="child::tei:head"/><xsl:text>}</xsl:text>-->
         <xsl:text>&#10;</xsl:text>
         <xsl:text>\begin{msitemlist}{1}</xsl:text>
         <xsl:for-each select="tei:witness">
@@ -564,8 +564,6 @@ of this software, even if advised of the possibility of such damage.
         <xsl:text>\end{msitemlist}</xsl:text>
       </xsl:when>
       <xsl:when test="parent::tei:witness">
-        <!--<xsl:text>&#10;\hfill \break</xsl:text>-->
-        <!--<xsl:text>\textbf{</xsl:text><xsl:value-of select="child::tei:head"/><xsl:text>}</xsl:text>-->
         <xsl:text>&#10;</xsl:text>
         <xsl:text>\begin{msitemlist}{1}</xsl:text>
         <xsl:for-each select="tei:witness">
@@ -575,8 +573,6 @@ of this software, even if advised of the possibility of such damage.
         <xsl:text>\end{msitemlist}</xsl:text>
       </xsl:when>
       <xsl:when test="parent::tei:div[@xml:id='bibliography-early-editions']">
-        <!--<xsl:text>\subsubsection*{</xsl:text><xsl:value-of select="child::tei:head"/>
-        <xsl:text>&#10;</xsl:text>-->
         <xsl:text>\begin{bibitemlist}{1}</xsl:text>
         <xsl:for-each select="tei:witness">
           <xsl:text> \bibitem</xsl:text><xsl:apply-templates/>
