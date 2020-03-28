@@ -221,20 +221,10 @@ of this software, even if advised of the possibility of such damage.
             or (not($numberHeadings='true') and ancestor::tei:body)
             or (ancestor::tei:front and  $numberFrontHeadings='')">*</xsl:when>
           <xsl:otherwise>[{<xsl:value-of select="tei:escapeChars(.,.)"/>}]</xsl:otherwise>
-        </xsl:choose><!-- SJH: Use the soul package to adjust tracking for all caps and small caps in subsection and subsubsections -->
-        <xsl:choose>
-          <xsl:when test="$depth=1">
-            <xsl:text>{\so{</xsl:text>
-            <xsl:apply-templates/>
-            <xsl:text>}}</xsl:text>
-          </xsl:when>
-          <xsl:otherwise>
-            <xsl:text>{</xsl:text>
-            <xsl:apply-templates/>
-            <xsl:text>}
-            </xsl:text>
-          </xsl:otherwise>
         </xsl:choose>
+        <xsl:text>{</xsl:text>
+        <xsl:apply-templates/>
+        <xsl:text>}</xsl:text>
         <xsl:if test="../@xml:id">
           <xsl:text>\label{</xsl:text>
           <xsl:value-of select="../@xml:id"/>
@@ -676,7 +666,8 @@ of this software, even if advised of the possibility of such damage.
   <xsl:template match="//tei:div[@type='commentary']//tei:note">
     <xsl:text>\footnote{</xsl:text>
     <xsl:apply-templates/>
-    <xsl:text>\label{</xsl:text><xsl:value-of select="@xml:id"/><xsl:text>}}</xsl:text>
+    <xsl:if test="@xml:id"><xsl:text>\label{</xsl:text><xsl:value-of select="@xml:id"/><xsl:text>}</xsl:text></xsl:if>
+    <xsl:text>}</xsl:text>
   </xsl:template>
 
   <doc xmlns="http://www.oxygenxml.com/ns/doc/xsl">
