@@ -810,6 +810,15 @@ of this software, even if advised of the possibility of such damage.
       <xsl:apply-templates/>
       <xsl:text>\end{</xsl:text><xsl:value-of select="$quoteEnv"/><xsl:text>}&#10;</xsl:text>
   </xsl:template>
+  
+  <!-- SJH: added to render bylines for commentary -->
+  <doc xmlns="http://www.oxygenxml.com/ns/doc/xsl">
+    <desc>Process element p with tei:match(@rend,'byline')</desc>
+  </doc>
+  <xsl:template match="tei:p[@rend='byline']">
+    <xsl:text>&#10;&#10;</xsl:text>
+    <xsl:text>\begin{flushright}&#10;</xsl:text><xsl:apply-templates/><xsl:text>&#10;\end{flushright}</xsl:text>
+  </xsl:template>
 
   <doc xmlns="http://www.oxygenxml.com/ns/doc/xsl">
       <desc>Process element q with tei:match(@rend,'display')</desc>

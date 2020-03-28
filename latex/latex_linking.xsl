@@ -171,7 +171,7 @@ of this software, even if advised of the possibility of such damage.
 		       <xsl:value-of select="$dest"/>
 		       <xsl:text>]</xsl:text>
 		        
-		       <xsl:text>]{</xsl:text>
+		       <xsl:text>{</xsl:text>
 		       <xsl:value-of select="$body"/>
 		       <xsl:apply-templates mode="xref" select=".">
 			 <xsl:with-param name="minimal" select="$minimalCrossRef"/>
