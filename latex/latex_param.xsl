@@ -117,6 +117,7 @@ the beginning of the document</desc>
 \usepackage{framed}
 \usepackage{microtype}
 \usepackage{soul}
+\usepackage{leading}
 </xsl:text>
 <xsl:text>
 \definecolor{shadecolor}{gray}{0.95}
@@ -133,8 +134,6 @@ the beginning of the document</desc>
 </xsl:text>
 <!-- SJH: Added calls to templates to handle some LDLT requirements. -->
 <xsl:call-template name="section-numbering"/>
-<!--<xsl:call-template name="format-citations"/>-->
-<xsl:call-template name="noLabel"></xsl:call-template>
 <xsl:if test="not($marginFont='')">
 \renewcommand*{\marginfont}{<xsl:value-of select="$marginFont"/>}
 </xsl:if>
@@ -450,15 +449,15 @@ characters. The normal characters remain active for LaTeX commands.
 \renewcommand\section{\@startsection {section}{1}{\z@}%
   {-2ex \@plus -0.5ex \@minus -.2ex}%
   {3ex \@plus .2ex}%
-  {\reset@font\Large\bfseries\rmfamily}}
+  {\reset@font\Huge\bfseries\fontfamily{lmr}}}
 \renewcommand\subsection{\@startsection{subsection}{2}{\z@}%
   {-1.75ex\@plus -0.5ex \@minus- .2ex}%
   {2.5ex \@plus .2ex}%
-  {\reset@font\Large\rmfamily}}
+  {\reset@font\Large\fontfamily{lmr}}}
 \renewcommand\subsubsection{\@startsection{subsubsection}{3}{\z@}%
   {4ex\@plus -0.35ex \@minus -.2ex}%
   {2ex \@plus .2ex}%
-  {\reset@font\large\sffamily}}
+  {\reset@font\fontfamily{lmr}\Large\scshape\selectfont}}
 \renewcommand\paragraph{\@startsection{paragraph}{4}{\z@}%
   {-1ex \@plus-0.35ex \@minus -0.2ex}%
   {0.5ex \@plus .2ex}%
@@ -671,46 +670,7 @@ characters. The normal characters remain active for LaTeX commands.
 \usepackage{titlesec}
 \usepackage{titletoc}
   </xsl:template>
-  
-<!-- SJH: Deleted so that I can revert to using hyperref. -->  
-  <!--<doc xmlns="http://www.oxygenxml.com/ns/doc/xsl" class="layout">
-    <desc>Format citations in the notes without brackets around them.</desc>
-  </doc>
-  <xsl:template name="format-citations">
-    <xsl:text>
-% This is how to format citations in the notes without brackets around them.
-\usepackage{cite}
-\renewcommand\citeleft{}
-\renewcommand\citeright{}</xsl:text>
-  </xsl:template>-->
-
-<!-- SJH: Added. --> 
-  <doc xmlns="http://www.oxygenxml.com/ns/doc/xsl" class="layout">
-    <desc>Prevent labels from being printed in the bibliography.</desc>
-  </doc>
-<xsl:template name="noLabel">
-<!-- % Prevent labels from being printed in the bibliography.
-\makeatletter
-\renewcommand{\@biblabel}[1]{}
-\renewenvironment{thebibliography}[1]
-  {\section*{\refname}%
-  \@mkboth{\MakeUppercase\refname}{\MakeUppercase\refname}%
-  \list{}%
-    {\labelwidth=0pt
-     \labelsep=0pt
-      \leftmargin1.5em
-      \itemindent=-1.5em
-      \advance\leftmargin\labelsep
-      \@openbib@code
-      }%
-  \sloppy
-  \clubpenalty4000
-  \@clubpenalty \clubpenalty
-  \widowpenalty4000%
-  \sfcode`\.\@m}
-\makeatother
-</xsl:template> --></xsl:template>
-
+ 
 <!-- SJH: Fallback characters. Tip of the hat to Andrew Dunning. -->
   <doc xmlns="http://www.oxygenxml.com/ns/doc/xsl" class="layout">
     <desc>

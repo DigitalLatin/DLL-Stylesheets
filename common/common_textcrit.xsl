@@ -162,7 +162,7 @@ of this software, even if advised of the possibility of such damage.
          <xsl:text>\textit{</xsl:text><xsl:apply-templates select="following-sibling::*[1][self::tei:note]"/><xsl:text>}</xsl:text>
        </xsl:if>
        <!-- SJH: If the combination of rdg and note is not the last one, put a colon before the next one. -->
-       <xsl:if test="not(position() = last())"><xsl:text> : </xsl:text></xsl:if>
+       <xsl:if test="not(position() = last())"><xsl:text> | </xsl:text></xsl:if>
      </xsl:when>
        <xsl:otherwise>
          <xsl:choose><xsl:when test="not(node())">om.</xsl:when><xsl:otherwise><xsl:apply-templates/></xsl:otherwise></xsl:choose><xsl:text> </xsl:text>

@@ -153,7 +153,7 @@ of this software, even if advised of the possibility of such damage.
     <xsl:template name="titlePage">
         <xsl:text>
 \begin{titlepage} % Suppresses headers and footers on the title page
-\centering % Centre everything on the title page
+\centering % Center everything on the title page
 \scshape % Use small caps for all text on the title page
         
 %------------------------------------------------
@@ -284,6 +284,7 @@ Volumes are published under the </xsl:text><xsl:value-of select="//tei:publicati
       </xsl:if>
       <xsl:apply-templates/>
   </xsl:template>
+    
   <doc xmlns="http://www.oxygenxml.com/ns/doc/xsl">
       <desc/>
    </doc>
@@ -421,6 +422,35 @@ Volumes are published under the </xsl:text><xsl:value-of select="//tei:publicati
                            select="//tei:ref[@type='cite'] | //tei:ptr[@type='cite']"/>
   </xsl:template>
 
+    <doc xmlns="http://www.oxygenxml.com/ns/doc/xsl">
+        <desc>Make a title for the back matter.</desc>
+    </doc>
+    <xsl:template match="tei:back/tei:div">
+        <xsl:apply-templates/>
+    </xsl:template>
+    
+    <xsl:template match="tei:back/tei:div/tei:head">
+        <xsl:text>\begin{titlepage} % Suppresses headers and footers on the title page
+        \centering % Center everything on the title page
+        
+        %------------------------------------------------
+        %	Title
+        %------------------------------------------------
+        \vspace*{\baselineskip} % White space at the top of the page
+        
+        \rule{\textwidth}{1.6pt}\vspace*{-\baselineskip}\vspace*{2pt} % Thick horizontal rule
+        \rule{\textwidth}{0.4pt} % Thin horizontal rule
+        
+        \vspace{1\baselineskip} % Whitespace above the title
+       \leading{30pt}
+        {\Huge\uppercase{</xsl:text>
+        <xsl:value-of select="."/>
+        <xsl:text>}} % Title
+
+\vspace{2.25\baselineskip} % Whitespace below the title
+\end{titlepage}
+\setcounter{page}{1}</xsl:text>
+    </xsl:template>
 
   <xsl:template match="/tei:text" priority="999">
     <xsl:call-template name="wrapRootText"/>

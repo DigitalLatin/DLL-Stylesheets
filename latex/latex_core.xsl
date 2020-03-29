@@ -180,11 +180,11 @@ of this software, even if advised of the possibility of such damage.
       <xsl:when test="parent::tei:castList"/>
       <xsl:when test="parent::tei:figure"/>
       <xsl:when test="parent::tei:list"/>
-      <xsl:when test="parent::tei:lg"> \subsection*{<xsl:apply-templates/>} </xsl:when>
+      <xsl:when test="parent::tei:lg"> \subsection*{\uppercase{<xsl:apply-templates/>}} </xsl:when>
       <xsl:when test="parent::tei:front or parent::tei:body or parent::tei:back or
         parent::tei:div[@type='edition']"> \section*{<xsl:apply-templates/>}</xsl:when>
       <xsl:when test="parent::tei:div[@xml:id='preface']">\section*{<xsl:apply-templates/>}<xsl:text>&#10;\pagestyle{fancy}</xsl:text></xsl:when>
-      <xsl:when test="ancestor::tei:div[@type='edition']"><xsl:text>\subsection[{</xsl:text><xsl:apply-templates/><xsl:text>}]{</xsl:text><xsl:apply-templates/><xsl:text>}\label{</xsl:text><xsl:value-of select="parent::tei:div/@xml:id"/><xsl:text>}&#10;\pagestyle{fancy}</xsl:text></xsl:when>
+      <xsl:when test="ancestor::tei:div[@type='edition']"><xsl:text>\subsection[{</xsl:text><xsl:apply-templates/><xsl:text>}]{\centering\uppercase{\so{</xsl:text><xsl:apply-templates/><xsl:text>}}}\label{</xsl:text><xsl:value-of select="parent::tei:div/@xml:id"/><xsl:text>}&#10;\pagestyle{fancy}</xsl:text></xsl:when>
       <xsl:when test="parent::tei:table"/>
       <xsl:otherwise>
         <xsl:variable name="depth">
@@ -222,9 +222,25 @@ of this software, even if advised of the possibility of such damage.
             or (ancestor::tei:front and  $numberFrontHeadings='')">*</xsl:when>
           <xsl:otherwise>[{<xsl:value-of select="tei:escapeChars(.,.)"/>}]</xsl:otherwise>
         </xsl:choose>
-        <xsl:text>{</xsl:text>
-        <xsl:apply-templates/>
-        <xsl:text>}</xsl:text>
+        <xsl:choose>
+          <!-- SJH: Capitalize subsection headings --> 
+          <xsl:when test="$depth='1'">
+            <xsl:text>{\centering\uppercase{\so{</xsl:text>
+            <xsl:apply-templates/>
+            <xsl:text>}}}&#10;</xsl:text>
+          </xsl:when>
+          <!-- SJH: Set subsubsection headings in small caps -->
+          <xsl:when test="$depth='2'">
+            <xsl:text>{\scshape{</xsl:text>
+            <xsl:apply-templates/>
+            <xsl:text>}}</xsl:text>
+          </xsl:when>
+          <xsl:otherwise>
+            <xsl:text>{</xsl:text>
+            <xsl:apply-templates/>
+            <xsl:text>}</xsl:text>
+          </xsl:otherwise>
+        </xsl:choose>
         <xsl:if test="../@xml:id">
           <xsl:text>\label{</xsl:text>
           <xsl:value-of select="../@xml:id"/>
@@ -761,7 +777,7 @@ of this software, even if advised of the possibility of such damage.
       <xsl:sequence select="tei:makeHyperTarget(@xml:id)"/>
   </xsl:template>
   <doc xmlns="http://www.oxygenxml.com/ns/doc/xsl">
-      <desc>Process elementq</desc>
+      <desc>Process element q</desc>
    </doc>
   <xsl:template match="tei:q|tei:said">
       <xsl:choose>
@@ -794,6 +810,12 @@ of this software, even if advised of the possibility of such damage.
         <!-- SJH: Avoid having line breaks interrupt the quotation. This was an issue in Dunning's text. -->
         <xsl:when test="child::tei:lb">
           <xsl:text>`</xsl:text><xsl:apply-templates/><xsl:text>’</xsl:text>
+        </xsl:when>
+        <!-- SJH: Set quotation of a section of the apparatus in smaller type -->
+        <xsl:when test="@type='apparatus'">
+          <xsl:text>\begin{</xsl:text><xsl:value-of select="$quoteEnv"/><xsl:text>}</xsl:text>
+          <xsl:text>\small{</xsl:text><xsl:apply-templates/><xsl:text>}</xsl:text>
+          <xsl:text>\end{</xsl:text><xsl:value-of select="$quoteEnv"/><xsl:text>}</xsl:text>
         </xsl:when>
 	<xsl:otherwise>
 	   <xsl:call-template name="makeQuote"/>

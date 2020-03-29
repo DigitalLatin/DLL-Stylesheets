@@ -87,7 +87,7 @@ of this software, even if advised of the possibility of such damage.
           </xsl:otherwise>
         </xsl:choose>
         <xsl:text>\Afootnote[nosep]</xsl:text><xsl:if
-                test="tei:lem[@rend='none']"><xsl:text>[nosep]\Xlemmaseparator[: ]</xsl:text></xsl:if><xsl:text>{</xsl:text>
+                test="tei:lem[@rend='none']"><xsl:text>[nosep]\Xlemmaseparator[| ]</xsl:text></xsl:if><xsl:text>{</xsl:text>
         <!-- SJH: Added call to template appLemmaWitness so that the witnesses would be rendered. The colon is to separate the lema from the next reading. -->
         <xsl:text>\textit{</xsl:text>
         <xsl:call-template name="appLemmaWitness"/>
@@ -226,10 +226,10 @@ of this software, even if advised of the possibility of such damage.
     <xsl:choose>
       <xsl:when test="tei:lem/following-sibling::*[1][self::tei:note]">
         <xsl:text>\textit{</xsl:text><xsl:apply-templates select="tei:lem/following-sibling::*[1][self::tei:note]"/><xsl:text>}</xsl:text>
-        <xsl:if test="tei:lem/following-sibling::*[2][self::tei:rdg]"><xsl:text> \normalfont{:} </xsl:text></xsl:if>
+        <xsl:if test="tei:lem/following-sibling::*[2][self::tei:rdg]"><xsl:text> \normalfont{|} </xsl:text></xsl:if>
       </xsl:when>
       <xsl:otherwise>
-        <xsl:if test="tei:lem/following-sibling::*[2][self::tei:rdg]"><xsl:text> \normalfont{:} </xsl:text></xsl:if>
+        <xsl:if test="tei:lem/following-sibling::*[2][self::tei:rdg]"><xsl:text> \normalfont{|} </xsl:text></xsl:if>
       </xsl:otherwise>
     </xsl:choose>
   </xsl:template>
