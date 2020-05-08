@@ -114,6 +114,8 @@ the beginning of the document</desc>
       <xsl:text>,</xsl:text>
       <xsl:value-of select="$latexGeometryOptions"/>
       <xsl:text>]{geometry}
+\setlength{\textwidth}{115mm}
+\setlength{\textheight}{173mm}
 \usepackage{framed}
 \usepackage{microtype}
 \usepackage{soul}
@@ -209,7 +211,7 @@ as a proportion of the page width.</desc>
    <doc xmlns="http://www.oxygenxml.com/ns/doc/xsl" class="userpackage" type="string">
       <desc>Options to pass to the geometry package to set margins etc</desc>
    </doc>
-   <xsl:param name="latexGeometryOptions">twoside,lmargin=1in,rmargin=1in,tmargin=1in,bmargin=1in,marginparwidth=0.75in</xsl:param>
+  <xsl:param name="latexGeometryOptions">twoside,tmargin=53.2mm,bmargin=53.2mm,inner=31.6mm,outer=63.3mm</xsl:param>
 
    <doc xmlns="http://www.oxygenxml.com/ns/doc/xsl" class="userpackage" type="string">
       <desc>The page style to use with the \pagestyle command (empty, plain, fancy, ...).</desc>
@@ -388,7 +390,7 @@ characters. The normal characters remain active for LaTeX commands.
     <p>LaTeX paper size</p>
   </desc>
 </doc>
-<xsl:param name="latexPaperSize">a4paper</xsl:param>
+<xsl:param name="latexPaperSize">letterpaper</xsl:param>
      
 <doc xmlns="http://www.oxygenxml.com/ns/doc/xsl" class="style" type="string"><desc>Font for examples</desc>   </doc>
 <xsl:param name="exampleFont">Courier New</xsl:param>
@@ -599,6 +601,9 @@ characters. The normal characters remain active for LaTeX commands.
    </doc>
 <xsl:template name="ledmacOptions">
 <xsl:text>
+\Xbeforenumber[A]{10pt}
+\Xparafootsep{$\parallel$}
+\Xragged[A]{R}
 \Xnotenumfont{\normalfont\bfseries}
 \lineation{page}
 \linenummargin{inner}

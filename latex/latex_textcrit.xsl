@@ -58,47 +58,71 @@ of this software, even if advised of the possibility of such damage.
    </doc>
   <xsl:template name="makeAppEntry">
     <xsl:param name="lemma"/>
-    <xsl:choose><xsl:when test="tei:lem[not(@wit) and not(@source) and not(following-sibling::*[1][self::tei:note])]">
-      <xsl:text>\edtext</xsl:text><xsl:text>{</xsl:text><xsl:apply-templates
-        select="tei:lem[not(@rend='none')]"/><xsl:choose>
-          <xsl:when test="tei:lem/tei:ptr">
-            <xsl:text>}</xsl:text>
-          </xsl:when>
-          <xsl:otherwise>
-            <xsl:text>}{</xsl:text><xsl:if
-              test="tei:lem[@rend='none']"><xsl:text>\lemma{</xsl:text><xsl:value-of
-                select="tei:lem"/><xsl:text>}</xsl:text></xsl:if>    
-          </xsl:otherwise>
-        </xsl:choose>
-      <xsl:text>\Afootnote</xsl:text><xsl:if
-              test="tei:lem[@rend='none']"><xsl:text></xsl:text></xsl:if><xsl:text>{</xsl:text>
-    </xsl:when>
+    <!-- If the lemma doesn't have a witness or a source, insert the lemma separator -->
+    <xsl:choose>
+      <xsl:when test="tei:lem[not(@wit) and not(@source)]">
+        <xsl:text>\edtext</xsl:text><xsl:text>{</xsl:text><xsl:apply-templates select="tei:lem[not(@rend='none')]"/>
+      <!-- If there's a pointer to a commentary note, insert the link. -->
+      <xsl:choose>
+        <xsl:when test="tei:lem/tei:ptr">
+          <xsl:text>}</xsl:text>
+        </xsl:when>
+        <xsl:otherwise>
+            <xsl:text>}{</xsl:text>
+          <xsl:if test="tei:lem[@rend='none']">
+            <xsl:text>\lemma{</xsl:text><xsl:value-of select="tei:lem"/><xsl:text>}</xsl:text>
+          </xsl:if>    
+        </xsl:otherwise>
+      </xsl:choose>
+        <xsl:text>\Afootnote</xsl:text><xsl:if test="tei:lem[@rend='none']"><xsl:text></xsl:text></xsl:if><xsl:text>{</xsl:text>        
+      </xsl:when>
       <xsl:otherwise>
-        <xsl:text>\edtext</xsl:text><xsl:text>{</xsl:text><xsl:apply-templates
-          select="tei:lem[not(@rend='none')]"/>
+        <!-- If the lemma does have a source, witness, or note, don't insert a lemma separator -->
+        <xsl:text>\edtext</xsl:text><xsl:text>{</xsl:text><xsl:apply-templates select="tei:lem[not(@rend='none')]"/>
+        <!-- If there's a pointer to a commentary note, insert the link. Otherwise, don't. -->
         <xsl:choose>
           <xsl:when test="tei:lem/tei:ptr">
             <xsl:text>}</xsl:text>
           </xsl:when>
           <xsl:otherwise>
-            <xsl:text>}{</xsl:text><xsl:if
-              test="tei:lem[@rend='none']"><xsl:text>\lemma{</xsl:text><xsl:value-of
-                select="tei:lem"/><xsl:text>}</xsl:text></xsl:if>    
+            <xsl:text>}{</xsl:text>
+            <xsl:if test="tei:lem[@rend='none']">
+              <xsl:text>\lemma{</xsl:text><xsl:value-of select="tei:lem"/><xsl:text>}</xsl:text>
+            </xsl:if>    
           </xsl:otherwise>
         </xsl:choose>
-        <xsl:text>\Afootnote[nosep]</xsl:text><xsl:if
-                test="tei:lem[@rend='none']"><xsl:text>[nosep]\Xlemmaseparator[| ]</xsl:text></xsl:if><xsl:text>{</xsl:text>
-        <!-- SJH: Added call to template appLemmaWitness so that the witnesses would be rendered. The colon is to separate the lema from the next reading. -->
-        <xsl:text>\textit{</xsl:text>
-        <xsl:call-template name="appLemmaWitness"/>
-        <xsl:text> </xsl:text>
-        <xsl:call-template name="appLemmaNote"/>
-        <xsl:text>}</xsl:text>
+        <xsl:text>\Afootnote[nosep]</xsl:text>
+        <xsl:if test="tei:lem[@rend='none']">
+          <xsl:text>[nosep]\Xlemmaseparator[ | ]</xsl:text>
+        </xsl:if>
+        <xsl:text>{</xsl:text>
+        <!-- SJH: Added call to template appLemmaWitness so that the witnesses would be rendered. -->
+        <xsl:text>\textit{</xsl:text><xsl:call-template name="appLemmaWitness"/><xsl:text>} </xsl:text>
       </xsl:otherwise>
     </xsl:choose>
+    <xsl:choose>
+      <xsl:when test="tei:lem/following-sibling::*[1][self::tei:note]">
+        <!-- If a note is associated with the lemma, print it, followed by a vertical bar. -->
+        <xsl:text> \textit{</xsl:text><xsl:apply-templates select="tei:lem/following-sibling::*[1][self::tei:note]"/><xsl:text>} | </xsl:text>
+      </xsl:when>
+      <xsl:otherwise>
+        <!-- Otherwise, insert a vertical to separate the lemma from the first variant reading. --> 
+        <xsl:text> | </xsl:text>
+      </xsl:otherwise>
+    </xsl:choose>
+    <!-- Now insert the readings and their witness, sources, and notes -->
     <xsl:text> </xsl:text>
     <xsl:call-template name="appReadings"/>
-    <xsl:text>}}</xsl:text>
+    <xsl:choose>
+      <xsl:when test="tei:lem/following-sibling::tei:note[(last()) and not(attribute(target))]">
+        <xsl:text> | </xsl:text>
+        <xsl:text>\textit{</xsl:text><xsl:apply-templates select="tei:lem/following-sibling::tei:note[(last()) and not(attribute(target))]"/><xsl:text>}</xsl:text>
+        <xsl:text>}}</xsl:text>
+      </xsl:when>
+      <xsl:otherwise>
+        <xsl:text>}}</xsl:text>
+      </xsl:otherwise>
+    </xsl:choose>
   </xsl:template>
   
   <xsl:template match="tei:lem/tei:ptr">
@@ -219,27 +243,12 @@ of this software, even if advised of the possibility of such damage.
     </xsl:choose>
   </xsl:template>-->
 
-  <xsldoc:doc xmlns:xsldoc="http://www.oxygenxml.com/ns/doc/xsl">
-    <xsldoc:desc>If a note follows a lemma, render it, followed by a colon. If there isn't a note, just insert a colon after the lemma witnesses.</xsldoc:desc>
-  </xsldoc:doc>
-  <xsl:template name="appLemmaNote">
-    <xsl:choose>
-      <xsl:when test="tei:lem/following-sibling::*[1][self::tei:note]">
-        <xsl:text>\textit{</xsl:text><xsl:apply-templates select="tei:lem/following-sibling::*[1][self::tei:note]"/><xsl:text>}</xsl:text>
-        <xsl:if test="tei:lem/following-sibling::*[2][self::tei:rdg]"><xsl:text> \normalfont{|} </xsl:text></xsl:if>
-      </xsl:when>
-      <xsl:otherwise>
-        <xsl:if test="tei:lem/following-sibling::*[2][self::tei:rdg]"><xsl:text> \normalfont{|} </xsl:text></xsl:if>
-      </xsl:otherwise>
-    </xsl:choose>
-  </xsl:template>
-
   <doc xmlns="http://www.oxygenxml.com/ns/doc/xsl">
     <desc>
       <p>Handle text within a note in the apparatus that must be rendered in a roman font (e.g., Latin text).</p>
     </desc>
   </doc>
-<xsl:template match="tei:app/tei:note/tei:hi[@rend='normal']">
+<xsl:template match="tei:app/tei:note/tei:hi[@rend='normal']|tei:app/tei:witDetail/tei:hi[@rend='normal']">
   <xsl:text>{\normalfont </xsl:text><xsl:apply-templates/><xsl:text>}</xsl:text>
 </xsl:template>
 
@@ -254,13 +263,36 @@ of this software, even if advised of the possibility of such damage.
 <!-- SJH: Added. -->
   <doc xmlns="http://www.oxygenxml.com/ns/doc/xsl">
     <desc>
-      <p>Process with witStart/witEnd</p>
+      <p>Process lacunaStart</p>
+    </desc>
+  </doc>
+  <xsl:template match="tei:lacunaStart">
+    <xsl:text>\textit{deest}</xsl:text>
+  </xsl:template>
+  
+  <doc xmlns="http://www.oxygenxml.com/ns/doc/xsl">
+    <desc>
+      <p>Process lacunaEnd</p>
+    </desc>
+  </doc>
+  <xsl:template match="tei:lacunaEnd">
+    <xsl:text>\textit{redit}</xsl:text>
+  </xsl:template>
+  
+  <doc xmlns="http://www.oxygenxml.com/ns/doc/xsl">
+    <desc>
+      <p>Process with witStart</p>
     </desc>
   </doc>
 <xsl:template match="tei:witStart">
   <xsl:text>\textit{hinc adest} </xsl:text><xsl:value-of select="translate(ancestor::rdg[1]/@wit,'#','')"/>
 </xsl:template>
   
+  <doc xmlns="http://www.oxygenxml.com/ns/doc/xsl">
+    <desc>
+      <p>Process with witEnd</p>
+    </desc>
+  </doc>
   <xsl:template match="tei:witEnd">
     <xsl:text>\textit{hinc deest} </xsl:text><xsl:value-of select="translate(ancestor::rdg[1]/@wit,'#','')"/>
   </xsl:template>
