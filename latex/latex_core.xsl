@@ -59,7 +59,7 @@ of this software, even if advised of the possibility of such damage.
       <desc>Process element bibl</desc>
    </doc>
   <xsl:template match="tei:bibl" mode="cite">
-      <xsl:apply-templates select="text()[1]"/>
+    <xsl:apply-templates select="text()[1]"/>
   </xsl:template>
 
 
@@ -180,9 +180,11 @@ of this software, even if advised of the possibility of such damage.
       <xsl:when test="parent::tei:castList"/>
       <xsl:when test="parent::tei:figure"/>
       <xsl:when test="parent::tei:list"/>
-      <xsl:when test="parent::tei:lg"> \subsection*{<xsl:apply-templates/>} </xsl:when>
+      <xsl:when test="parent::tei:lg"> \subsection*{\uppercase{<xsl:apply-templates/>}} </xsl:when>
       <xsl:when test="parent::tei:front or parent::tei:body or parent::tei:back or
-        parent::tei:div[@type='edition']"> \section*{<xsl:apply-templates/>} </xsl:when>
+        parent::tei:div[@type='edition']"> \section*{<xsl:apply-templates/>}</xsl:when>
+      <xsl:when test="parent::tei:div[@xml:id='preface']">\section*{<xsl:apply-templates/>}<xsl:text>&#10;\pagestyle{fancy}</xsl:text></xsl:when>
+      <xsl:when test="ancestor::tei:div[@type='edition']"><xsl:text>\subsection[{</xsl:text><xsl:apply-templates/><xsl:text>}]{\centering\uppercase{\so{</xsl:text><xsl:apply-templates/><xsl:text>}}}\label{</xsl:text><xsl:value-of select="parent::tei:div/@xml:id"/><xsl:text>}&#10;\pagestyle{fancy}</xsl:text></xsl:when>
       <xsl:when test="parent::tei:table"/>
       <xsl:otherwise>
         <xsl:variable name="depth">
@@ -220,9 +222,25 @@ of this software, even if advised of the possibility of such damage.
             or (ancestor::tei:front and  $numberFrontHeadings='')">*</xsl:when>
           <xsl:otherwise>[{<xsl:value-of select="tei:escapeChars(.,.)"/>}]</xsl:otherwise>
         </xsl:choose>
-        <xsl:text>{</xsl:text>
-        <xsl:apply-templates/>
-        <xsl:text>}</xsl:text>
+        <xsl:choose>
+          <!-- SJH: Capitalize subsection headings --> 
+          <xsl:when test="$depth='1'">
+            <xsl:text>{\centering\uppercase{\so{</xsl:text>
+            <xsl:apply-templates/>
+            <xsl:text>}}}&#10;</xsl:text>
+          </xsl:when>
+          <!-- SJH: Set subsubsection headings in small caps -->
+          <xsl:when test="$depth='2'">
+            <xsl:text>{\scshape{</xsl:text>
+            <xsl:apply-templates/>
+            <xsl:text>}}</xsl:text>
+          </xsl:when>
+          <xsl:otherwise>
+            <xsl:text>{</xsl:text>
+            <xsl:apply-templates/>
+            <xsl:text>}</xsl:text>
+          </xsl:otherwise>
+        </xsl:choose>
         <xsl:if test="../@xml:id">
           <xsl:text>\label{</xsl:text>
           <xsl:value-of select="../@xml:id"/>
@@ -463,20 +481,42 @@ of this software, even if advised of the possibility of such damage.
      </xsl:choose>
    </xsl:template>
 
-
   <doc xmlns="http://www.oxygenxml.com/ns/doc/xsl">
       <desc>Process element listBibl/tei:bibl</desc>
    </doc>
+  <doc xmlns="http://www.oxygenxml.com/ns/doc/xsl">
+    <desc>Process element listBibl/tei:bibl</desc>
+  </doc>
   <xsl:template match="tei:listBibl/tei:bibl">
-      <xsl:text> \bibitem {</xsl:text>
-      <xsl:choose>
-         <xsl:when test="@xml:id">
-	           <xsl:value-of select="@xml:id"/>
-         </xsl:when>
-         <xsl:otherwise>bibitem-<xsl:number level="any"/>
-         </xsl:otherwise>
-      </xsl:choose>
-      <xsl:text>}</xsl:text>
+    <xsl:text> \bibitem {</xsl:text>
+    <xsl:choose>
+      <xsl:when test="@xml:id">
+        <xsl:value-of select="@xml:id"/>
+      </xsl:when>
+      <xsl:otherwise>bibitem-<xsl:number level="any"/>
+      </xsl:otherwise>
+    </xsl:choose>
+    <xsl:text>}</xsl:text>
+    <xsl:choose>
+      <xsl:when test="parent::tei:listBibl/@xml:lang='zh-TW' or @xml:lang='zh-TW'">
+        <xsl:text>{\textChinese </xsl:text>
+        <xsl:apply-templates/>
+        <xsl:text>}</xsl:text>
+      </xsl:when>
+      <xsl:when test="parent::tei:listBibl/@xml:lang='ja' or @xml:lang='ja'">
+        <xsl:text>{\textJapanese </xsl:text>
+        <xsl:apply-templates/>
+        <xsl:text>}</xsl:text>
+      </xsl:when>
+      <xsl:otherwise>
+        <xsl:apply-templates/>
+      </xsl:otherwise>
+    </xsl:choose>
+    <xsl:text>&#10;</xsl:text>
+  </xsl:template>
+  
+  <xsl:template match="tei:listBibl/tei:bibl">
+    <xsl:text>\bibitem</xsl:text>
       <xsl:choose>
          <xsl:when test="parent::tei:listBibl/@xml:lang='zh-TW' or @xml:lang='zh-TW'">
 	           <xsl:text>{\textChinese </xsl:text>
@@ -493,8 +533,67 @@ of this software, even if advised of the possibility of such damage.
          </xsl:otherwise>
       </xsl:choose>
       <xsl:text>&#10;</xsl:text>
+  </xsl:template>  
+  
+  <doc xmlns="http://www.oxygenxml.com/ns/doc/xsl">
+    <desc>Process element tei:bibl within a tei:witness (for early editions)</desc>
+  </doc>
+  <xsl:template match="tei:listWit/tei:witness/tei:bibl">
+    <xsl:text> </xsl:text><xsl:apply-templates/>
   </xsl:template>
-
+  
+  <doc xmlns="http://www.oxygenxml.com/ns/doc/xsl">
+    <desc>
+      <p>Process listWit. The big issue here is turning each witness into a \bibitem, so that cross references work as expected.</p>
+    </desc>
+  </doc>
+  <xsl:template match="tei:listWit">
+    <xsl:choose>
+      <xsl:when test="parent::tei:div[@xml:id='bibliography-manuscripts']">
+        <xsl:if test="child::tei:head"><xsl:text>\textbf{</xsl:text><xsl:value-of select="child::tei:head"/><xsl:text>}</xsl:text></xsl:if>
+        <xsl:text>&#10;</xsl:text>
+        <xsl:text>\begin{msitemlist}{1}</xsl:text>
+        <xsl:for-each select="tei:witness">
+          <xsl:text>\bibitem</xsl:text><xsl:apply-templates/>
+          <xsl:text>&#10;</xsl:text>
+        </xsl:for-each>
+        <xsl:text>\end{msitemlist}</xsl:text>
+      </xsl:when>
+      <xsl:when test="parent::tei:listWit">
+        <xsl:text>&#10;</xsl:text>
+        <xsl:text>&#10;</xsl:text>
+        <xsl:text>\begin{msitemlist}{1}</xsl:text>
+        <xsl:for-each select="tei:witness">
+          <xsl:text>\bibitem</xsl:text><xsl:apply-templates/>
+          <xsl:text>&#10;</xsl:text>
+        </xsl:for-each>
+        <xsl:text>\end{msitemlist}</xsl:text>
+      </xsl:when>
+      <xsl:when test="parent::tei:witness">
+        <xsl:text>&#10;</xsl:text>
+        <xsl:text>\begin{msitemlist}{1}</xsl:text>
+        <xsl:for-each select="tei:witness">
+          <xsl:text> \bibitem</xsl:text><xsl:apply-templates/>
+          <xsl:text>&#10;</xsl:text>
+        </xsl:for-each>
+        <xsl:text>\end{msitemlist}</xsl:text>
+      </xsl:when>
+      <xsl:when test="parent::tei:div[@xml:id='bibliography-early-editions']">
+        <xsl:text>\begin{bibitemlist}{1}</xsl:text>
+        <xsl:for-each select="tei:witness">
+          <xsl:text> \bibitem</xsl:text><xsl:apply-templates/>
+          <xsl:text>&#10;</xsl:text>
+        </xsl:for-each>
+        <xsl:text>\end{bibitemlist}</xsl:text>
+      </xsl:when>
+    </xsl:choose>
+  </xsl:template>
+  
+  <doc xmlns="http://www.oxygenxml.com/ns/doc/xsl">
+    <desc>Process abbr so that it does appear in apparatus, but not in the bibliography.</desc>
+  </doc>
+<xsl:template match="tei:abbr[@type='siglum']" mode="biblio"/>
+  
   <doc xmlns="http://www.oxygenxml.com/ns/doc/xsl">
       <desc>Process a note element which has a @place attribute
       pointing to margin</desc>
@@ -578,6 +677,13 @@ of this software, even if advised of the possibility of such damage.
 	  <xsl:text>}</xsl:text>
 	</xsl:otherwise>
       </xsl:choose>
+  </xsl:template>
+  
+  <xsl:template match="//tei:div[@type='commentary']//tei:note">
+    <xsl:text>\footnote{</xsl:text>
+    <xsl:apply-templates/>
+    <xsl:if test="@xml:id"><xsl:text>\label{</xsl:text><xsl:value-of select="@xml:id"/><xsl:text>}</xsl:text></xsl:if>
+    <xsl:text>}</xsl:text>
   </xsl:template>
 
   <doc xmlns="http://www.oxygenxml.com/ns/doc/xsl">
@@ -671,7 +777,7 @@ of this software, even if advised of the possibility of such damage.
       <xsl:sequence select="tei:makeHyperTarget(@xml:id)"/>
   </xsl:template>
   <doc xmlns="http://www.oxygenxml.com/ns/doc/xsl">
-      <desc>Process elementq</desc>
+      <desc>Process element q</desc>
    </doc>
   <xsl:template match="tei:q|tei:said">
       <xsl:choose>
@@ -705,6 +811,12 @@ of this software, even if advised of the possibility of such damage.
         <xsl:when test="child::tei:lb">
           <xsl:text>`</xsl:text><xsl:apply-templates/><xsl:text>’</xsl:text>
         </xsl:when>
+        <!-- SJH: Set quotation of a section of the apparatus in smaller type -->
+        <xsl:when test="@type='apparatus'">
+          <xsl:text>\begin{</xsl:text><xsl:value-of select="$quoteEnv"/><xsl:text>}</xsl:text>
+          <xsl:text>\small{</xsl:text><xsl:apply-templates/><xsl:text>}</xsl:text>
+          <xsl:text>\end{</xsl:text><xsl:value-of select="$quoteEnv"/><xsl:text>}</xsl:text>
+        </xsl:when>
 	<xsl:otherwise>
 	   <xsl:call-template name="makeQuote"/>
 	</xsl:otherwise>
@@ -720,23 +832,27 @@ of this software, even if advised of the possibility of such damage.
       <xsl:apply-templates/>
       <xsl:text>\end{</xsl:text><xsl:value-of select="$quoteEnv"/><xsl:text>}&#10;</xsl:text>
   </xsl:template>
+  
+  <!-- SJH: added to render bylines for commentary -->
+  <doc xmlns="http://www.oxygenxml.com/ns/doc/xsl">
+    <desc>Process element p with tei:match(@rend,'byline')</desc>
+  </doc>
+  <xsl:template match="tei:p[@rend='byline']">
+    <xsl:text>&#10;&#10;</xsl:text>
+    <xsl:text>\begin{flushright}&#10;</xsl:text><xsl:apply-templates/><xsl:text>&#10;\end{flushright}</xsl:text>
+  </xsl:template>
 
   <doc xmlns="http://www.oxygenxml.com/ns/doc/xsl">
       <desc>Process element q with tei:match(@rend,'display')</desc>
    </doc>
+  
+  
   <doc xmlns="http://www.oxygenxml.com/ns/doc/xsl">
       <desc>Process element ref[@type='cite']</desc>
    </doc>
   <xsl:template match="tei:ref[@type='cite']">
       <xsl:apply-templates/>
   </xsl:template>
-  
-  <!-- SJH: This is duplicated by the next entry.
-  <xsl:template match="tei:seg">
-    <xsl:if test="@n"><xsl:text>\textbf{\textsuperscript{</xsl:text><xsl:value-of
-      select="@n"/><xsl:text>}}\,</xsl:text></xsl:if>
-    <xsl:apply-templates/>
-  </xsl:template>-->
 
   <!-- SJH: Insert a number in superscript to indicate the beginning of a seg, using value of @n-->
   <doc xmlns="http://www.oxygenxml.com/ns/doc/xsl">
@@ -850,6 +966,15 @@ of this software, even if advised of the possibility of such damage.
       <xsl:text>&#10;\begin{center}&#10;</xsl:text>
       <xsl:apply-templates/>
       <xsl:text>\end{center}&#10;</xsl:text>
+  </xsl:template>
+  
+  <!-- SJH: Handling back matter (commentary, etc.) -->
+  <doc xmlns="http://www.oxygenxml.com/ns/doc/xsl">
+    <desc>Back matter.</desc>
+  </doc>
+  <xsl:template match="tei:div[@type='commentary']">
+    <xsl:text>\setcounter{footnote}{0}</xsl:text>
+    <xsl:text>\newpage</xsl:text>
   </xsl:template>
 
 <!-- SJH: Omit linebreaks with @break='no', which occurs in Dunning's edition. -->

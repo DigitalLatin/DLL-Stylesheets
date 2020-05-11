@@ -82,12 +82,14 @@ of this software, even if advised of the possibility of such damage.
       <xsl:call-template name="latexLayout"/>
       <xsl:call-template name="latexOther"/>
       <xsl:text>&#10;\begin{document}&#10;</xsl:text>
-      <xsl:if test="not(tei:text/tei:front/tei:titlePage)">
+      <!-- Taking this out because the LDLT has its own title page.
+          <xsl:if test="not(tei:text/tei:front/tei:titlePage)">
          <xsl:call-template name="printTitleAndLogo"/>
-      </xsl:if>
+      </xsl:if>-->
       <xsl:call-template name="beginDocumentHook"/>
       <!-- certainly don't touch this line -->
       <xsl:text disable-output-escaping="yes">\let\tabcellsep&amp;</xsl:text>
+      <xsl:call-template name="titlePage"/>
       <xsl:apply-templates/>
       <xsl:call-template name="latexEnd"/>
       <xsl:if test="key('ENDNOTES',1)">
@@ -138,21 +140,151 @@ of this software, even if advised of the possibility of such damage.
       <desc>Processing teiHeader elements</desc>
    </doc>
    <xsl:template match="tei:teiHeader"/>
-  
-  <xsl:template match="tei:front">
+    
+    <xsl:template match="tei:front">
     <xsl:text>\frontmatter </xsl:text>
     <xsl:apply-templates/>
   </xsl:template>
+    
+    <!-- SJH: Added -->
+    <doc xmlns="http://www.oxygenxml.com/ns/doc/xsl">
+        <desc>Make the title page</desc>
+    </doc>
+    <xsl:template name="titlePage">
+        <xsl:text>
+\begin{titlepage} % Suppresses headers and footers on the title page
+\centering % Center everything on the title page
+\scshape % Use small caps for all text on the title page
+        
+%------------------------------------------------
+%	Title
+%------------------------------------------------
+\vspace*{\baselineskip} % White space at the top of the page
+        
+\rule{\textwidth}{1.6pt}\vspace*{-\baselineskip}\vspace*{2pt} % Thick horizontal rule
+\rule{\textwidth}{0.4pt} % Thin horizontal rule
+        
+\vspace{1\baselineskip} % Whitespace above the title
+        
+{\Huge\uppercase{</xsl:text>
+        <xsl:value-of select="//tei:titleStmt/tei:title"/>
+        <xsl:text>}} % Title
 
-  <doc xmlns="http://www.oxygenxml.com/ns/doc/xsl">
-      <desc/>
-   </doc>
-  <xsl:template match="tei:back">
+\vspace{2.25\baselineskip} % Whitespace below the title 
+
+%------------------------------------------------
+%	Editor(s)
+%------------------------------------------------
+
+Edited By
+
+\vspace{0.5\baselineskip} % Whitespace before the editors
+
+{\scshape\LARGE </xsl:text>
+        <xsl:value-of select="//tei:titleStmt/tei:editor"/>
+        <xsl:text>} % Editor list
+        
+\vspace{0.5\baselineskip} % Whitespace below the editor list
+\rule{\textwidth}{0.4pt}\vspace*{-\baselineskip}\vspace{3.2pt} % Thin horizontal rule
+\rule{\textwidth}{1.6pt} % Thick horizontal rule
+
+%------------------------------------------------
+%	Series
+%------------------------------------------------
+\vspace{8\baselineskip} % Whitespace below the title and editor block
+
+{\scshape\Large </xsl:text>
+        <xsl:value-of select="//tei:titleStmt/tei:sponsor"/>
+        <xsl:text>}\\
+\medskip % Whitespace
+{\scshape\Large </xsl:text>
+        <xsl:value-of select="//tei:seriesStmt/tei:title"/>
+        <xsl:text>}\\
+\vspace{2\baselineskip} % Whitespace
+
+{\scshape \normalsize </xsl:text>
+        <xsl:value-of select="//tei:seriesStmt/tei:respStmt/tei:name"/>
+        <xsl:text>, General Editor}\\
+                        
+\vspace{2\baselineskip} % Whitespace
+{\large Volume </xsl:text>
+        <xsl:value-of select="//tei:seriesStmt/tei:biblScope"/>
+        <xsl:text>}\\
+\vfill % Whitespace between editor names and publisher logo
+        
+%------------------------------------------------
+%	Publisher
+%------------------------------------------------
+
+\begin{figure}[h] % Position the logo here on the page.
+\includegraphics[scale=0.60]{DLL.eps} % Logo of DLL
+\centering % Center the logo.
+\end{figure}
+
+{\normalsize </xsl:text>
+        <xsl:value-of select="//tei:publicationStmt/tei:date"/>
+        <xsl:text>}        
+\end{titlepage}
+%----------------------------------------------------------------------------------------
+% Copyright Page
+%----------------------------------------------------------------------------------------
+\begin{copyrightPage}
+\thispagestyle{empty}
+\vspace*{\baselineskip} % White space at the top of the page
+\vspace{12\baselineskip} % Whitespace
+\centering
+{\scshape \LARGE </xsl:text>
+        <xsl:value-of select="//tei:publicationStmt/tei:publisher"/>
+        <xsl:text>}\\</xsl:text>
+        <xsl:value-of select="//tei:publicationStmt/tei:address/tei:street"/>
+        <xsl:text>, </xsl:text>
+        <xsl:value-of select="//tei:publicationStmt/tei:address/tei:addrLine"/>
+        <xsl:text>, </xsl:text>
+        <xsl:value-of select="//tei:publicationStmt/tei:address/tei:settlement"/>
+        <xsl:text>, </xsl:text>
+        <xsl:value-of select="//tei:publicationStmt/tei:address/tei:name"/>
+        <xsl:text>  </xsl:text>
+        <xsl:value-of select="//tei:publicationStmt/tei:address/tei:postCode"/>
+        <xsl:text>, </xsl:text>
+        <xsl:value-of select="//tei:publicationStmt/tei:address/tei:country"/>
+        <xsl:text>
+\vspace{\baselineskip} % Whitespace
+
+\flushleft
+\small
+{\scshape </xsl:text><xsl:value-of select="//tei:publicationStmt/tei:publisher"/><xsl:text>} publishes the \textit{</xsl:text><xsl:value-of select="//tei:seriesStmt/tei:title"/><xsl:text>} under the authority of </xsl:text><xsl:value-of select="//tei:publicationStmt/tei:authority"/><xsl:text>. Individual volumes are reviewed and sponsored by the Society for Classical Studies, the Medieval Academy of America, or the Renaissance Society of America, depending on the era of the text(s).
+
+\vspace{2\baselineskip} % Whitespace
+
+Volumes are published under the </xsl:text><xsl:value-of select="//tei:publicationStmt/tei:availability/tei:licence"/><xsl:text>: \url{</xsl:text><xsl:value-of select="//tei:publicationStmt/tei:availability/tei:licence/@target"/><xsl:text>}.
+
+\vspace{2\baselineskip} % Whitespace
+
+\textcopyright \thinspace </xsl:text><xsl:value-of select="//tei:titleStmt/tei:editor"/><xsl:text>, </xsl:text><xsl:value-of select="//tei:publicationStmt/tei:date"/><xsl:text>.
+
+\vspace{2\baselineskip} % Whitespace
+
+</xsl:text>
+        <xsl:for-each select="//tei:titleStmt/tei:respStmt">
+            <xsl:value-of select="tei:resp"/><xsl:text> </xsl:text><xsl:value-of select="tei:name"/><xsl:text>.</xsl:text>
+            <xsl:text>&#10;\newline&#10;</xsl:text>
+        </xsl:for-each>
+        <xsl:text>
+\end{copyrightPage}
+\newpage
+</xsl:text>
+    </xsl:template>
+    
+    <doc xmlns="http://www.oxygenxml.com/ns/doc/xsl">
+        <desc/>
+    </doc>
+    <xsl:template match="tei:back">
       <xsl:if test="not(preceding::tei:back)">
          <xsl:text>\backmatter </xsl:text>
       </xsl:if>
       <xsl:apply-templates/>
   </xsl:template>
+    
   <doc xmlns="http://www.oxygenxml.com/ns/doc/xsl">
       <desc/>
    </doc>
@@ -160,7 +292,8 @@ of this software, even if advised of the possibility of such damage.
     <xsl:if test="not(ancestor::tei:floatingText) and not(preceding::tei:body) and preceding::tei:front">
       <xsl:text>\mainmatter </xsl:text>
     </xsl:if>
-      \def\endstanzaextra{\pstart\centering-\-\-\-\-\-\-\-\-\skipnumbering\pend}
+      <xsl:text>\def\endstanzaextra{\pstart\centering-\-\-\-\-\-\-\-\-\skipnumbering\pend}</xsl:text>
+      <xsl:text>&#10;\thispagestyle{plain}&#10;</xsl:text>
     <xsl:apply-templates/>
   </xsl:template>
   <doc xmlns="http://www.oxygenxml.com/ns/doc/xsl">
@@ -190,7 +323,19 @@ of this software, even if advised of the possibility of such damage.
    </doc>
   <xsl:template
       match="tei:div|tei:div1|tei:div2|tei:div3|tei:div4|tei:div5">
-    <xsl:apply-templates/>
+    <xsl:choose>
+        <xsl:when test="parent::tei:div[@type='commentary']">
+            <!-- SJH: Handling back matter (commentary, etc.) -->
+            <xsl:apply-templates/>
+            <xsl:if test="not(position() = last())">
+                <xsl:text>&#10;\setcounter{footnote}{0}</xsl:text>
+                <xsl:text>&#10;\newpage</xsl:text>
+            </xsl:if>
+        </xsl:when>
+        <xsl:otherwise>
+            <xsl:apply-templates/>
+        </xsl:otherwise>
+    </xsl:choose>
   </xsl:template>
 
   <doc xmlns="http://www.oxygenxml.com/ns/doc/xsl">
@@ -215,6 +360,8 @@ of this software, even if advised of the possibility of such damage.
   <xsl:template match="tei:front">
       <xsl:if test="not(preceding::tei:front)">
          <xsl:text>\frontmatter </xsl:text>
+          <!-- SJH: This keeps the header from showing up on the first page of the preface. -->
+          <xsl:text>&#10;\thispagestyle{plain}&#10;</xsl:text>
       </xsl:if>
       <xsl:apply-templates/>
   </xsl:template>
@@ -275,6 +422,35 @@ of this software, even if advised of the possibility of such damage.
                            select="//tei:ref[@type='cite'] | //tei:ptr[@type='cite']"/>
   </xsl:template>
 
+    <doc xmlns="http://www.oxygenxml.com/ns/doc/xsl">
+        <desc>Make a title for the back matter.</desc>
+    </doc>
+    <xsl:template match="tei:back/tei:div">
+        <xsl:apply-templates/>
+    </xsl:template>
+    
+    <xsl:template match="tei:back/tei:div/tei:head">
+        <xsl:text>\begin{titlepage} % Suppresses headers and footers on the title page
+        \centering % Center everything on the title page
+        
+        %------------------------------------------------
+        %	Title
+        %------------------------------------------------
+        \vspace*{\baselineskip} % White space at the top of the page
+        
+        \rule{\textwidth}{1.6pt}\vspace*{-\baselineskip}\vspace*{2pt} % Thick horizontal rule
+        \rule{\textwidth}{0.4pt} % Thin horizontal rule
+        
+        \vspace{1\baselineskip} % Whitespace above the title
+       \leading{30pt}
+        {\Huge\uppercase{</xsl:text>
+        <xsl:value-of select="."/>
+        <xsl:text>}} % Title
+
+\vspace{2.25\baselineskip} % Whitespace below the title
+\end{titlepage}
+\setcounter{page}{1}</xsl:text>
+    </xsl:template>
 
   <xsl:template match="/tei:text" priority="999">
     <xsl:call-template name="wrapRootText"/>

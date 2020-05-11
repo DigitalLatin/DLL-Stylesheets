@@ -49,13 +49,25 @@ of this software, even if advised of the possibility of such damage.
       </desc>
    </doc>
   <xsl:template match="tei:listPerson">
-    \begin{enumerate}
-      <xsl:apply-templates/>
-      \end{enumerate}
+    <xsl:if test="tei:head"> 
+      <xsl:text>\leftline{\textbf{</xsl:text>
+      <xsl:for-each select="tei:head">
+        <xsl:apply-templates/>
+      </xsl:for-each>
+      <xsl:text>}} </xsl:text>
+    </xsl:if>
+    \begin{bibitemlist}{1}
+    <xsl:for-each select="tei:person">
+      <xsl:text>\bibitem</xsl:text><xsl:call-template name="person"/>      
+    </xsl:for-each>
+      \end{bibitemlist}
   </xsl:template>
-
-  <xsl:template match="tei:person">
-    \item <xsl:apply-templates/>
+  
+  <xsl:template match="tei:listPerson/tei:person" name="person">
+    <xsl:text>[</xsl:text><xsl:value-of select="descendant::tei:persName/tei:abbr[@type='siglum']"/><xsl:text>]{</xsl:text><xsl:value-of select="@xml:id"/><xsl:text>}  </xsl:text>
+    <xsl:value-of select="descendant::tei:persName/text()"/>
+    <xsl:text>. </xsl:text><xsl:apply-templates select="descendant::tei:note"/>
+    <xsl:text>&#10;</xsl:text>
   </xsl:template>
 
   <xsl:template match="tei:affiliation|tei:email">

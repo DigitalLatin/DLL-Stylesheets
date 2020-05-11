@@ -116,6 +116,8 @@ the beginning of the document</desc>
       <xsl:text>]{geometry}
 \usepackage{framed}
 \usepackage{microtype}
+\usepackage{soul}
+\usepackage{leading}
 </xsl:text>
 <xsl:text>
 \definecolor{shadecolor}{gray}{0.95}
@@ -124,6 +126,7 @@ the beginning of the document</desc>
 \usepackage{fancyvrb}
 \usepackage{fancyhdr}
 \usepackage{graphicx}
+\graphicspath{ {./images/} }
 \usepackage{marginnote}
 
 \renewcommand{\@cite}[1]{#1}
@@ -131,10 +134,6 @@ the beginning of the document</desc>
 </xsl:text>
 <!-- SJH: Added calls to templates to handle some LDLT requirements. -->
 <xsl:call-template name="section-numbering"/>
-<xsl:call-template name="format-citations"/>
-<xsl:call-template name="remove-color-hyperlinks"/>
-<xsl:call-template name="url-font"/>
-<xsl:call-template name="noLabel"></xsl:call-template>
 <xsl:if test="not($marginFont='')">
 \renewcommand*{\marginfont}{<xsl:value-of select="$marginFont"/>}
 </xsl:if>
@@ -352,6 +351,7 @@ characters. The normal characters remain active for LaTeX commands.
 \newenvironment{msItem}{\vskip 6pt}{\par}
 \newenvironment{rubric}{}{}
 \newenvironment{titlePart}{}{\par }
+\newenvironment{copyrightPage}{}{}
 <xsl:text disable-output-escaping="yes">
 \newcolumntype{L}[1]{){\raggedright\arraybackslash}p{#1}}
 \newcolumntype{C}[1]{){\centering\arraybackslash}p{#1}}
@@ -447,26 +447,26 @@ characters. The normal characters remain active for LaTeX commands.
 \widowpenalty=10000
 <xsl:if test="not($documentclass='letter')">
 \renewcommand\section{\@startsection {section}{1}{\z@}%
-     {-1.75ex \@plus -0.5ex \@minus -.2ex}%
-     {0.5ex \@plus .2ex}%
-     {\reset@font\Large\bfseries\sffamily}}
+  {-2ex \@plus -0.5ex \@minus -.2ex}%
+  {3ex \@plus .2ex}%
+  {\reset@font\Huge\bfseries\fontfamily{lmr}}}
 \renewcommand\subsection{\@startsection{subsection}{2}{\z@}%
-     {-1.75ex\@plus -0.5ex \@minus- .2ex}%
-     {0.5ex \@plus .2ex}%
-     {\reset@font\Large\sffamily}}
+  {-1.75ex\@plus -0.5ex \@minus- .2ex}%
+  {2.5ex \@plus .2ex}%
+  {\reset@font\Large\fontfamily{lmr}}}
 \renewcommand\subsubsection{\@startsection{subsubsection}{3}{\z@}%
-     {-1.5ex\@plus -0.35ex \@minus -.2ex}%
-     {0.5ex \@plus .2ex}%
-     {\reset@font\large\sffamily}}
+  {4ex\@plus -0.35ex \@minus -.2ex}%
+  {2ex \@plus .2ex}%
+  {\reset@font\fontfamily{lmr}\Large\scshape\selectfont}}
 \renewcommand\paragraph{\@startsection{paragraph}{4}{\z@}%
-     {-1ex \@plus-0.35ex \@minus -0.2ex}%
-     {0.5ex \@plus .2ex}%
-     {\reset@font\normalsize\sffamily}}
+  {-1ex \@plus-0.35ex \@minus -0.2ex}%
+  {0.5ex \@plus .2ex}%
+  {\reset@font\normalsize\sffamily}}
 \renewcommand\subparagraph{\@startsection{subparagraph}{5}{\parindent}%
-     {1.5ex \@plus1ex \@minus .2ex}%
-     {-1em}%
-     {\reset@font\normalsize\bfseries}}
-
+  {1.5ex \@plus1ex \@minus .2ex}%
+  {-1em}%
+  {\reset@font\normalsize\bfseries}}
+  
 </xsl:if>
 \def\l@section#1#2{\addpenalty{\@secpenalty} \addvspace{1.0em plus 1pt}
  \@tempdima 1.5em \begingroup
@@ -508,7 +508,7 @@ characters. The normal characters remain active for LaTeX commands.
   \cleardoublepage
   \setcounter{chapter}{0}
   \setcounter{section}{0}
-  \setcounter{secnumdepth}{2}
+  \setcounter{secnumdepth}{0}<!-- SJH: changed to 0 to prevent automatic numbering -->
   \def\@chapapp{\appendixname}%
   \def\thechapter{\@Alph\c@chapter}
   \def\theHchapter{\Alph{chapter}}
@@ -532,7 +532,25 @@ characters. The normal characters remain active for LaTeX commands.
   {\def\@noitemerr
     {\@latex@warning{Empty `bibitemlist' environment}}%
     \endlist}
-
+<!-- SJH: Added this to cope with different requirements for manuscript items. -->
+\newenvironment{msitemlist}[1]{%
+  \list{}%
+  {\settowidth\labelwidth{\@biblabel{#1}}%
+    \leftmargin\labelwidth
+    \advance\leftmargin\labelsep
+    \@openbib@code
+    \usecounter{enumiv}%
+    \let\p@enumiv\@empty
+    \renewcommand\theenumiv{\@arabic\c@enumiv}%
+    }%
+    \sloppy
+    \clubpenalty4000
+    \@clubpenalty \clubpenalty
+    \widowpenalty4000%
+    \sfcode`\.\@m}%
+    {\def\@noitemerr
+    {\@latex@warning{Empty `bibitemlist' environment}}%
+    \endlist}
 \def\tableofcontents{\section*{\contentsname}\@starttoc{toc}}
 \parskip<xsl:value-of select="$parSkip"/>
 \parindent<xsl:value-of select="$parIndent"/>
@@ -582,7 +600,7 @@ characters. The normal characters remain active for LaTeX commands.
 <xsl:template name="ledmacOptions">
 <xsl:text>
 \Xnotenumfont{\normalfont\bfseries}
-\lineation{section}
+\lineation{page}
 \linenummargin{inner}
 \Xarrangement[A]{paragraph}
 \Xnumberonlyfirstinline[A]
@@ -637,9 +655,9 @@ characters. The normal characters remain active for LaTeX commands.
 \fancyfoot[LE]{}
 \fancyfoot[CE]{\thepage}
 \fancyfoot[RE]{\TheID}
-\hypersetup{</xsl:text><xsl:value-of select="$hyperSetup"/><xsl:text>}
 \fancypagestyle{plain}{\fancyhead{}\renewcommand{\headrulewidth}{0pt}}</xsl:text>
 <xsl:call-template name="fallback-characters"/>
+<xsl:call-template name="hyperref"/>
    </xsl:template>
 
 <!-- SJH: Added this block to remove numbers from sections. --> 
@@ -652,63 +670,7 @@ characters. The normal characters remain active for LaTeX commands.
 \usepackage{titlesec}
 \usepackage{titletoc}
   </xsl:template>
-  
-<!-- SJH: Added. -->  
-  <doc xmlns="http://www.oxygenxml.com/ns/doc/xsl" class="layout">
-    <desc>Format citations in the notes without brackets around them.</desc>
-  </doc>
-  <xsl:template name="format-citations">
-    <xsl:text>
-% This is how to format citations in the notes without brackets around them.
-\usepackage{cite}
-\renewcommand\citeleft{}
-\renewcommand\citeright{}</xsl:text>
-  </xsl:template>
-
-<!-- SJH: Added. -->
-  <doc xmlns="http://www.oxygenxml.com/ns/doc/xsl" class="layout">
-    <desc>Format URLs in the same font as the rest of the document.</desc>
-  </doc>
-  <xsl:template name="url-font">
-  <xsl:text>
-% Set the font for URLs to the regular font for the document.
-\urlstyle{same}</xsl:text>
-  </xsl:template>
-
-<!-- SJH: Added. --> 
-  <doc xmlns="http://www.oxygenxml.com/ns/doc/xsl" class="layout">
-    <desc>Prevent labels from being printed in the bibliography.</desc>
-  </doc>
-<xsl:template name="noLabel">
-% Prevent labels from being printed in the bibliography.
-\makeatletter
-\renewcommand{\@biblabel}[1]{}
-\renewenvironment{thebibliography}[1]
-  {\section*{\refname}%
-  \@mkboth{\MakeUppercase\refname}{\MakeUppercase\refname}%
-  \list{}%
-    {\labelwidth=0pt
-     \labelsep=0pt
-      \leftmargin1.5em
-      \itemindent=-1.5em
-      \advance\leftmargin\labelsep
-      \@openbib@code
-      }%
-  \sloppy
-  \clubpenalty4000
-  \@clubpenalty \clubpenalty
-  \widowpenalty4000%
-  \sfcode`\.\@m}
-\makeatother
-</xsl:template>
-<!-- SJH: Added. -->
-  <doc xmlns="http://www.oxygenxml.com/ns/doc/xsl" class="style">
-    <desc>Remove colors and borders from hyperlinks.</desc>
-  </doc>
-<xsl:template name="remove-color-hyperlinks">
-\usepackage[linktoc=all,colorlinks=true,linkcolor=black,anchorcolor=black,citecolor=black,filecolor=black,menucolor=black,runcolor=black,urlcolor=black]{hyperref}
-</xsl:template>
-
+ 
 <!-- SJH: Fallback characters. Tip of the hat to Andrew Dunning. -->
   <doc xmlns="http://www.oxygenxml.com/ns/doc/xsl" class="layout">
     <desc>
@@ -737,6 +699,20 @@ characters. The normal characters remain active for LaTeX commands.
 \newunicodechar{ϛ}{\textfallbackStigma{ϛ}}
 </xsl:text>
 </xsl:template>
+  
+  <doc xmlns="http://www.oxygenxml.com/ns/doc/xsl" class="style">
+    <desc>
+      <p>Set up hyperref.</p>
+    </desc>
+  </doc>
+<xsl:template name="hyperref">
+  <xsl:text>
+\usepackage[linktoc=all,colorlinks=true,linkcolor=black,anchorcolor=black,citecolor=black,filecolor=black,menucolor=black,runcolor=black,urlcolor=black]{hyperref}
+\hypersetup{</xsl:text><xsl:value-of select="$hyperSetup"/><xsl:text>}
+% Set the font for URLs to the regular font for the document.
+\urlstyle{same}</xsl:text>  
+</xsl:template> 
+  
    <doc xmlns="http://www.oxygenxml.com/ns/doc/xsl" class="layout">
       <desc>
          <p>LaTeX setup at end of document</p>
