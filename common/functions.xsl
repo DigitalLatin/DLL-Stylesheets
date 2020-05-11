@@ -1397,9 +1397,17 @@ of this software, even if advised of the possibility of such damage.
               <xsl:value-of select="substring($wit,2)"/>
             </xsl:when>
             <xsl:otherwise>
-              <xsl:for-each select="doc($wit)/*">
-                <xsl:value-of select="if (@n) then @n else @xml:id"/>
-              </xsl:for-each>
+              <xsl:choose>
+                <xsl:when test="doc-available($wit)">
+                  <xsl:for-each select="doc($wit)/*">
+                    <xsl:value-of select="if (@n) then @n else @xml:id"/>
+                  </xsl:for-each>
+                </xsl:when>
+                <xsl:otherwise>
+                  <xsl:message>Error: can't find <xsl:value-of select="$wit"/></xsl:message>
+                </xsl:otherwise>
+              </xsl:choose>
+              
             </xsl:otherwise>
           </xsl:choose>
         </xsl:for-each>
