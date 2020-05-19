@@ -113,6 +113,7 @@ of this software, even if advised of the possibility of such damage.
     <!-- Now insert the readings and their witness, sources, and notes -->
     <xsl:text> </xsl:text>
     <xsl:call-template name="appReadings"/>
+    <!-- If there is a note like "alii alia" at the end of the apparatus entry, insert a vertical bar followed by the text of the note. -->
     <xsl:choose>
       <xsl:when test="tei:lem/following-sibling::tei:note[(last()) and not(attribute(target))]">
         <xsl:text> | </xsl:text>
@@ -261,6 +262,15 @@ of this software, even if advised of the possibility of such damage.
   </xsl:template>
 
 <!-- SJH: Added. -->
+  <doc xmlns="http://www.oxygenxml.com/ns/doc/xsl">
+    <desc>
+      <p>Process gap</p>
+    </desc>
+  </doc>
+  <xsl:template match="tei:gap">
+    <xsl:text>…</xsl:text>
+  </xsl:template>
+  
   <doc xmlns="http://www.oxygenxml.com/ns/doc/xsl">
     <desc>
       <p>Process lacunaStart</p>

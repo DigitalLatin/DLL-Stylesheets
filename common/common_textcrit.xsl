@@ -158,8 +158,8 @@ of this software, even if advised of the possibility of such damage.
              <!-- If the reading is empty, insert "om." -->
              <xsl:when test="not(node())">om.</xsl:when>
              <xsl:otherwise>
-               <xsl:if test="preceding-sibling::tei:note[@next]">
-                 <xsl:text>\textit{</xsl:text><xsl:apply-templates select="preceding-sibling::tei:note[@next]"/><xsl:text>} </xsl:text>
+               <xsl:if test="contains(preceding-sibling::tei:note[1]/@target,@xml:id)">
+                 <xsl:text>\textit{</xsl:text><xsl:apply-templates select="preceding-sibling::tei:note[1]"/><xsl:text>} </xsl:text>
                </xsl:if>
                <xsl:apply-templates/>
              </xsl:otherwise>
