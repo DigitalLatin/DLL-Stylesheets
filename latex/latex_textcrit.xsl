@@ -165,6 +165,9 @@ of this software, even if advised of the possibility of such damage.
  <xsl:template match="tei:abbr[@type='siglum']"><xsl:apply-templates/></xsl:template>
  <xsl:template match="tei:bibl/tei:abbr[@type='siglum']|tei:witness/tei:abbr[@type='siglum']">[<xsl:apply-templates/>]<xsl:text>{</xsl:text><xsl:value-of select="../@xml:id"/><xsl:text>} </xsl:text></xsl:template> 
   
+  <!-- Don't render an app with @type="transposition", since a pdf can't do interactive swapping. -->
+  <xsl:template match="tei:app[@type='transposition']"/>
+  
   <xsl:template match="tei:l[ancestor::tei:app and not(@processed)]">
     <xsl:variable name="self" select="."/>
     <xsl:if test="parent::tei:lem">
@@ -218,6 +221,7 @@ of this software, even if advised of the possibility of such damage.
     </xsl:variable>
     <xsl:apply-templates select="$appnote"/>
   </xsl:template>
+  
 
   <!--<xsl:template match="tei:lg">
     <xsl:choose>

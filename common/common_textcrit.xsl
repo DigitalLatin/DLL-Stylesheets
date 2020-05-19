@@ -64,7 +64,7 @@ of this software, even if advised of the possibility of such damage.
     </desc>
   </doc>
   <xsl:template match="tei:app">
-    <!-- If the len or rdg contains l, p, ab, or div, just apply templates-->
+    <!-- If the lem or rdg contains l, p, ab, or div, just apply templates-->
     <xsl:choose>
       <xsl:when test="(tei:lem|tei:rdg)/(tei:l|tei:p|tei:ab|tei:div) 
         or tei:rdgGrp/(tei:lem|tei:rdg)/(tei:l|tei:p|tei:ab|tei:div)
