@@ -257,24 +257,30 @@ of this software, even if advised of the possibility of such damage.
   <xsl:text>{\normalfont </xsl:text><xsl:apply-templates/><xsl:text>}</xsl:text>
 </xsl:template>
 
-
-  <xsl:template match="tei:witDetail[not(*|text())]">
+<xsl:template match="tei:witDetail[not(*|text())]">
     <xsl:choose>
       <xsl:when test="@type='correction-altered'">p.c.</xsl:when>
       <xsl:when test="@type='correction-original'">a.c.</xsl:when>
     </xsl:choose>
-  </xsl:template>
-
+</xsl:template>
+  
 <!-- SJH: Added. -->
-  <doc xmlns="http://www.oxygenxml.com/ns/doc/xsl">
+ <doc xmlns="http://www.oxygenxml.com/ns/doc/xsl">
     <desc>
       <p>Process gap</p>
     </desc>
   </doc>
   <xsl:template match="tei:gap">
-    <xsl:text>…</xsl:text>
+    <xsl:choose><xsl:when test="@reason='lost'">
+      <!-- Look for both \supplied and \gap in latex_param.xsl -->
+      <xsl:text>\supplied{\gap} </xsl:text>
+    </xsl:when>
+      <xsl:otherwise>
+        <xsl:apply-templates/>
+      </xsl:otherwise>
+    </xsl:choose>
   </xsl:template>
-  
+
   <doc xmlns="http://www.oxygenxml.com/ns/doc/xsl">
     <desc>
       <p>Process lacunaStart</p>

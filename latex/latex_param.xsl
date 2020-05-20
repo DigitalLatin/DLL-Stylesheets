@@ -321,11 +321,11 @@ characters. The normal characters remain active for LaTeX commands.
 \def\abbr{}
 \def\corr{}
 \def\expan{}
-\def\gap{}
 \def\orig{}
 \def\reg{}
 \def\ref{}
 <!-- SJH: Added rules for editorial symbols. -->
+\def\gap{⁎⁎⁎}
 \def\sic#1{†#1†}
 \def\supplied#1{\anglefont ⟨#1\anglefont ⟩}
 \def\surplus#1{\{#1\}}
@@ -698,6 +698,9 @@ characters. The normal characters remain active for LaTeX commands.
 \newfontfamily{\anglefont}{Junicode}
 \newunicodechar{⟨}{{\anglefont ⟨}}
 \newunicodechar{⟩}{{\anglefont ⟩}}
+% Asterisk character for gap.
+\newfontfamily{\asterisk}{Junicode}
+\newunicodechar{⁎}{{\asterisk ⁎}}
 % Stigma
 \newfontfamily{\fallbackfontStigma}{KadmosU}
 \DeclareTextFontCommand{\textfallbackStigma}{\fallbackfontStigma}
