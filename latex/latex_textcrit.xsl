@@ -51,18 +51,18 @@ of this software, even if advised of the possibility of such damage.
       </desc>
    </doc>
 
-  <doc xmlns="http://www.oxygenxml.com/ns/doc/xsl">
+  <!--<doc xmlns="http://www.oxygenxml.com/ns/doc/xsl">
       <desc>
          <p>Creating an apparatus criticus reading.</p>
       </desc>
    </doc>
   <xsl:template name="makeAppEntry">
     <xsl:param name="lemma"/>
-    <!-- If the lemma doesn't have a witness or a source, insert the lemma separator -->
+    <!-\- If the lemma doesn't have a witness or a source, insert the lemma separator -\->
     <xsl:choose>
       <xsl:when test="tei:lem[not(@wit) and not(@source)]">
         <xsl:text>\edtext</xsl:text><xsl:text>{</xsl:text><xsl:apply-templates select="tei:lem[not(@rend='none')]"/>
-      <!-- If there's a pointer to a commentary note, insert the link. -->
+      <!-\- If there's a pointer to a commentary note, insert the link. -\->
       <xsl:choose>
         <xsl:when test="tei:lem/tei:ptr">
           <xsl:text>}</xsl:text>
@@ -77,9 +77,9 @@ of this software, even if advised of the possibility of such damage.
         <xsl:text>\Afootnote</xsl:text><xsl:if test="tei:lem[@rend='none']"><xsl:text></xsl:text></xsl:if><xsl:text>{</xsl:text>        
       </xsl:when>
       <xsl:otherwise>
-        <!-- If the lemma does have a source, witness, or note, don't insert a lemma separator -->
+        <!-\- If the lemma does have a source, witness, or note, don't insert a lemma separator -\->
         <xsl:text>\edtext</xsl:text><xsl:text>{</xsl:text><xsl:apply-templates select="tei:lem[not(@rend='none')]"/>
-        <!-- If there's a pointer to a commentary note, insert the link. Otherwise, don't. -->
+        <!-\- If there's a pointer to a commentary note, insert the link. Otherwise, don't. -\->
         <xsl:choose>
           <xsl:when test="tei:lem/tei:ptr">
             <xsl:text>}</xsl:text>
@@ -96,24 +96,24 @@ of this software, even if advised of the possibility of such damage.
           <xsl:text>[nosep]\Xlemmaseparator[ | ]</xsl:text>
         </xsl:if>
         <xsl:text>{</xsl:text>
-        <!-- SJH: Added call to template appLemmaWitness so that the witnesses would be rendered. -->
+        <!-\- SJH: Added call to template appLemmaWitness so that the witnesses would be rendered. -\->
         <xsl:text>\textit{</xsl:text><xsl:call-template name="appLemmaWitness"/><xsl:text>} </xsl:text>
       </xsl:otherwise>
     </xsl:choose>
     <xsl:choose>
       <xsl:when test="tei:lem/following-sibling::*[1][self::tei:note]">
-        <!-- If a note is associated with the lemma, print it, followed by a vertical bar. -->
+        <!-\- If a note is associated with the lemma, print it, followed by a vertical bar. -\->
         <xsl:text> \textit{</xsl:text><xsl:apply-templates select="tei:lem/following-sibling::*[1][self::tei:note]"/><xsl:text>} | </xsl:text>
       </xsl:when>
       <xsl:otherwise>
-        <!-- Otherwise, insert a vertical to separate the lemma from the first variant reading. --> 
+        <!-\- Otherwise, insert a vertical to separate the lemma from the first variant reading. -\-> 
         <xsl:text> | </xsl:text>
       </xsl:otherwise>
     </xsl:choose>
-    <!-- Now insert the readings and their witness, sources, and notes -->
+    <!-\- Now insert the readings and their witness, sources, and notes -\->
     <xsl:text> </xsl:text>
     <xsl:call-template name="appReadings"/>
-    <!-- If there is a note like "alii alia" at the end of the apparatus entry, insert a vertical bar followed by the text of the note. -->
+    <!-\- If there is a note like "alii alia" at the end of the apparatus entry, insert a vertical bar followed by the text of the note. -\->
     <xsl:choose>
       <xsl:when test="tei:lem/following-sibling::tei:note[(last()) and not(attribute(target))]">
         <xsl:text> | </xsl:text>
@@ -124,7 +124,7 @@ of this software, even if advised of the possibility of such damage.
         <xsl:text>}}</xsl:text>
       </xsl:otherwise>
     </xsl:choose>
-  </xsl:template>
+  </xsl:template>-->
   
   <xsl:template match="tei:lem/tei:ptr">
     <xsl:value-of select=".."/><xsl:text>}</xsl:text>
@@ -257,12 +257,12 @@ of this software, even if advised of the possibility of such damage.
   <xsl:text>{\normalfont </xsl:text><xsl:apply-templates/><xsl:text>}</xsl:text>
 </xsl:template>
 
-<xsl:template match="tei:witDetail[not(*|text())]">
+<!--<xsl:template match="tei:witDetail[not(*|text())]">
     <xsl:choose>
       <xsl:when test="@type='correction-altered'">p.c.</xsl:when>
       <xsl:when test="@type='correction-original'">a.c.</xsl:when>
     </xsl:choose>
-</xsl:template>
+</xsl:template>-->
   
 <!-- SJH: Added. -->
  <doc xmlns="http://www.oxygenxml.com/ns/doc/xsl">
