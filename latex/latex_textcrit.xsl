@@ -50,6 +50,7 @@
           <!-- If there's a pointer to a commentary note, insert the link. -->
           <xsl:choose>
             <xsl:when test="tei:ptr">
+              <xsl:apply-templates select="tei:lem/tei:ptr"/>
               <xsl:text>}</xsl:text>
             </xsl:when>
             <xsl:otherwise>
@@ -79,6 +80,7 @@
           <!-- If there's a pointer to a commentary note, insert the link. Otherwise, don't. -->
           <xsl:choose>
             <xsl:when test="tei:ptr">
+              <xsl:apply-templates select="tei:lem/tei:ptr"/>
               <xsl:text>}</xsl:text>
             </xsl:when>
             <xsl:otherwise>
@@ -105,7 +107,7 @@
             <xsl:text> </xsl:text>
           </xsl:if>
           <xsl:value-of select="tei:getWitness(@source, ., ' ')"/>
-          <xsl:text>} </xsl:text>
+          <xsl:text>}</xsl:text>
           <!-- If a note is associated with the lemma, render it. -->
           <!-- There are two scenarios: witDetail is the next sibling to lem, and note is the one after that: -->
           <xsl:if test="following-sibling::*[1][self::tei:witDetail] and following-sibling::*[2][self::tei:note]">
@@ -138,8 +140,11 @@
               </xsl:otherwise>
             </xsl:choose>
           </xsl:if>
-          <!-- Add the vertical bar before the readings begin. -->
-          <xsl:text> | </xsl:text>
+          <!--<xsl:text>}</xsl:text>-->
+          <!-- If a reading follows the lemma, insert a vertical bar separator to indicate the end of the lemma data. -->
+          <xsl:if test="following-sibling::tei:rdg">
+            <xsl:text> | </xsl:text>
+          </xsl:if>
         </xsl:otherwise>
       </xsl:choose>
     </xsl:for-each>
@@ -183,7 +188,23 @@
       </xsl:if>
       <!-- Now look for a note that follows the reading. If there is one, render it. -->
       <xsl:if test="contains(tei:note/@target, tei:rdg/@xml:id)">
+      <xsl:if test="following-sibling::*[1][self::tei:witDetail] and following-sibling::*[2][self::tei:note]">
         <!-- If the note begins with a comma, don't leave a space in front of it. If it doesn't, don't insert an extra space. -->
+        <xsl:choose>
+          <xsl:when test="starts-with(following-sibling::*[2][self::tei:note], ',')">
+            <xsl:text>\textit{</xsl:text>
+            <xsl:apply-templates select="following-sibling::*[2][self::tei:note]"/>
+            <xsl:text>}</xsl:text>
+          </xsl:when>
+          <xsl:otherwise>
+            <xsl:text> \textit{</xsl:text>
+            <xsl:apply-templates select="following-sibling::*[2][self::tei:note]"/>
+            <xsl:text>}</xsl:text>
+          </xsl:otherwise>
+        </xsl:choose>
+      </xsl:if>
+      <!-- … or note is the immediately following sibling to lem. -->
+      <xsl:if test="following-sibling::*[1][self::tei:note]">
         <xsl:choose>
           <xsl:when test="starts-with(following-sibling::*[1][self::tei:note], ',')">
             <xsl:text>\textit{</xsl:text>
@@ -197,6 +218,8 @@
           </xsl:otherwise>
         </xsl:choose>
       </xsl:if>
+      </xsl:if>
+      
       <!-- If the combination of rdg and note is not the last one, put a separator before the next one. -->
       <xsl:choose>
         <xsl:when test="not(position() = last())">
@@ -209,8 +232,6 @@
             <xsl:apply-templates select="following-sibling::tei:note[not(@target)]"/>
             <xsl:text>}</xsl:text>
           </xsl:if>
-          <!-- Insert the closing tags to finish the Afootnote block. -->
-          <xsl:text>}}</xsl:text>
         </xsl:otherwise>
       </xsl:choose>
     </xsl:for-each>
@@ -223,10 +244,18 @@
     <xsldoc:param name="lemma">The parameter 'lemma' occurs in the appLemma template
       above.</xsldoc:param>
   </xsldoc:doc>
+  <!-- We need \edtext{lemma}{ \Afootnote[nosep]{\textit{witnesses} \textit{sources}} | reading \textit{witness} \textit{note} | reading \textit{source} \textit{(note)}}} -->
   <xsl:template name="makeAppEntry">
     <xsl:param name="lemma"/>
     <xsl:call-template name="appLemma"/>
-    <xsl:call-template name="appReadings"/>
+    
+      <xsl:if test="tei:rdg">
+        <xsl:call-template name="appReadings"/>
+        <!--<xsl:text></xsl:text>-->
+      </xsl:if>
+        <xsl:text>}}</xsl:text>
+      
+    
   </xsl:template>
 
   <xsldoc:doc xmlns:xsldoc="http://www.oxygenxml.com/ns/doc/xsl">
