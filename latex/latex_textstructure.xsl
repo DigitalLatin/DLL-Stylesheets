@@ -166,11 +166,11 @@ of this software, even if advised of the possibility of such damage.
         
 \vspace{1\baselineskip} % Whitespace above the title
         
-{\Huge\uppercase{</xsl:text>
+{\LARGE\uppercase{</xsl:text>
         <xsl:value-of select="//tei:titleStmt/tei:title"/>
         <xsl:text>}} % Title
 
-\vspace{2.25\baselineskip} % Whitespace below the title 
+\vspace{1.25\baselineskip} % Whitespace below the title 
 
 %------------------------------------------------
 %	Editor(s)
@@ -180,7 +180,7 @@ Edited By
 
 \vspace{0.5\baselineskip} % Whitespace before the editors
 
-{\scshape\LARGE </xsl:text>
+{\scshape\Large </xsl:text>
         <xsl:value-of select="//tei:titleStmt/tei:editor"/>
         <xsl:text>} % Editor list
         
@@ -191,7 +191,7 @@ Edited By
 %------------------------------------------------
 %	Series
 %------------------------------------------------
-\vspace{8\baselineskip} % Whitespace below the title and editor block
+\vspace{4\baselineskip} % Whitespace below the title and editor block
 
 {\scshape\Large </xsl:text>
         <xsl:value-of select="//tei:titleStmt/tei:sponsor"/>
@@ -200,13 +200,13 @@ Edited By
 {\scshape\Large </xsl:text>
         <xsl:value-of select="//tei:seriesStmt/tei:title"/>
         <xsl:text>}\\
-\vspace{2\baselineskip} % Whitespace
+\vspace{1\baselineskip} % Whitespace
 
 {\scshape \normalsize </xsl:text>
         <xsl:value-of select="//tei:seriesStmt/tei:respStmt/tei:name"/>
         <xsl:text>, General Editor}\\
                         
-\vspace{2\baselineskip} % Whitespace
+\vspace{1\baselineskip} % Whitespace
 {\large Volume </xsl:text>
         <xsl:value-of select="//tei:seriesStmt/tei:biblScope"/>
         <xsl:text>}\\
@@ -217,7 +217,7 @@ Edited By
 %------------------------------------------------
 
 \begin{figure}[h] % Position the logo here on the page.
-\includegraphics[scale=0.60]{DLL.eps} % Logo of DLL
+\includegraphics[scale=0.50]{DLL.eps} % Logo of DLL
 \centering % Center the logo.
 \end{figure}
 
@@ -231,7 +231,7 @@ Edited By
 \begin{copyrightPage}
 \thispagestyle{empty}
 \vspace*{\baselineskip} % White space at the top of the page
-\vspace{12\baselineskip} % Whitespace
+\vspace{6\baselineskip} % Whitespace
 \centering
 {\scshape \LARGE </xsl:text>
         <xsl:value-of select="//tei:publicationStmt/tei:publisher"/>
@@ -254,7 +254,7 @@ Edited By
 \small
 {\scshape </xsl:text><xsl:value-of select="//tei:publicationStmt/tei:publisher"/><xsl:text>} publishes the \textit{</xsl:text><xsl:value-of select="//tei:seriesStmt/tei:title"/><xsl:text>} under the authority of </xsl:text><xsl:value-of select="//tei:publicationStmt/tei:authority"/><xsl:text>. Individual volumes are reviewed and sponsored by the Society for Classical Studies, the Medieval Academy of America, or the Renaissance Society of America, depending on the era of the text(s).
 
-\vspace{2\baselineskip} % Whitespace
+\vspace{1\baselineskip} % Whitespace
 
 Volumes are published under the </xsl:text><xsl:value-of select="//tei:publicationStmt/tei:availability/tei:licence"/><xsl:text>: \url{</xsl:text><xsl:value-of select="//tei:publicationStmt/tei:availability/tei:licence/@target"/><xsl:text>}.
 
@@ -280,7 +280,7 @@ Volumes are published under the </xsl:text><xsl:value-of select="//tei:publicati
     </doc>
     <xsl:template match="tei:back">
       <xsl:if test="not(preceding::tei:back)">
-         <xsl:text>\backmatter </xsl:text>
+         <xsl:text>&#10;\backmatter </xsl:text>
       </xsl:if>
       <xsl:apply-templates/>
   </xsl:template>
@@ -430,8 +430,10 @@ Volumes are published under the </xsl:text><xsl:value-of select="//tei:publicati
     </xsl:template>
     
     <xsl:template match="tei:back/tei:div/tei:head">
-        <xsl:text>\begin{titlepage} % Suppresses headers and footers on the title page
-        \centering % Center everything on the title page
+        <xsl:text>
+        &#10;\newpage
+        \thispagestyle{empty}
+        \begin{center} % Center everything on the title page
         
         %------------------------------------------------
         %	Title
@@ -448,7 +450,9 @@ Volumes are published under the </xsl:text><xsl:value-of select="//tei:publicati
         <xsl:text>}} % Title
 
 \vspace{2.25\baselineskip} % Whitespace below the title
-\end{titlepage}
+\end{center}
+\cleardoublepage
+\newpage
 \setcounter{page}{1}</xsl:text>
     </xsl:template>
 

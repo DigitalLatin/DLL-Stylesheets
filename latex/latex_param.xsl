@@ -73,7 +73,7 @@ the beginning of the document</desc>
    <doc xmlns="http://www.oxygenxml.com/ns/doc/xsl" class="layout" type="string">
       <desc>Optional parameters for documentclass</desc>
    </doc>
-   <xsl:param name="classParameters">11pt,twoside</xsl:param>
+   <xsl:param name="classParameters">11pt</xsl:param>
 
    <doc xmlns="http://www.oxygenxml.com/ns/doc/xsl" class="output" type="string">
       <desc>location of original XML file, for looking up relative pointers</desc>
@@ -114,8 +114,10 @@ the beginning of the document</desc>
       <xsl:text>,</xsl:text>
       <xsl:value-of select="$latexGeometryOptions"/>
       <xsl:text>]{geometry}
-\setlength{\textwidth}{115mm}
-\setlength{\textheight}{173mm}
+<!--\setlength{\textwidth}{115mm}
+\setlength{\textheight}{173mm}-->
+\setlength{\textwidth}{100mm}
+\setlength{\textheight}{162mm}
 \usepackage{framed}
 \usepackage{microtype}
 \usepackage{soul}
@@ -194,7 +196,7 @@ as a proportion of the page width.</desc>
    <xsl:param name="quoteEnv">quote</xsl:param>
 
    <doc xmlns="http://www.oxygenxml.com/ns/doc/xsl" class="layout" type="boolean">
-      <desc>Whether to number lines of poetry</desc>
+      <desc>Whether to number lines of poetry</desc>t
    </doc>
    <xsl:param name="verseNumbering">false</xsl:param>
 
@@ -211,8 +213,9 @@ as a proportion of the page width.</desc>
    <doc xmlns="http://www.oxygenxml.com/ns/doc/xsl" class="userpackage" type="string">
       <desc>Options to pass to the geometry package to set margins etc</desc>
    </doc>
-  <xsl:param name="latexGeometryOptions">twoside,tmargin=53.2mm,bmargin=53.2mm,inner=31.6mm,outer=63.3mm</xsl:param>
-
+  <!--<xsl:param name="latexGeometryOptions">twoside,tmargin=25mm,bmargin=30mm,inner=31.6mm,outer=63.3mm</xsl:param>-->
+  <xsl:param name="latexGeometryOptions">twoside,tmargin=40mm,bmargin=40mm,inner=76.6mm,outer=38.3mm</xsl:param>
+  
    <doc xmlns="http://www.oxygenxml.com/ns/doc/xsl" class="userpackage" type="string">
       <desc>The page style to use with the \pagestyle command (empty, plain, fancy, ...).</desc>
    </doc>
@@ -328,7 +331,7 @@ characters. The normal characters remain active for LaTeX commands.
 \def\gap{⁎⁎⁎}
 \def\sic#1{†#1†}
 \def\supplied#1{\anglefont ⟨#1\anglefont ⟩}
-\def\surplus#1{\{#1\}}
+\def\surplus#1{[#1]}
 \def\persName{}\def\name{}
 \def\placeName{}
 \def\orgName{}
@@ -451,15 +454,15 @@ characters. The normal characters remain active for LaTeX commands.
 \renewcommand\section{\@startsection {section}{1}{\z@}%
   {-2ex \@plus -0.5ex \@minus -.2ex}%
   {3ex \@plus .2ex}%
-  {\reset@font\Huge\bfseries\fontfamily{lmr}}}
+  {\reset@font\Large\fontfamily{lmr}}}
 \renewcommand\subsection{\@startsection{subsection}{2}{\z@}%
   {-1.75ex\@plus -0.5ex \@minus- .2ex}%
   {2.5ex \@plus .2ex}%
-  {\reset@font\Large\fontfamily{lmr}}}
+  {\reset@font\large\fontfamily{lmr}}}
 \renewcommand\subsubsection{\@startsection{subsubsection}{3}{\z@}%
   {4ex\@plus -0.35ex \@minus -.2ex}%
   {2ex \@plus .2ex}%
-  {\reset@font\fontfamily{lmr}\Large\scshape\selectfont}}
+  {\reset@font\fontfamily{lmr}\large\scshape\selectfont}}
 \renewcommand\paragraph{\@startsection{paragraph}{4}{\z@}%
   {-1ex \@plus-0.35ex \@minus -0.2ex}%
   {0.5ex \@plus .2ex}%
@@ -652,13 +655,15 @@ characters. The normal characters remain active for LaTeX commands.
 \fvset{frame=single,numberblanklines=false,xleftmargin=5mm,xrightmargin=5mm}
 \fancyhf{} 
 \setlength{\headheight}{14pt}
-\fancyhead[LE]{\bfseries\leftmark} 
-\fancyhead[RO]{\bfseries\rightmark} 
+\fancyhead[LE]{\thepage}
+\fancyhead[CE]{\leftmark}
+\fancyhead[RO]{\thepage}
+\fancyhead[CO]{\rightmark}
 \fancyfoot[RO]{}
-\fancyfoot[CO]{\thepage}
+\fancyfoot[CO]{}
 \fancyfoot[LO]{\TheID}
 \fancyfoot[LE]{}
-\fancyfoot[CE]{\thepage}
+\fancyfoot[CE]{}
 \fancyfoot[RE]{\TheID}
 \fancypagestyle{plain}{\fancyhead{}\renewcommand{\headrulewidth}{0pt}}</xsl:text>
 <xsl:call-template name="fallback-characters"/>

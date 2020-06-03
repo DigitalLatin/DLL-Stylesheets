@@ -67,7 +67,7 @@ of this software, even if advised of the possibility of such damage.
   <xsl:output method="text" encoding="utf8"/>
   <xsl:variable name="top" select="/"/>
   <xsl:param name="outputTarget">latex</xsl:param>
-  <xsl:param name="documentclass">article</xsl:param>
+  <xsl:param name="documentclass">book</xsl:param>
   <xsl:param name="spaceCharacter">\hspace*{6pt}</xsl:param>
   <doc xmlns="http://www.oxygenxml.com/ns/doc/xsl">
       <desc>Process elements  processing-instruction()[name(.)='tex']</desc>

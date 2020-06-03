@@ -36,7 +36,6 @@
     <param name="lemma">The parameter 'lemma' is used in the "makeAppEntry" template in
       common/common_textcrit.xsl.</param>
   </doc>
-  
   <xsl:template name="appLemma">
     <xsl:param name="lemma"/>
     <xsl:for-each select="tei:lem">
@@ -140,7 +139,6 @@
               </xsl:otherwise>
             </xsl:choose>
           </xsl:if>
-          <!--<xsl:text>}</xsl:text>-->
           <!-- If a reading follows the lemma, insert a vertical bar separator to indicate the end of the lemma data. -->
           <xsl:if test="following-sibling::tei:rdg">
             <xsl:text> | </xsl:text>
@@ -150,7 +148,17 @@
     </xsl:for-each>
   </xsl:template>
 
-
+  <xsldoc:doc xmlns:xsldoc="http://www.oxygenxml.com/ns/doc/xsl">
+    <xsldoc:desc>Insert a symbol and a hyperlink to a note in the commentary.</xsldoc:desc>
+  </xsldoc:doc>
+  <xsl:template match="tei:lem/tei:ptr">
+    <xsl:value-of select=".."/>
+    <xsl:text>}</xsl:text>
+    <xsl:text>{\lemma{{\hyperref[</xsl:text>
+    <xsl:value-of select="translate(@target, '#', '')"/>
+    <xsl:text>]{◊}} </xsl:text>
+  </xsl:template>
+  
   <xsldoc:doc xmlns:xsldoc="http://www.oxygenxml.com/ns/doc/xsl">
     <xsldoc:desc>
       <p>Process each rdg, along with its witnesses, sources, notes, etc.</p>
@@ -244,29 +252,15 @@
     <xsldoc:param name="lemma">The parameter 'lemma' occurs in the appLemma template
       above.</xsldoc:param>
   </xsldoc:doc>
-  <!-- We need \edtext{lemma}{ \Afootnote[nosep]{\textit{witnesses} \textit{sources}} | reading \textit{witness} \textit{note} | reading \textit{source} \textit{(note)}}} -->
+  <!-- The goal: \edtext{lemma}{ \Afootnote {\textit{witnesses} \textit{sources} \textit{note} | reading \textit{witness} \textit{source} \textit{note} | reading \textit{witness} \textit{source} \textit{note}}} -->
   <xsl:template name="makeAppEntry">
     <xsl:param name="lemma"/>
     <xsl:call-template name="appLemma"/>
-    
       <xsl:if test="tei:rdg">
         <xsl:call-template name="appReadings"/>
-        <!--<xsl:text></xsl:text>-->
       </xsl:if>
-        <xsl:text>}}</xsl:text>
-      
-    
-  </xsl:template>
-
-  <xsldoc:doc xmlns:xsldoc="http://www.oxygenxml.com/ns/doc/xsl">
-    <xsldoc:desc>Insert a symbol and a hyperlink to a note in the commentary.</xsldoc:desc>
-  </xsldoc:doc>
-  <xsl:template match="tei:lem/tei:ptr">
-    <xsl:value-of select=".."/>
-    <xsl:text>}</xsl:text>
-    <xsl:text>{\lemma{{\hyperref[</xsl:text>
-    <xsl:value-of select="translate(@target, '#', '')"/>
-    <xsl:text>]{◊}} </xsl:text>
+    <!-- Close the apparatus note. -->    
+    <xsl:text>}}</xsl:text>
   </xsl:template>
 
   <xsl:template match="tei:div[@type = 'edition']/tei:div">
@@ -416,42 +410,6 @@
     <xsl:text>{\normalfont </xsl:text>
     <xsl:apply-templates/>
     <xsl:text>}</xsl:text>
-  </xsl:template>
-
-  <!-- SJH: Added. -->
-  <doc xmlns="http://www.oxygenxml.com/ns/doc/xsl">
-    <desc>
-      <p>Process gap</p>
-    </desc>
-  </doc>
-  <xsl:template match="tei:gap">
-    <xsl:choose>
-      <xsl:when test="@reason = 'lost'">
-        <!-- Look for both \supplied and \gap in latex_param.xsl -->
-        <xsl:text>\supplied{\gap} </xsl:text>
-      </xsl:when>
-      <xsl:otherwise>
-        <xsl:apply-templates/>
-      </xsl:otherwise>
-    </xsl:choose>
-  </xsl:template>
-
-  <doc xmlns="http://www.oxygenxml.com/ns/doc/xsl">
-    <desc>
-      <p>Process lacunaStart</p>
-    </desc>
-  </doc>
-  <xsl:template match="tei:lacunaStart">
-    <xsl:text>\textit{deest}</xsl:text>
-  </xsl:template>
-
-  <doc xmlns="http://www.oxygenxml.com/ns/doc/xsl">
-    <desc>
-      <p>Process lacunaEnd</p>
-    </desc>
-  </doc>
-  <xsl:template match="tei:lacunaEnd">
-    <xsl:text>\textit{redit}</xsl:text>
   </xsl:template>
 
   <doc xmlns="http://www.oxygenxml.com/ns/doc/xsl">
