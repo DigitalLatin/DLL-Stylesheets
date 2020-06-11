@@ -30,6 +30,44 @@
 
   <doc xmlns="http://www.oxygenxml.com/ns/doc/xsl">
     <desc>
+      <p>Override common_textcrit.xsl's template for tei:app.</p>
+      <p>This is needed especially to avoid rendering tei:app with
+      @type="transposition", since PDF output can't render 
+      dynamic swapping of readings.</p>
+    </desc>
+  </doc>
+<xsl:template match="tei:app">
+  <!-- If the lem or rdg contains l, p, ab, or div, just apply templates-->
+  <xsl:choose>
+    <xsl:when test="tei:app[not(tei:lem) and not(@type='transposition')]">
+      <xsl:variable name="appnote">
+        <xsl:copy>
+          <tei:lem rend="none"> </tei:lem>
+          <xsl:copy-of select="*"/>
+        </xsl:copy>
+      </xsl:variable>
+      <xsl:apply-templates select="$appnote"/>
+    </xsl:when>
+    <xsl:when test="(tei:lem|tei:rdg)/(tei:l|tei:p|tei:ab|tei:div) 
+      or tei:rdgGrp/(tei:lem|tei:rdg)/(tei:l|tei:p|tei:ab|tei:div)
+      or not(tei:lem)">
+      <xsl:apply-templates/>
+    </xsl:when>
+    <xsl:otherwise>
+      <!-- If the app has @type, don't render it, since PDF can't do dynamic swapping. -->
+      <xsl:if test="not(@from) or not(@type='transposition')">
+        <xsl:call-template name="makeAppEntry">
+          <xsl:with-param name="lemma">
+            <xsl:call-template name="appLemma"/>
+          </xsl:with-param>
+        </xsl:call-template>
+      </xsl:if>
+    </xsl:otherwise>
+  </xsl:choose>
+</xsl:template>
+
+  <doc xmlns="http://www.oxygenxml.com/ns/doc/xsl">
+    <desc>
       <p>Assemble the lemma, its witnesses and sources, and any notes or witDetails associated with
         it.</p>
     </desc>
@@ -227,7 +265,6 @@
         </xsl:choose>
       </xsl:if>
       </xsl:if>
-      
       <!-- If the combination of rdg and note is not the last one, put a separator before the next one. -->
       <xsl:choose>
         <xsl:when test="not(position() = last())">
@@ -255,7 +292,7 @@
   <!-- The goal: \edtext{lemma}{ \Afootnote {\textit{witnesses} \textit{sources} \textit{note} | reading \textit{witness} \textit{source} \textit{note} | reading \textit{witness} \textit{source} \textit{note}}} -->
   <xsl:template name="makeAppEntry">
     <xsl:param name="lemma"/>
-    <xsl:call-template name="appLemma"/>
+      <xsl:call-template name="appLemma"/>
       <xsl:if test="tei:rdg">
         <xsl:call-template name="appReadings"/>
       </xsl:if>
@@ -275,13 +312,12 @@
     </xsl:choose>
   </xsl:template>
 
-
+<!-- Don't render these elements. -->
   <xsl:template match="tei:note[parent::tei:app//(tei:l | tei:p)]"/>
   <xsl:template match="tei:witDetail[parent::tei:app//(tei:l | tei:p)]"/>
   <xsl:template match="tei:wit[parent::tei:app//(tei:l | tei:p)]"/>
   <xsl:template match="tei:rdg[parent::tei:app//(tei:l | tei:p)]"/>
   <xsl:template match="tei:rdgGrp[parent::tei:app//(tei:l | tei:p)]"/>
-
 
   <xsldoc:doc xmlns:xsldoc="http://www.oxygenxml.com/ns/doc/xsl">
     <xsldoc:desc>
@@ -301,15 +337,6 @@
     > [<xsl:apply-templates/>]<xsl:text>{</xsl:text><xsl:value-of select="../@xml:id"
     /><xsl:text>} </xsl:text>
   </xsl:template>
-
-
-  <xsldoc:doc xmlns:xsldoc="http://www.oxygenxml.com/ns/doc/xsl">
-    <xsldoc:desc>
-      <p>Don't render an app with @type="transposition", since a pdf can't do interactive
-        swapping.</p>
-    </xsldoc:desc>
-  </xsldoc:doc>
-  <xsl:template match="tei:app[@type = 'transposition']"/>
 
   <xsl:template match="tei:l[ancestor::tei:app and not(@processed)]">
     <xsl:variable name="self" select="."/>
@@ -361,16 +388,6 @@
       </xsl:variable>
       <xsl:apply-templates select="$elt"/>
     </xsl:if>
-  </xsl:template>
-
-  <xsl:template match="tei:app[not(tei:lem)]">
-    <xsl:variable name="appnote">
-      <xsl:copy>
-        <tei:lem rend="none"> </tei:lem>
-        <xsl:copy-of select="*"/>
-      </xsl:copy>
-    </xsl:variable>
-    <xsl:apply-templates select="$appnote"/>
   </xsl:template>
 
 

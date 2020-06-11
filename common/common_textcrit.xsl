@@ -71,7 +71,7 @@ of this software, even if advised of the possibility of such damage.
         or not(tei:lem)">
         <xsl:apply-templates/>
       </xsl:when>
-      <xsl:otherwise>
+      <xsl:otherwise>        
         <xsl:if test="not(@from)">
           <xsl:call-template name="makeAppEntry">
             <xsl:with-param name="lemma">
