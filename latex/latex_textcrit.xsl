@@ -39,6 +39,9 @@
 <xsl:template match="tei:app">
   <!-- If the lem or rdg contains l, p, ab, or div, just apply templates-->
   <xsl:choose>
+    <xsl:when test="@type='split-entry'">
+      <xsl:value-of select="child::tei:lem"/>
+    </xsl:when>
     <xsl:when test="tei:app[not(tei:lem) and not(@type='transposition')]">
       <xsl:variable name="appnote">
         <xsl:copy>
@@ -54,7 +57,8 @@
       <xsl:apply-templates/>
     </xsl:when>
     <xsl:otherwise>
-      <!-- If the app has @type, don't render it, since PDF can't do dynamic swapping. -->
+      <!-- If the app has @type='transposition', don't render it, since PDF can't do dynamic swapping. -->
+      <!-- If the app has @type='split-entry', don't render it, since the data should be joined with the next entry. -->
       <xsl:if test="not(@from) or not(@type='transposition')">
         <xsl:call-template name="makeAppEntry">
           <xsl:with-param name="lemma">
@@ -92,11 +96,17 @@
             </xsl:when>
             <xsl:otherwise>
               <xsl:text>}{</xsl:text>
-              <xsl:if test="tei:lem[@rend = 'none']">
-                <!-- \lemma{} is needed if the apparatus requires an alteration to what is inserted in \edtext{} -->
-                <xsl:text>\lemma{</xsl:text>
-                <xsl:value-of select="tei:lem"/>
-                <xsl:text>}</xsl:text>
+              <!-- \lemma{} is needed if the apparatus requires an alteration to what is inserted in \edtext{} -->
+              <xsl:if test="tei:lem[@rend='none']">
+                <xsl:text>\lemma{</xsl:text><xsl:value-of select="tei:lem"/><xsl:text>}</xsl:text>
+              </xsl:if>
+              <!-- If a lemma is split across xml tags, join the previous one to the current one. -->    
+              <xsl:if test="@prev">
+                <xsl:if test="contains(@prev,ancestor::tei:seg/preceding-sibling::tei:seg[1]/tei:app[@type='split-entry']/tei:lem/@xml:id)">
+                  <xsl:text>\lemma{</xsl:text>
+                  <xsl:value-of select="ancestor::tei:seg/preceding-sibling::tei:seg[1]/tei:app[last()]/tei:lem"/><xsl:text> </xsl:text><xsl:apply-templates select="self::tei:lem"/>
+                  <xsl:text>}</xsl:text>
+                </xsl:if>
               </xsl:if>
             </xsl:otherwise>
           </xsl:choose>
@@ -122,11 +132,17 @@
             </xsl:when>
             <xsl:otherwise>
               <xsl:text>}{</xsl:text>
-              <xsl:if test="tei:lem[@rend = 'none']">
                 <!-- \lemma{} is needed if the apparatus requires an alteration to what is inserted in \edtext{} -->
-                <xsl:text>\lemma{</xsl:text>
-                <xsl:value-of select="tei:lem"/>
-                <xsl:text>}</xsl:text>
+              <xsl:if test="tei:lem[@rend='none']">
+                    <xsl:text>\lemma{</xsl:text><xsl:value-of select="tei:lem"/><xsl:text>}</xsl:text>
+              </xsl:if>
+              <!-- If a lemma is split across xml tags, join the previous one to the current one. -->    
+              <xsl:if test="@prev">
+                    <xsl:if test="contains(@prev,ancestor::tei:seg/preceding-sibling::tei:seg[1]/tei:app[@type='split-entry']/tei:lem/@xml:id)">
+                      <xsl:text>\lemma{</xsl:text>
+                      <xsl:value-of select="ancestor::tei:seg/preceding-sibling::tei:seg[1]/tei:app[last()]/tei:lem"/><xsl:text> </xsl:text><xsl:apply-templates select="self::tei:lem"/>
+                      <xsl:text>}</xsl:text>
+                    </xsl:if>
               </xsl:if>
             </xsl:otherwise>
           </xsl:choose>
