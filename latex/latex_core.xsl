@@ -226,9 +226,9 @@
         <xsl:choose>
           <!-- SJH: Capitalize subsection headings -->
           <xsl:when test="$depth = '1'">
-            <xsl:text>{\centering\uppercase{\so{</xsl:text>
+            <xsl:text>{\scshape{</xsl:text>
             <xsl:apply-templates/>
-            <xsl:text>}}}&#10;</xsl:text>
+            <xsl:text>}}&#10;</xsl:text>
           </xsl:when>
           <!-- SJH: Set subsubsection headings in small caps -->
           <xsl:when test="$depth = '2'">

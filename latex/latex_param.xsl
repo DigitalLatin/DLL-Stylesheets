@@ -454,11 +454,11 @@ characters. The normal characters remain active for LaTeX commands.
 \renewcommand\section{\@startsection {section}{1}{\z@}%
   {-2ex \@plus -0.5ex \@minus -.2ex}%
   {3ex \@plus .2ex}%
-  {\reset@font\Large\fontfamily{lmr}}}
+  {\reset@font\LARGE\fontfamily{lmr}}}
 \renewcommand\subsection{\@startsection{subsection}{2}{\z@}%
   {-1.75ex\@plus -0.5ex \@minus- .2ex}%
   {2.5ex \@plus .2ex}%
-  {\reset@font\large\fontfamily{lmr}}}
+  {\reset@font\Large\fontfamily{lmr}}}
 \renewcommand\subsubsection{\@startsection{subsubsection}{3}{\z@}%
   {4ex\@plus -0.35ex \@minus -.2ex}%
   {2ex \@plus .2ex}%
