@@ -290,9 +290,9 @@ Volumes are published under the </xsl:text><xsl:value-of select="//tei:publicati
    </doc>
   <xsl:template match="tei:body">
     <xsl:if test="not(ancestor::tei:floatingText) and not(preceding::tei:body) and preceding::tei:front">
-      <xsl:text>\mainmatter </xsl:text>
+      <xsl:text>&#10;\mainmatter </xsl:text>
     </xsl:if>
-      <xsl:text>\def\endstanzaextra{\pstart\centering-\-\-\-\-\-\-\-\-\skipnumbering\pend}</xsl:text>
+      <xsl:text>&#10;\def\endstanzaextra{\pstart\centering-\-\-\-\-\-\-\-\-\skipnumbering\pend}</xsl:text>
       <xsl:text>&#10;\thispagestyle{plain}&#10;</xsl:text>
     <xsl:apply-templates/>
   </xsl:template>
@@ -431,29 +431,11 @@ Volumes are published under the </xsl:text><xsl:value-of select="//tei:publicati
     
     <xsl:template match="tei:back/tei:div/tei:head">
         <xsl:text>
-        &#10;\newpage
-        \thispagestyle{empty}
-        \begin{center} % Center everything on the title page
-        
-        %------------------------------------------------
-        %	Title
-        %------------------------------------------------
-        \vspace*{\baselineskip} % White space at the top of the page
-        
-        \rule{\textwidth}{1.6pt}\vspace*{-\baselineskip}\vspace*{2pt} % Thick horizontal rule
-        \rule{\textwidth}{0.4pt} % Thin horizontal rule
-        
-        \vspace{1\baselineskip} % Whitespace above the title
-       \leading{30pt}
-        {\Huge\uppercase{</xsl:text>
-        <xsl:value-of select="."/>
-        <xsl:text>}} % Title
-
-\vspace{2.25\baselineskip} % Whitespace below the title
-\end{center}
-\cleardoublepage
-\newpage
-\setcounter{page}{1}</xsl:text>
+        &#10;&#10;\newpage
+\thispagestyle{plain}
+\subsection[{</xsl:text><xsl:value-of select="."/><xsl:text>}]{\centering\uppercase{\so{</xsl:text><xsl:value-of select="."/><xsl:text>}}}</xsl:text>
+\pagestyle{fancy}
+\setcounter{page}{1}
     </xsl:template>
 
   <xsl:template match="/tei:text" priority="999">

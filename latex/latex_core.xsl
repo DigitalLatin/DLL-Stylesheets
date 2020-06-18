@@ -174,7 +174,7 @@
         > \section*{<xsl:apply-templates/>}</xsl:when>
       <xsl:when test="parent::tei:div[@xml:id = 'preface']"
         >\section*{<xsl:apply-templates/>}<xsl:text>&#10;\pagestyle{fancy}</xsl:text></xsl:when>
-      <xsl:when test="ancestor::tei:div[@type = 'edition']">
+      <xsl:when test="ancestor::tei:div[@type = 'edition'] or ancestor::tei:div[@type = 'commentary']">
         <xsl:text>\subsection[{</xsl:text>
         <xsl:apply-templates/>
         <xsl:text>}]{\centering\uppercase{\so{</xsl:text>
@@ -224,7 +224,7 @@
           <xsl:otherwise>[{<xsl:value-of select="tei:escapeChars(., .)"/>}]</xsl:otherwise>
         </xsl:choose>
         <xsl:choose>
-          <!-- SJH: Capitalize subsection headings -->
+          <!-- SJH: Set the subsection headings in small caps. -->
           <xsl:when test="$depth = '1'">
             <xsl:text>{\scshape{</xsl:text>
             <xsl:apply-templates/>
@@ -714,7 +714,10 @@
     <xsl:choose>
       <xsl:when test="parent::tei:note and not(preceding-sibling::tei:p)"> </xsl:when>
       <xsl:when test="ancestor::tei:div[@type = 'edition']">
-        <xsl:text>\pstart&#10;</xsl:text>
+        <xsl:text>&#10;\pstart&#10;</xsl:text>
+      </xsl:when>
+      <xsl:when test="parent::tei:div[@type = 'apparatus']">
+        <xsl:text>&#10;\noindent&#10;\par&#10;</xsl:text>
       </xsl:when>
       <xsl:otherwise>
         <xsl:text>\par&#10;</xsl:text>

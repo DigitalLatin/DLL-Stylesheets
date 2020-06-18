@@ -328,7 +328,7 @@ characters. The normal characters remain active for LaTeX commands.
 \def\reg{}
 \def\ref{}
 <!-- SJH: Added rules for editorial symbols. -->
-\def\gap{⁎⁎⁎}
+\def\gap{\asterisk ⁎\asterisk ⁎\asterisk ⁎}
 \def\sic#1{†#1†}
 \def\supplied#1{\anglefont ⟨#1\anglefont ⟩}
 \def\surplus#1{[#1]}
