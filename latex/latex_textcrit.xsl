@@ -31,44 +31,45 @@
   <doc xmlns="http://www.oxygenxml.com/ns/doc/xsl">
     <desc>
       <p>Override common_textcrit.xsl's template for tei:app.</p>
-      <p>This is needed especially to avoid rendering tei:app with
-      @type="transposition", since PDF output can't render 
-      dynamic swapping of readings.</p>
+      <p>This is needed especially to avoid rendering tei:app with @type="transposition", since PDF
+        output can't render dynamic swapping of readings.</p>
     </desc>
   </doc>
-<xsl:template match="tei:app">
-  <!-- If the lem or rdg contains l, p, ab, or div, just apply templates-->
-  <xsl:choose>
-    <xsl:when test="@type='split-entry'">
-      <xsl:value-of select="child::tei:lem"/>
-    </xsl:when>
-    <xsl:when test="tei:app[not(tei:lem) and not(@type='transposition')]">
-      <xsl:variable name="appnote">
-        <xsl:copy>
-          <tei:lem rend="none"> </tei:lem>
-          <xsl:copy-of select="*"/>
-        </xsl:copy>
-      </xsl:variable>
-      <xsl:apply-templates select="$appnote"/>
-    </xsl:when>
-    <xsl:when test="(tei:lem|tei:rdg)/(tei:l|tei:p|tei:ab|tei:div) 
-      or tei:rdgGrp/(tei:lem|tei:rdg)/(tei:l|tei:p|tei:ab|tei:div)
-      or not(tei:lem)">
-      <xsl:apply-templates/>
-    </xsl:when>
-    <xsl:otherwise>
-      <!-- If the app has @type='transposition', don't render it, since PDF can't do dynamic swapping. -->
-      <!-- If the app has @type='split-entry', don't render it, since the data should be joined with the next entry. -->
-      <xsl:if test="not(@from) or not(@type='transposition')">
-        <xsl:call-template name="makeAppEntry">
-          <xsl:with-param name="lemma">
-            <xsl:call-template name="appLemma"/>
-          </xsl:with-param>
-        </xsl:call-template>
-      </xsl:if>
-    </xsl:otherwise>
-  </xsl:choose>
-</xsl:template>
+  <xsl:template match="tei:app">
+    <!-- If the lem or rdg contains l, p, ab, or div, just apply templates-->
+    <xsl:choose>
+      <xsl:when test="@type = 'split-entry'">
+        <xsl:value-of select="child::tei:lem"/>
+      </xsl:when>
+      <xsl:when test="tei:app[not(tei:lem) and not(@type = 'transposition')]">
+        <xsl:variable name="appnote">
+          <xsl:copy>
+            <tei:lem rend="none"> </tei:lem>
+            <xsl:copy-of select="*"/>
+          </xsl:copy>
+        </xsl:variable>
+        <xsl:apply-templates select="$appnote"/>
+      </xsl:when>
+      <xsl:when
+        test="
+          (tei:lem | tei:rdg)/(tei:l | tei:p | tei:ab | tei:div)
+          or tei:rdgGrp/(tei:lem | tei:rdg)/(tei:l | tei:p | tei:ab | tei:div)
+          or not(tei:lem)">
+        <xsl:apply-templates/>
+      </xsl:when>
+      <xsl:otherwise>
+        <!-- If the app has @type='transposition', don't render it, since PDF can't do dynamic swapping. -->
+        <!-- If the app has @type='split-entry', don't render it, since the data should be joined with the next entry. -->
+        <xsl:if test="not(@from) or not(@type = 'transposition')">
+          <xsl:call-template name="makeAppEntry">
+            <xsl:with-param name="lemma">
+              <xsl:call-template name="appLemma"/>
+            </xsl:with-param>
+          </xsl:call-template>
+        </xsl:if>
+      </xsl:otherwise>
+    </xsl:choose>
+  </xsl:template>
 
   <doc xmlns="http://www.oxygenxml.com/ns/doc/xsl">
     <desc>
@@ -97,14 +98,20 @@
             <xsl:otherwise>
               <xsl:text>}{</xsl:text>
               <!-- \lemma{} is needed if the apparatus requires an alteration to what is inserted in \edtext{} -->
-              <xsl:if test="tei:lem[@rend='none']">
-                <xsl:text>\lemma{</xsl:text><xsl:value-of select="tei:lem"/><xsl:text>}</xsl:text>
+              <xsl:if test="tei:lem[@rend = 'none']">
+                <xsl:text>\lemma{</xsl:text>
+                <xsl:value-of select="tei:lem"/>
+                <xsl:text>}</xsl:text>
               </xsl:if>
-              <!-- If a lemma is split across xml tags, join the previous one to the current one. -->    
+              <!-- If a lemma is split across xml tags, join the previous one to the current one. -->
               <xsl:if test="@prev">
-                <xsl:if test="contains(@prev,ancestor::tei:seg/preceding-sibling::tei:seg[1]/tei:app[@type='split-entry']/tei:lem/@xml:id)">
+                <xsl:if
+                  test="contains(@prev, ancestor::tei:seg/preceding-sibling::tei:seg[1]/tei:app[@type = 'split-entry']/tei:lem/@xml:id)">
                   <xsl:text>\lemma{</xsl:text>
-                  <xsl:value-of select="ancestor::tei:seg/preceding-sibling::tei:seg[1]/tei:app[last()]/tei:lem"/><xsl:text> </xsl:text><xsl:apply-templates select="self::tei:lem"/>
+                  <xsl:value-of
+                    select="ancestor::tei:seg/preceding-sibling::tei:seg[1]/tei:app[last()]/tei:lem"/>
+                  <xsl:text> </xsl:text>
+                  <xsl:apply-templates select="self::tei:lem"/>
                   <xsl:text>}</xsl:text>
                 </xsl:if>
               </xsl:if>
@@ -132,17 +139,23 @@
             </xsl:when>
             <xsl:otherwise>
               <xsl:text>}{</xsl:text>
-                <!-- \lemma{} is needed if the apparatus requires an alteration to what is inserted in \edtext{} -->
-              <xsl:if test="tei:lem[@rend='none']">
-                    <xsl:text>\lemma{</xsl:text><xsl:value-of select="tei:lem"/><xsl:text>}</xsl:text>
+              <!-- \lemma{} is needed if the apparatus requires an alteration to what is inserted in \edtext{} -->
+              <xsl:if test="tei:lem[@rend = 'none']">
+                <xsl:text>\lemma{</xsl:text>
+                <xsl:value-of select="tei:lem"/>
+                <xsl:text>}</xsl:text>
               </xsl:if>
-              <!-- If a lemma is split across xml tags, join the previous one to the current one. -->    
+              <!-- If a lemma is split across xml tags, join the previous one to the current one. -->
               <xsl:if test="@prev">
-                    <xsl:if test="contains(@prev,ancestor::tei:seg/preceding-sibling::tei:seg[1]/tei:app[@type='split-entry']/tei:lem/@xml:id)">
-                      <xsl:text>\lemma{</xsl:text>
-                      <xsl:value-of select="ancestor::tei:seg/preceding-sibling::tei:seg[1]/tei:app[last()]/tei:lem"/><xsl:text> </xsl:text><xsl:apply-templates select="self::tei:lem"/>
-                      <xsl:text>}</xsl:text>
-                    </xsl:if>
+                <xsl:if
+                  test="contains(@prev, ancestor::tei:seg/preceding-sibling::tei:seg[1]/tei:app[@type = 'split-entry']/tei:lem/@xml:id)">
+                  <xsl:text>\lemma{</xsl:text>
+                  <xsl:value-of
+                    select="ancestor::tei:seg/preceding-sibling::tei:seg[1]/tei:app[last()]/tei:lem"/>
+                  <xsl:text> </xsl:text>
+                  <xsl:apply-templates select="self::tei:lem"/>
+                  <xsl:text>}</xsl:text>
+                </xsl:if>
               </xsl:if>
             </xsl:otherwise>
           </xsl:choose>
@@ -163,7 +176,8 @@
           <xsl:text>}</xsl:text>
           <!-- If a note is associated with the lemma, render it. -->
           <!-- There are two scenarios: witDetail is the next sibling to lem, and note is the one after that: -->
-          <xsl:if test="following-sibling::*[1][self::tei:witDetail] and following-sibling::*[2][self::tei:note]">
+          <xsl:if
+            test="following-sibling::*[1][self::tei:witDetail] and following-sibling::*[2][self::tei:note]">
             <!-- If the note begins with a comma, don't leave a space in front of it. If it doesn't, don't insert an extra space. -->
             <xsl:choose>
               <xsl:when test="starts-with(following-sibling::*[2][self::tei:note], ',')">
@@ -212,7 +226,7 @@
     <xsl:value-of select="translate(@target, '#', '')"/>
     <xsl:text>]{◊}} </xsl:text>
   </xsl:template>
-  
+
   <xsldoc:doc xmlns:xsldoc="http://www.oxygenxml.com/ns/doc/xsl">
     <xsldoc:desc>
       <p>Process each rdg, along with its witnesses, sources, notes, etc.</p>
@@ -221,8 +235,8 @@
   <xsl:template name="appReadings">
     <!-- Start by selecting just the rdg … -->
     <xsl:for-each select="tei:rdg">
-      <!-- If a note precedes the reading and its @target points to the reading , render it first. -->
-      <xsl:if test="contains(preceding-sibling::tei:note[1]/@target, @xml:id)">
+      <!-- If a note precedes the reading and its @target points to the reading, render it first. -->
+      <xsl:if test="matches(translate(preceding-sibling::tei:note[1]/@target, '#', ''), string(self::tei:rdg/@xml:id))">
         <xsl:text>\textit{</xsl:text>
         <xsl:apply-templates select="preceding-sibling::tei:note[1]"/>
         <xsl:text>} </xsl:text>
@@ -249,37 +263,42 @@
         <xsl:text>}</xsl:text>
       </xsl:if>
       <!-- Now look for a note that follows the reading. If there is one, render it. -->
-      <xsl:if test="contains(tei:note/@target, tei:rdg/@xml:id)">
-      <xsl:if test="following-sibling::*[1][self::tei:witDetail] and following-sibling::*[2][self::tei:note]">
-        <!-- If the note begins with a comma, don't leave a space in front of it. If it doesn't, don't insert an extra space. -->
+      
+      <!-- Test to account for situations where there is a witDetail following the rdg before the note. -->
+      <xsl:if test="matches(translate(following-sibling::tei:note[1]/@target, '#', ''), string(self::tei:rdg/@xml:id)) or matches(translate(following-sibling::tei:note[2]/@target, '#', ''), string(self::tei:rdg/@xml:id))">
+        <!-- If a witDetail precedes the note, process it. -->
         <xsl:choose>
-          <xsl:when test="starts-with(following-sibling::*[2][self::tei:note], ',')">
-            <xsl:text>\textit{</xsl:text>
-            <xsl:apply-templates select="following-sibling::*[2][self::tei:note]"/>
-            <xsl:text>}</xsl:text>
+          <xsl:when test="following-sibling::*[1][self::tei:witDetail] and following-sibling::*[2][self::tei:note]">
+            <xsl:choose>
+              <!-- If the note begins with a comma, don't leave a space in front of it. If it doesn't, don't insert an extra space. -->
+              <xsl:when test="starts-with(following-sibling::*[2][self::tei:note], ',')">
+                <xsl:text>\textit{</xsl:text>
+                <xsl:apply-templates select="following-sibling::*[2][self::tei:note]"/>
+                <xsl:text>}</xsl:text>
+              </xsl:when>
+              <xsl:otherwise>
+                <xsl:text> \textit{</xsl:text>
+                <xsl:apply-templates select="following-sibling::*[2][self::tei:note]"/>
+                <xsl:text>}</xsl:text>
+              </xsl:otherwise>
+            </xsl:choose>
           </xsl:when>
+          <!-- If note is the immediately following sibling to rdg, process it. -->
           <xsl:otherwise>
-            <xsl:text> \textit{</xsl:text>
-            <xsl:apply-templates select="following-sibling::*[2][self::tei:note]"/>
-            <xsl:text>}</xsl:text>
+            <xsl:choose>
+              <xsl:when test="starts-with(following-sibling::*[1][self::tei:note], ',')">
+                <xsl:text>\textit{</xsl:text>
+                <xsl:apply-templates select="following-sibling::*[1][self::tei:note]"/>
+                <xsl:text>}</xsl:text>
+              </xsl:when>
+              <xsl:otherwise>
+                <xsl:text> \textit{</xsl:text>
+                <xsl:apply-templates select="following-sibling::*[1][self::tei:note]"/>
+                <xsl:text>}</xsl:text>
+              </xsl:otherwise>
+            </xsl:choose>
           </xsl:otherwise>
         </xsl:choose>
-      </xsl:if>
-      <!-- … or note is the immediately following sibling to lem. -->
-      <xsl:if test="following-sibling::*[1][self::tei:note]">
-        <xsl:choose>
-          <xsl:when test="starts-with(following-sibling::*[1][self::tei:note], ',')">
-            <xsl:text>\textit{</xsl:text>
-            <xsl:apply-templates select="following-sibling::*[1][self::tei:note]"/>
-            <xsl:text>}</xsl:text>
-          </xsl:when>
-          <xsl:otherwise>
-            <xsl:text> \textit{</xsl:text>
-            <xsl:apply-templates select="following-sibling::*[1][self::tei:note]"/>
-            <xsl:text>}</xsl:text>
-          </xsl:otherwise>
-        </xsl:choose>
-      </xsl:if>
       </xsl:if>
       <!-- If the combination of rdg and note is not the last one, put a separator before the next one. -->
       <xsl:choose>
@@ -288,9 +307,9 @@
         </xsl:when>
         <xsl:otherwise>
           <!-- If there's a note of the type "alii alia" that should really count as a reading, insert a separator followed by the note. -->
-          <xsl:if test="following-sibling::tei:note[not(@target)]">
+          <xsl:if test="following-sibling::tei:note[last() and not(@target)]">
             <xsl:text> | \textit{</xsl:text>
-            <xsl:apply-templates select="following-sibling::tei:note[not(@target)]"/>
+            <xsl:apply-templates select="following-sibling::tei:note[last() and not(@target)]"/>
             <xsl:text>}</xsl:text>
           </xsl:if>
         </xsl:otherwise>
@@ -308,11 +327,11 @@
   <!-- The goal: \edtext{lemma}{ \Afootnote {\textit{witnesses} \textit{sources} \textit{note} | reading \textit{witness} \textit{source} \textit{note} | reading \textit{witness} \textit{source} \textit{note}}} -->
   <xsl:template name="makeAppEntry">
     <xsl:param name="lemma"/>
-      <xsl:call-template name="appLemma"/>
-      <xsl:if test="tei:rdg">
-        <xsl:call-template name="appReadings"/>
-      </xsl:if>
-    <!-- Close the apparatus note. -->    
+    <xsl:call-template name="appLemma"/>
+    <xsl:if test="tei:rdg">
+      <xsl:call-template name="appReadings"/>
+    </xsl:if>
+    <!-- Close the apparatus note. -->
     <xsl:text>}}</xsl:text>
   </xsl:template>
 
@@ -328,7 +347,7 @@
     </xsl:choose>
   </xsl:template>
 
-<!-- Don't render these elements. -->
+  <!-- Don't render these elements. -->
   <xsl:template match="tei:note[parent::tei:app//(tei:l | tei:p)]"/>
   <xsl:template match="tei:witDetail[parent::tei:app//(tei:l | tei:p)]"/>
   <xsl:template match="tei:wit[parent::tei:app//(tei:l | tei:p)]"/>
