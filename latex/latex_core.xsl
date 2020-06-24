@@ -720,7 +720,7 @@
         <xsl:text>&#10;\noindent </xsl:text>
       </xsl:when>
       <xsl:when test="preceding-sibling::*[1][self::tei:quote[@rend='blockquote']]">
-        <xsl:text>&#10;\noindent BONGO</xsl:text>
+        <xsl:text>&#10;\noindent</xsl:text>
       </xsl:when>
       <xsl:otherwise>
         <xsl:text>\par&#10;</xsl:text>
@@ -848,14 +848,14 @@
         <xsl:apply-templates/>
       </xsl:when>
       <xsl:when test="not(tei:isInline(.) and @type='apparatus')">
-        <xsl:text>\begin{</xsl:text>
+        <xsl:text>&#10;&#10;\begin{</xsl:text>
         <xsl:value-of select="$quoteEnv"/>
         <xsl:text>}</xsl:text>
         <xsl:sequence select="tei:makeHyperTarget(@xml:id)"/>
         <xsl:apply-templates/>
         <xsl:text>\end{</xsl:text>
         <xsl:value-of select="$quoteEnv"/>
-        <xsl:text>}</xsl:text>
+        <xsl:text>}&#10;</xsl:text>
       </xsl:when>
       <!-- SJH: Avoid having line breaks interrupt the quotation. This was an issue in Dunning's text. -->
       <xsl:when test="child::tei:lb">

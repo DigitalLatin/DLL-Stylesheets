@@ -371,7 +371,7 @@ Volumes are published under the </xsl:text><xsl:value-of select="//tei:publicati
   <xsl:template match="tei:opener">
     <xsl:text>&#10;&#10;\begin{quote}</xsl:text>
     <xsl:apply-templates/>
-    <xsl:text>\end{quote}</xsl:text>
+    <xsl:text>\end{quote}&#10;</xsl:text>
 </xsl:template>
   <doc xmlns="http://www.oxygenxml.com/ns/doc/xsl">
       <desc>the main TEI text</desc>
