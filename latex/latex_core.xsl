@@ -720,7 +720,7 @@
         <xsl:text>&#10;\noindent </xsl:text>
       </xsl:when>
       <xsl:when test="preceding-sibling::*[1][self::tei:quote[@rend='blockquote']]">
-        <xsl:text>&#10;\noindent</xsl:text>
+        <xsl:text>&#10;\noindent </xsl:text>
       </xsl:when>
       <xsl:otherwise>
         <xsl:text>\par&#10;</xsl:text>
@@ -890,9 +890,9 @@
   </doc>
   <xsl:template match="tei:p[@rend = 'byline']">
     <xsl:text>&#10;&#10;</xsl:text>
-    <xsl:text>\begin{flushright}&#10;</xsl:text>
+    <xsl:text>\begin{center}&#10;</xsl:text>
     <xsl:apply-templates/>
-    <xsl:text>&#10;\end{flushright}</xsl:text>
+    <xsl:text>&#10;\end{center}</xsl:text>
   </xsl:template>
 
   <doc xmlns="http://www.oxygenxml.com/ns/doc/xsl">
