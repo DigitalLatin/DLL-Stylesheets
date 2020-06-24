@@ -59,7 +59,6 @@
       </xsl:when>
       <xsl:otherwise>
         <!-- If the app has @type='transposition', don't render it, since PDF can't do dynamic swapping. -->
-        <!-- If the app has @type='split-entry', don't render it, since the data should be joined with the next entry. -->
         <xsl:if test="not(@from) or not(@type = 'transposition')">
           <xsl:call-template name="makeAppEntry">
             <xsl:with-param name="lemma">
@@ -148,7 +147,7 @@
               <!-- If a lemma is split across xml tags, join the previous one to the current one. -->
               <xsl:if test="@prev">
                 <xsl:if
-                  test="contains(@prev, ancestor::tei:seg/preceding-sibling::tei:seg[1]/tei:app[@type = 'split-entry']/tei:lem/@xml:id)">
+                  test="matches(translate(@prev,'#',''), string(ancestor::tei:seg/preceding-sibling::tei:seg[1]/tei:app[@type = 'split-entry']/tei:lem/@xml:id))">
                   <xsl:text>\lemma{</xsl:text>
                   <xsl:value-of
                     select="ancestor::tei:seg/preceding-sibling::tei:seg[1]/tei:app[last()]/tei:lem"/>

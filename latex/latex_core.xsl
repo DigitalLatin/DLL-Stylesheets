@@ -716,8 +716,11 @@
       <xsl:when test="ancestor::tei:div[@type = 'edition']">
         <xsl:text>&#10;\pstart&#10;</xsl:text>
       </xsl:when>
-      <xsl:when test="parent::tei:div[@type = 'apparatus']">
-        <xsl:text>&#10;\noindent&#10;\par&#10;</xsl:text>
+      <xsl:when test="parent::tei:div[@xml:id = 'appendix-critica']">
+        <xsl:text>&#10;\noindent </xsl:text>
+      </xsl:when>
+      <xsl:when test="preceding-sibling::*[1][self::tei:quote[@rend='blockquote']]">
+        <xsl:text>&#10;\noindent BONGO</xsl:text>
       </xsl:when>
       <xsl:otherwise>
         <xsl:text>\par&#10;</xsl:text>
@@ -736,6 +739,9 @@
     <xsl:apply-templates/>
     <xsl:if test="ancestor::tei:div[@type = 'edition']">
       <xsl:text>&#10;\pend&#10;</xsl:text>
+    </xsl:if>
+    <xsl:if test="ancestor::tei:div[@xml:id = 'appendix-critica']">
+      <xsl:text>\par&#10;</xsl:text>
     </xsl:if>
   </xsl:template>
 
@@ -832,7 +838,6 @@
         <xsl:value-of select="$quoteEnv"/>
         <xsl:text>}</xsl:text>
         <xsl:apply-templates/>
-        
         <xsl:text>\end{</xsl:text>
         <xsl:value-of select="$quoteEnv"/>
         <xsl:text>}</xsl:text>
