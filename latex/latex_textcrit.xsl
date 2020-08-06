@@ -81,88 +81,47 @@
   <xsl:template name="appLemma">
     <xsl:param name="lemma"/>
     <xsl:for-each select="tei:lem">
+      <xsl:text>\edtext</xsl:text>
+      <xsl:text>{</xsl:text>
+      <!-- If a lemma is split across xml tags, join the previous one to the current one. -->
+      <xsl:if test="contains(@prev, ancestor::tei:seg/preceding-sibling::tei:seg[1]/tei:app[@type = 'split-entry']/tei:lem/@xml:id)">
+        <xsl:apply-templates select="ancestor::tei:seg/preceding-sibling::tei:seg[1]/tei:app[last()]/tei:lem"/>
+        <xsl:text> </xsl:text>
+      </xsl:if>
+      <!-- The lemma -->
+      <xsl:apply-templates/>
+      <xsl:text>}</xsl:text>
+      <!-- Logic for handling various scenarios where the lemma in the app is different from the lemma in the text. -->
+        <xsl:choose>
+          <xsl:when test="following-sibling::tei:note[@type='commentary']">
+            <!-- If there is a note with a pointer to the commentary, there needs to be a link to it and the symbol ◊, then the lemma -->
+            <xsl:text>{\lemma{{\hyperref[</xsl:text>
+            <xsl:value-of select="translate(following-sibling::tei:note[@type='commentary']/tei:ptr/@target, '#', '')"/>
+            <xsl:text>]{◊}} </xsl:text>
+            <xsl:apply-templates select="self::tei:lem"/>
+            <xsl:text>}</xsl:text>
+          </xsl:when>
+          <xsl:otherwise>
+            <!-- Otherwise, just open the bracket for the Afootnote string. -->
+            <xsl:text>{</xsl:text>
+          </xsl:otherwise>
+        </xsl:choose>
+      <!-- \Afootnote{} is where a note should be placed. -->
+      <xsl:text>\Afootnote</xsl:text>
+      <!-- Logic for handling a lemma with or without witness or source -->
       <xsl:choose>
         <!-- If the lemma doesn't have a witness or a source, just insert the lemma, followed by ]. -->
         <xsl:when test="not(@wit) and not(@source)">
-          <!-- This encodes the lemma in \edtext{} -->
-          <xsl:text>\edtext</xsl:text>
-          <xsl:text>{</xsl:text>
-          <xsl:apply-templates/>
-          <!-- If there's a pointer to a commentary note, insert the link. -->
-          <xsl:choose>
-            <xsl:when test="tei:ptr">
-              <xsl:apply-templates select="tei:lem/tei:ptr"/>
-              <xsl:text>}</xsl:text>
-            </xsl:when>
-            <xsl:otherwise>
-              <xsl:text>}{</xsl:text>
-              <!-- \lemma{} is needed if the apparatus requires an alteration to what is inserted in \edtext{} -->
-              <xsl:if test="tei:lem[@rend = 'none']">
-                <xsl:text>\lemma{</xsl:text>
-                <xsl:value-of select="tei:lem"/>
-                <xsl:text>}</xsl:text>
-              </xsl:if>
-              <!-- If a lemma is split across xml tags, join the previous one to the current one. -->
-              <xsl:if test="@prev">
-                <xsl:if
-                  test="contains(@prev, ancestor::tei:seg/preceding-sibling::tei:seg[1]/tei:app[@type = 'split-entry']/tei:lem/@xml:id)">
-                  <xsl:text>\lemma{</xsl:text>
-                  <xsl:value-of
-                    select="ancestor::tei:seg/preceding-sibling::tei:seg[1]/tei:app[last()]/tei:lem"/>
-                  <xsl:text> </xsl:text>
-                  <xsl:apply-templates select="self::tei:lem"/>
-                  <xsl:text>}</xsl:text>
-                </xsl:if>
-              </xsl:if>
-            </xsl:otherwise>
-          </xsl:choose>
-          <xsl:text> </xsl:text>
-          <!-- \Afootnote{} is where a note should be placed. -->
-          <xsl:text>\Afootnote</xsl:text>
           <xsl:if test="tei:lem[@rend = 'none']">
             <xsl:text/>
           </xsl:if>
           <xsl:text>{</xsl:text>
         </xsl:when>
-
-        <!-- If the lemma does have a source, witness, or note, don't insert a lemma separator before the witnesses, etc. -->
+        <!-- Otherwise, print the lemma without ], followed by witnesses and sources -->
         <xsl:otherwise>
-          <xsl:text>\edtext</xsl:text>
-          <xsl:text>{</xsl:text>
-          <xsl:apply-templates/>
-          <!-- If there's a pointer to a commentary note, insert the link. Otherwise, don't. -->
-          <xsl:choose>
-            <xsl:when test="tei:ptr">
-              <xsl:apply-templates select="tei:lem/tei:ptr"/>
-              <xsl:text>}</xsl:text>
-            </xsl:when>
-            <xsl:otherwise>
-              <xsl:text>}{</xsl:text>
-              <!-- \lemma{} is needed if the apparatus requires an alteration to what is inserted in \edtext{} -->
-              <xsl:if test="tei:lem[@rend = 'none']">
-                <xsl:text>\lemma{</xsl:text>
-                <xsl:value-of select="tei:lem"/>
-                <xsl:text>}</xsl:text>
-              </xsl:if>
-              <!-- If a lemma is split across xml tags, join the previous one to the current one. -->
-              <xsl:if test="@prev">
-                <xsl:if
-                  test="matches(translate(@prev,'#',''), string(ancestor::tei:seg/preceding-sibling::tei:seg[1]/tei:app[@type = 'split-entry']/tei:lem/@xml:id))">
-                  <xsl:text>\lemma{</xsl:text>
-                  <xsl:value-of
-                    select="ancestor::tei:seg/preceding-sibling::tei:seg[1]/tei:app[last()]/tei:lem"/>
-                  <xsl:text> </xsl:text>
-                  <xsl:apply-templates select="self::tei:lem"/>
-                  <xsl:text>}</xsl:text>
-                </xsl:if>
-              </xsl:if>
-            </xsl:otherwise>
-          </xsl:choose>
-          <xsl:text> </xsl:text>
-          <!-- \Afootnote{} is where witnesses, sources, notes, etc. are inserted. -->
-          <xsl:text>\Afootnote[nosep]</xsl:text>
+          <xsl:text>[nosep]</xsl:text>
           <xsl:if test="tei:lem[@rend = 'none']">
-            <xsl:text>[nosep]\Xlemmaseparator[ | ]</xsl:text>
+            <xsl:text>\Xlemmaseparator[ | ]</xsl:text>
           </xsl:if>
           <xsl:text>{</xsl:text>
           <!-- Get the witnesses and sources and format them. -->
@@ -173,58 +132,58 @@
           </xsl:if>
           <xsl:value-of select="tei:getWitness(@source, ., ' ')"/>
           <xsl:text>}</xsl:text>
-          <!-- If a note is associated with the lemma, render it. -->
-          <!-- There are two scenarios: witDetail is the next sibling to lem, and note is the one after that: -->
-          <xsl:if
-            test="following-sibling::*[1][self::tei:witDetail] and following-sibling::*[2][self::tei:note]">
-            <!-- If the note begins with a comma, don't leave a space in front of it. If it doesn't, don't insert an extra space. -->
-            <xsl:choose>
-              <xsl:when test="starts-with(following-sibling::*[2][self::tei:note], ',')">
-                <xsl:text>\textit{</xsl:text>
-                <xsl:apply-templates select="following-sibling::*[2][self::tei:note]"/>
-                <xsl:text>}</xsl:text>
-              </xsl:when>
-              <xsl:otherwise>
-                <xsl:text> \textit{</xsl:text>
-                <xsl:apply-templates select="following-sibling::*[2][self::tei:note]"/>
-                <xsl:text>}</xsl:text>
-              </xsl:otherwise>
-            </xsl:choose>
-          </xsl:if>
-          <!-- … or note is the immediately following sibling to lem. -->
-          <xsl:if test="following-sibling::*[1][self::tei:note]">
-            <xsl:choose>
-              <xsl:when test="starts-with(following-sibling::*[1][self::tei:note], ',')">
-                <xsl:text>\textit{</xsl:text>
-                <xsl:apply-templates select="following-sibling::*[1][self::tei:note]"/>
-                <xsl:text>}</xsl:text>
-              </xsl:when>
-              <xsl:otherwise>
-                <xsl:text> \textit{</xsl:text>
-                <xsl:apply-templates select="following-sibling::*[1][self::tei:note]"/>
-                <xsl:text>}</xsl:text>
-              </xsl:otherwise>
-            </xsl:choose>
-          </xsl:if>
-          <!-- If a reading follows the lemma, insert a vertical bar separator to indicate the end of the lemma data. -->
-          <xsl:if test="following-sibling::tei:rdg">
-            <xsl:text> | </xsl:text>
-          </xsl:if>
         </xsl:otherwise>
       </xsl:choose>
+        <!-- If a note is associated with the lemma, render it. -->
+        <!-- There are two scenarios: witDetail is the next sibling to lem, and note is the one after that: -->
+        <xsl:if
+          test="following-sibling::*[1][self::tei:witDetail] and following-sibling::*[2][self::tei:note]">
+          <!-- If the note begins with a comma, don't leave a space in front of it. If it doesn't, don't insert an extra space. -->
+          <xsl:choose>
+            <xsl:when test="starts-with(following-sibling::*[2][self::tei:note], ',')">
+              <xsl:text>\textit{</xsl:text>
+              <xsl:apply-templates select="following-sibling::*[2][self::tei:note]"/>
+              <xsl:text>}</xsl:text>
+            </xsl:when>
+            <xsl:otherwise>
+              <xsl:text> \textit{</xsl:text>
+              <xsl:apply-templates select="following-sibling::*[2][self::tei:note]"/>
+              <xsl:text>}</xsl:text>
+            </xsl:otherwise>
+          </xsl:choose>
+        </xsl:if>
+        <!-- … or note is the immediately following sibling to lem. -->
+      <xsl:if test="following-sibling::*[1][self::tei:note] and not(following-sibling::*[1][self::tei:note/@type='commentary'])">
+          <xsl:choose>
+            <xsl:when test="starts-with(following-sibling::*[1][self::tei:note], ',')">
+              <xsl:text>\textit{</xsl:text>
+              <xsl:apply-templates select="following-sibling::*[1][self::tei:note]"/>
+              <xsl:text>}</xsl:text>
+            </xsl:when>
+            <xsl:otherwise>
+              <xsl:text> \textit{</xsl:text>
+              <xsl:apply-templates select="following-sibling::*[1][self::tei:note]"/>
+              <xsl:text>}</xsl:text>
+            </xsl:otherwise>
+          </xsl:choose>
+        </xsl:if>
+        <!-- If a reading follows the lemma, insert a vertical bar separator to indicate the end of the lemma data. -->
+        <xsl:if test="following-sibling::tei:rdg">
+          <xsl:text> | </xsl:text>
+        </xsl:if>
     </xsl:for-each>
   </xsl:template>
 
   <xsldoc:doc xmlns:xsldoc="http://www.oxygenxml.com/ns/doc/xsl">
     <xsldoc:desc>Insert a symbol and a hyperlink to a note in the commentary.</xsldoc:desc>
   </xsldoc:doc>
-  <xsl:template match="tei:lem/tei:ptr">
+  <!--<xsl:template match="tei:lem/tei:ptr">
     <xsl:value-of select=".."/>
     <xsl:text>}</xsl:text>
     <xsl:text>{\lemma{{\hyperref[</xsl:text>
     <xsl:value-of select="translate(@target, '#', '')"/>
     <xsl:text>]{◊}} </xsl:text>
-  </xsl:template>
+  </xsl:template>-->
 
   <xsldoc:doc xmlns:xsldoc="http://www.oxygenxml.com/ns/doc/xsl">
     <xsldoc:desc>
@@ -235,7 +194,7 @@
     <!-- Start by selecting just the rdg … -->
     <xsl:for-each select="tei:rdg">
       <!-- If a note precedes the reading and its @target points to the reading, render it first. -->
-      <xsl:if test="matches(translate(preceding-sibling::tei:note[1]/@target, '#', ''), string(self::tei:rdg/@xml:id))">
+      <xsl:if test="preceding-sibling::tei:note[substring(@target,2) = current()/@xml:id]">
         <xsl:text>\textit{</xsl:text>
         <xsl:apply-templates select="preceding-sibling::tei:note[1]"/>
         <xsl:text>} </xsl:text>
@@ -264,7 +223,7 @@
       <!-- Now look for a note that follows the reading. If there is one, render it. -->
       
       <!-- Test to account for situations where there is a witDetail following the rdg before the note. -->
-      <xsl:if test="matches(translate(following-sibling::tei:note[1]/@target, '#', ''), string(self::tei:rdg/@xml:id)) or matches(translate(following-sibling::tei:note[2]/@target, '#', ''), string(self::tei:rdg/@xml:id))">
+      <xsl:if test="preceding-sibling::tei:note[substring(@target,2) = current()/@xml:id]">
         <!-- If a witDetail precedes the note, process it. -->
         <xsl:choose>
           <xsl:when test="following-sibling::*[1][self::tei:witDetail] and following-sibling::*[2][self::tei:note]">
@@ -302,7 +261,16 @@
       <!-- If the combination of rdg and note is not the last one, put a separator before the next one. -->
       <xsl:choose>
         <xsl:when test="not(position() = last())">
-          <xsl:text> | </xsl:text>
+          <!-- If the last two rdgs are part of a list of conjectures,
+            and therefore shouldn't be separated by a vertical bar,
+            don't insert a vertical bar. -->
+          <xsl:choose>
+            <xsl:when test="self::tei:rdg[@type='conjecture'] and following-sibling::tei:rdg[@type='conjecture']">
+              <xsl:text> </xsl:text>
+            </xsl:when>
+            <xsl:otherwise>
+              <xsl:text> | </xsl:text>
+            </xsl:otherwise></xsl:choose>
         </xsl:when>
         <xsl:otherwise>
           <!-- If there's a note of the type "alii alia" that should really count as a reading, insert a separator followed by the note. -->
