@@ -83,11 +83,6 @@
     <xsl:for-each select="tei:lem">
       <xsl:text>\edtext</xsl:text>
       <xsl:text>{</xsl:text>
-      <!-- If a lemma is split across xml tags, join the previous one to the current one. -->
-      <xsl:if test="contains(@prev, ancestor::tei:seg/preceding-sibling::tei:seg[1]/tei:app[@type = 'split-entry']/tei:lem/@xml:id)">
-        <xsl:apply-templates select="ancestor::tei:seg/preceding-sibling::tei:seg[1]/tei:app[last()]/tei:lem"/>
-        <xsl:text> </xsl:text>
-      </xsl:if>
       <!-- The lemma -->
       <xsl:apply-templates/>
       <xsl:text>}</xsl:text>
@@ -98,6 +93,19 @@
             <xsl:text>{\lemma{{\hyperref[</xsl:text>
             <xsl:value-of select="translate(following-sibling::tei:note[@type='commentary']/tei:ptr/@target, '#', '')"/>
             <xsl:text>]{◊}} </xsl:text>
+            <!-- If there is also a partial lemma from a previous segment, include it. --> 
+            <xsl:if test="ancestor::tei:seg/preceding-sibling::tei:seg[1]/tei:app[@type = 'split-entry']/tei:lem[@xml:id = current()/substring(@prev,2)]">
+              <xsl:apply-templates select="ancestor::tei:seg/preceding-sibling::tei:seg[1]/tei:app[last()]/tei:lem"/>
+              <xsl:text> </xsl:text>
+            </xsl:if>
+            <xsl:apply-templates select="self::tei:lem"/>
+            <xsl:text>}</xsl:text>
+          </xsl:when>
+          <!-- If there is a partial lemma from a previous segment, but no commentary link, include the previous lemma. -->
+          <xsl:when test="not(following-sibling::tei:note[@type='commentary']) and ancestor::tei:seg/preceding-sibling::tei:seg[1]/tei:app[@type = 'split-entry']/tei:lem[@xml:id = current()/substring(@prev,2)]">
+            <xsl:text>{\lemma{</xsl:text>
+            <xsl:apply-templates select="ancestor::tei:seg/preceding-sibling::tei:seg[1]/tei:app[@type = 'split-entry']/tei:lem"/>
+            <xsl:text> </xsl:text>
             <xsl:apply-templates select="self::tei:lem"/>
             <xsl:text>}</xsl:text>
           </xsl:when>
@@ -152,7 +160,7 @@
             </xsl:otherwise>
           </xsl:choose>
         </xsl:if>
-        <!-- … or note is the immediately following sibling to lem. -->
+        <!-- … or note is the immediately following sibling to lem, provided that it isn't a "commentary" type note. -->
       <xsl:if test="following-sibling::*[1][self::tei:note] and not(following-sibling::*[1][self::tei:note/@type='commentary'])">
           <xsl:choose>
             <xsl:when test="starts-with(following-sibling::*[1][self::tei:note], ',')">
@@ -223,7 +231,7 @@
       <!-- Now look for a note that follows the reading. If there is one, render it. -->
       
       <!-- Test to account for situations where there is a witDetail following the rdg before the note. -->
-      <xsl:if test="preceding-sibling::tei:note[substring(@target,2) = current()/@xml:id]">
+      <xsl:if test="following-sibling::tei:note[substring(@target,2) = current()/@xml:id]">
         <!-- If a witDetail precedes the note, process it. -->
         <xsl:choose>
           <xsl:when test="following-sibling::*[1][self::tei:witDetail] and following-sibling::*[2][self::tei:note]">

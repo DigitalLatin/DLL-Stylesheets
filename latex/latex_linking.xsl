@@ -113,7 +113,7 @@ of this software, even if advised of the possibility of such damage.
 	</xsl:when>
          <xsl:when test="id($dest)">
             <xsl:choose>
-               <xsl:when test="parent::tei:label">
+              <xsl:when test="parent::tei:label">
 		 <xsl:text>\hyperlink{</xsl:text>
 		 <xsl:value-of select="$dest"/>
 		 <xsl:text>}{</xsl:text>
