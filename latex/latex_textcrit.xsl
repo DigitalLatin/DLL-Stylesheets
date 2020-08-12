@@ -143,7 +143,7 @@
         </xsl:otherwise>
       </xsl:choose>
         <!-- If a note is associated with the lemma, render it. -->
-        <!-- There are two scenarios: witDetail is the next sibling to lem, and note is the one after that: -->
+        <!-- There are three scenarios: witDetail is the next sibling to lem, and note is the one after that: -->
         <xsl:if
           test="following-sibling::*[1][self::tei:witDetail] and following-sibling::*[2][self::tei:note]">
           <!-- If the note begins with a comma, don't leave a space in front of it. If it doesn't, don't insert an extra space. -->
@@ -160,9 +160,10 @@
             </xsl:otherwise>
           </xsl:choose>
         </xsl:if>
-        <!-- … or note is the immediately following sibling to lem, provided that it isn't a "commentary" type note. -->
+        <!-- … a note is the immediately following sibling to lem, provided that it isn't a "commentary" type note. -->
       <xsl:if test="following-sibling::*[1][self::tei:note] and not(following-sibling::*[1][self::tei:note/@type='commentary'])">
-          <xsl:choose>
+        <!-- If the note begins with a comma, don't leave a space in front of it. If it doesn't, don't insert an extra space. -->  
+        <xsl:choose>
             <xsl:when test="starts-with(following-sibling::*[1][self::tei:note], ',')">
               <xsl:text>\textit{</xsl:text>
               <xsl:apply-templates select="following-sibling::*[1][self::tei:note]"/>
@@ -175,6 +176,13 @@
             </xsl:otherwise>
           </xsl:choose>
         </xsl:if>
+      <!-- If there's a note of the type "alii alia," etc., that should really count as a reading, insert a separator followed by the note. -->
+        <xsl:if test="following-sibling::tei:note[last() and not(@target)]">
+          <xsl:text> | \textit{</xsl:text>
+          <xsl:apply-templates select="following-sibling::tei:note[last() and not(@target)]"/>
+          <xsl:text>}</xsl:text>
+        </xsl:if>
+      
         <!-- If a reading follows the lemma, insert a vertical bar separator to indicate the end of the lemma data. -->
         <xsl:if test="following-sibling::tei:rdg">
           <xsl:text> | </xsl:text>
