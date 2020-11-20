@@ -165,17 +165,17 @@ of this software, even if advised of the possibility of such damage.
    </doc>
   <xsl:template match="tei:table">
     <xsl:sequence select="tei:makeHyperTarget(@xml:id)"/>
-      <xsl:text> \par </xsl:text>
+      <xsl:text>{\small \par </xsl:text>
       <xsl:choose>
          <xsl:when test="ancestor::tei:table or $longtables='false'"> 
 	           <xsl:text>\begin{tabular}</xsl:text>
 	           <xsl:call-template name="makeTable"/> 
-	           <xsl:text>\end{tabular}</xsl:text>
+	           <xsl:text>\end{tabular}}</xsl:text>
          </xsl:when>
          <xsl:otherwise> 
 	           <xsl:text>&#10;\begin{longtable}</xsl:text>
 	           <xsl:call-template name="makeTable"/>
-	           <xsl:text>\end{longtable} \par&#10; </xsl:text>
+	           <xsl:text>\end{longtable} \par}&#10; </xsl:text>
          </xsl:otherwise>
       </xsl:choose>
   </xsl:template>

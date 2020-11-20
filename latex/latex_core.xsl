@@ -734,7 +734,7 @@
     <xsl:if test="@n">
       <xsl:text>\textbf{</xsl:text>
       <xsl:value-of select="@n"/>
-      <xsl:text>}</xsl:text>
+      <xsl:text>} </xsl:text>
     </xsl:if>
     <xsl:apply-templates/>
     <xsl:if test="ancestor::tei:div[@type = 'edition']">
@@ -847,6 +847,9 @@
         <xsl:sequence select="tei:makeHyperTarget(@xml:id)"/>
         <xsl:apply-templates/>
       </xsl:when>
+      <xsl:when test="@rend='inline'">
+        <xsl:text>``</xsl:text><xsl:apply-templates/><xsl:text>''</xsl:text>
+      </xsl:when>
       <xsl:when test="not(tei:isInline(.) and @type='apparatus')">
         <xsl:text>&#10;&#10;\begin{</xsl:text>
         <xsl:value-of select="$quoteEnv"/>
@@ -856,7 +859,7 @@
         <xsl:text>\end{</xsl:text>
         <xsl:value-of select="$quoteEnv"/>
         <xsl:text>}&#10;</xsl:text>
-      </xsl:when>
+      </xsl:when>      
       <!-- SJH: Avoid having line breaks interrupt the quotation. This was an issue in Dunning's text. -->
       <xsl:when test="child::tei:lb">
         <xsl:text>`</xsl:text>
@@ -1115,4 +1118,13 @@
     <xsl:apply-templates/>
     <xsl:text>}</xsl:text>
   </xsl:template>
+
+<doc xmlns="http://www.oxygenxml.com/ns/doc/xsl">
+  <desc>Handle foreign.</desc>
+</doc>
+<xsl:template match="tei:foreign">
+  <xsl:text>\textit{</xsl:text>
+  <xsl:apply-templates/>
+  <xsl:text>}</xsl:text>
+</xsl:template>
 </xsl:stylesheet>

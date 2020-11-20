@@ -165,11 +165,11 @@ of this software, even if advised of the possibility of such damage.
 \rule{\textwidth}{0.4pt} % Thin horizontal rule
         
 \vspace{1\baselineskip} % Whitespace above the title
-        
+\begin{spacing}{1.5}        
 {\LARGE\uppercase{</xsl:text>
         <xsl:value-of select="//tei:titleStmt/tei:title"/>
         <xsl:text>}} % Title
-
+\end{spacing}
 \vspace{1.25\baselineskip} % Whitespace below the title 
 
 %------------------------------------------------

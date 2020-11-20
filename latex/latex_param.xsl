@@ -122,6 +122,7 @@ the beginning of the document</desc>
 \usepackage{microtype}
 \usepackage{soul}
 \usepackage{leading}
+\usepackage{setspace}
 </xsl:text>
 <xsl:text>
 \definecolor{shadecolor}{gray}{0.95}
@@ -402,7 +403,7 @@ characters. The normal characters remain active for LaTeX commands.
 <doc xmlns="http://www.oxygenxml.com/ns/doc/xsl" class="style" type="string"><desc>Font for sans-serif</desc>   </doc>
 <xsl:param name="sansFont">Noto Sans</xsl:param>
 <doc xmlns="http://www.oxygenxml.com/ns/doc/xsl" class="style" type="string"><desc>Font for serif</desc>   </doc>
-<xsl:param name="romanFont">New Athena Unicode</xsl:param>
+<xsl:param name="romanFont">Baskerville</xsl:param>
 <doc xmlns="http://www.oxygenxml.com/ns/doc/xsl" class="style" type="string"><desc>Font for gothic</desc>   </doc>
 <xsl:param name="gothicFont">Lucida Blackletter</xsl:param>
 <doc xmlns="http://www.oxygenxml.com/ns/doc/xsl" class="style" type="string"><desc>Font for calligraphic</desc>   </doc>
@@ -700,7 +701,7 @@ characters. The normal characters remain active for LaTeX commands.
 \DeclareTextFontCommand{\textsiglumcharacter}{\siglumcharacter}
 \newunicodechar{✠}{\textsiglumcharacter{✠}}
 % Characters for angle brackets for supplied text.
-\newfontfamily{\anglefont}{Junicode}
+\newfontfamily{\anglefont}{KadmosU}
 \newunicodechar{⟨}{{\anglefont ⟨}}
 \newunicodechar{⟩}{{\anglefont ⟩}}
 % Asterisk character for gap.
