@@ -169,12 +169,11 @@
       <xsl:when test="parent::tei:lg"> \subsection*{\uppercase{<xsl:apply-templates/>}} </xsl:when>
       <xsl:when
         test="
-          parent::tei:front or parent::tei:body or parent::tei:back or
-          parent::tei:div[@type = 'edition']"
+          parent::tei:front or parent::tei:body or parent::tei:back"
         > \section*{<xsl:apply-templates/>}</xsl:when>
       <xsl:when test="parent::tei:div[@xml:id = 'preface']"
         >\section*{<xsl:apply-templates/>}<xsl:text>&#10;\pagestyle{fancy}</xsl:text></xsl:when>
-      <xsl:when test="ancestor::tei:div[@type = 'edition'] or ancestor::tei:div[@type = 'commentary']">
+      <xsl:when test=" parent::tei:div[@type = 'edition'] or ancestor::tei:div[@type = 'commentary']">
         <xsl:text>\subsection[{</xsl:text>
         <xsl:apply-templates/>
         <xsl:text>}]{\centering\uppercase{\so{</xsl:text>
@@ -182,6 +181,15 @@
         <xsl:text>}}}\label{</xsl:text>
         <xsl:value-of select="parent::tei:div/@xml:id"/>
         <xsl:text>}&#10;\pagestyle{fancy}</xsl:text>
+      </xsl:when>
+      <xsl:when test="self::tei:div[@type = 'textpart']">
+        <xsl:text>\leftline{\textbf{</xsl:text>
+        <xsl:apply-templates/>
+        <xsl:text>}]{</xsl:text>
+        <xsl:apply-templates/>
+        <xsl:text>}\label{</xsl:text>
+        <xsl:value-of select="self::tei:div/@xml:id"/>
+        <xsl:text>}</xsl:text>
       </xsl:when>
       <xsl:when test="parent::tei:table"/>
       <xsl:otherwise>
@@ -225,7 +233,7 @@
         </xsl:choose>
         <xsl:choose>
           <!-- SJH: Set the subsection headings in small caps. -->
-          <xsl:when test="$depth = '1'">
+          <xsl:when test="$depth = '1' and not(parent::tei:div[@type = 'textpart'])">
             <xsl:text>{\scshape{</xsl:text>
             <xsl:apply-templates/>
             <xsl:text>}}&#10;</xsl:text>

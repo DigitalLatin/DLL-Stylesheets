@@ -113,12 +113,12 @@
             <xsl:text>}</xsl:text>
           </xsl:when>
           <xsl:otherwise>
-            <!-- Otherwise, just open the bracket for the Afootnote string. -->
+            <!-- Otherwise, just open the bracket for the Bfootnote string. We're using \Bfootnote, since \Afootnote should be reserved for an apparatus fontium. -->
             <xsl:text>{</xsl:text>
           </xsl:otherwise>
         </xsl:choose>
-      <!-- \Afootnote{} is where a note should be placed. -->
-      <xsl:text>\Afootnote</xsl:text>
+      <!-- \Bfootnote{} is where a note should be placed. We're using \Bfootnote, since \Afootnote should be reserved for an apparatus fontium. -->
+      <xsl:text>\Bfootnote</xsl:text>
       <!-- Logic for handling a lemma with or without witness or source -->
       <xsl:choose>
         <!-- If the lemma doesn't have a witness or a source, just insert the lemma, followed by ]. -->
@@ -309,7 +309,7 @@
     <xsldoc:param name="lemma">The parameter 'lemma' occurs in the appLemma template
       above.</xsldoc:param>
   </xsldoc:doc>
-  <!-- The goal: \edtext{lemma}{ \Afootnote {\textit{witnesses} \textit{sources} \textit{note} | reading \textit{witness} \textit{source} \textit{note} | reading \textit{witness} \textit{source} \textit{note}}} -->
+  <!-- The goal: \edtext{lemma}{ \Bfootnote {\textit{witnesses} \textit{sources} \textit{note} | reading \textit{witness} \textit{source} \textit{note} | reading \textit{witness} \textit{source} \textit{note}}} -->
   <xsl:template name="makeAppEntry">
     <xsl:param name="lemma"/>
     <xsl:call-template name="appLemma"/>
