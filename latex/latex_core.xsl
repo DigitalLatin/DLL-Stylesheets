@@ -167,12 +167,12 @@
       <xsl:when test="parent::tei:figure"/>
       <xsl:when test="parent::tei:list"/>
       <xsl:when test="parent::tei:lg"> \subsection*{\uppercase{<xsl:apply-templates/>}} </xsl:when>
-      <xsl:when
-        test="
-          parent::tei:front or parent::tei:body or parent::tei:back"
-        > \section*{<xsl:apply-templates/>}</xsl:when>
-      <xsl:when test="parent::tei:div[@xml:id = 'preface']"
-        >\section*{<xsl:apply-templates/>}<xsl:text>&#10;\pagestyle{fancy}</xsl:text></xsl:when>
+      <xsl:when test="parent::tei:front or parent::tei:body or parent::tei:back"> 
+        <xsl:text>\section*{</xsl:text><xsl:apply-templates/><xsl:text>}</xsl:text>
+      </xsl:when>
+      <xsl:when test="parent::tei:div[@xml:id = 'preface']">
+        <xsl:text>\section*{</xsl:text><xsl:apply-templates/><xsl:text>}&#10;\pagestyle{fancy}</xsl:text>
+      </xsl:when>
       <xsl:when test=" parent::tei:div[@type = 'edition'] or ancestor::tei:div[@type = 'commentary']">
         <xsl:text>\subsection[{</xsl:text>
         <xsl:apply-templates/>
@@ -182,13 +182,11 @@
         <xsl:value-of select="parent::tei:div/@xml:id"/>
         <xsl:text>}&#10;\pagestyle{fancy}</xsl:text>
       </xsl:when>
-      <xsl:when test="self::tei:div[@type = 'textpart']">
-        <xsl:text>\leftline{\textbf{</xsl:text>
-        <xsl:apply-templates/>
-        <xsl:text>}]{</xsl:text>
+      <xsl:when test="parent::tei:div[@type = 'textpart']">
+        <xsl:text>&#10;&#10;\paragraph*{</xsl:text>
         <xsl:apply-templates/>
         <xsl:text>}\label{</xsl:text>
-        <xsl:value-of select="self::tei:div/@xml:id"/>
+        <xsl:value-of select="parent::tei:div/@xml:id"/>
         <xsl:text>}</xsl:text>
       </xsl:when>
       <xsl:when test="parent::tei:table"/>

@@ -123,6 +123,8 @@ the beginning of the document</desc>
 \usepackage{soul}
 \usepackage{leading}
 \usepackage{setspace}
+% Allow alignment of images
+\usepackage[export]{adjustbox}
 </xsl:text>
 <xsl:text>
 \definecolor{shadecolor}{gray}{0.95}
@@ -464,10 +466,10 @@ characters. The normal characters remain active for LaTeX commands.
   {4ex\@plus -0.35ex \@minus -.2ex}%
   {2ex \@plus .2ex}%
   {\reset@font\fontfamily{lmr}\large\scshape\selectfont}}
-\renewcommand\paragraph{\@startsection{paragraph}{4}{\z@}%
-  {-1ex \@plus-0.35ex \@minus -0.2ex}%
-  {0.5ex \@plus .2ex}%
-  {\reset@font\normalsize\sffamily}}
+ \renewcommand\paragraph{\@startsection{paragraph}{4}{\z@}%
+  {3ex \@plus-0.35ex \@minus -0.2ex}%
+  {1ex \@plus .2ex}%
+  {\reset@font\normalsize\fontfamily{lmr}\bfseries}}
 \renewcommand\subparagraph{\@startsection{subparagraph}{5}{\parindent}%
   {1.5ex \@plus1ex \@minus .2ex}%
   {-1em}%

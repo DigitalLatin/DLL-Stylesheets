@@ -327,8 +327,8 @@
       <xsl:when test="tei:l | tei:lg">&#10; \beginnumbering &#10;\pstart <xsl:apply-templates
           select="*[not(self::tei:head)]"/> \pend \endnumbering </xsl:when>
       <!-- prose -->
-      <xsl:when test="tei:p | tei:ab"> \beginnumbering <xsl:apply-templates
-          select="*[not(self::tei:head)]"/> \endnumbering </xsl:when>
+      <xsl:when test="tei:p | tei:ab">&#10; \beginnumbering &#10;<xsl:apply-templates
+        select="*[not(self::tei:head)]"/>&#10; \endnumbering &#10;</xsl:when>
     </xsl:choose>
   </xsl:template>
 

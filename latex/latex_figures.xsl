@@ -173,6 +173,7 @@ of this software, even if advised of the possibility of such damage.
 	           <xsl:text>\end{tabular}}</xsl:text>
          </xsl:when>
          <xsl:otherwise> 
+                        <xsl:text>\par</xsl:text>
 	           <xsl:text>&#10;\begin{longtable}</xsl:text>
 	           <xsl:call-template name="makeTable"/>
 	           <xsl:text>\end{longtable} \par}&#10; </xsl:text>
