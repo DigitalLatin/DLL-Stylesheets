@@ -173,7 +173,7 @@
       <xsl:when test="parent::tei:div[@xml:id = 'preface']">
         <xsl:text>\section*{</xsl:text><xsl:apply-templates/><xsl:text>}&#10;\pagestyle{fancy}</xsl:text>
       </xsl:when>
-      <xsl:when test=" parent::tei:div[@type = 'edition'] or ancestor::tei:div[@type = 'commentary']">
+      <xsl:when test="ancestor::tei:div[@type = 'edition'] or ancestor::tei:div[@type = 'commentary']">
         <xsl:text>\subsection[{</xsl:text>
         <xsl:apply-templates/>
         <xsl:text>}]{\centering\uppercase{\so{</xsl:text>

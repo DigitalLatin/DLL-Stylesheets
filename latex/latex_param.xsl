@@ -116,8 +116,8 @@ the beginning of the document</desc>
       <xsl:text>]{geometry}
 <!--\setlength{\textwidth}{115mm}
 \setlength{\textheight}{173mm}-->
-\setlength{\textwidth}{100mm}
-\setlength{\textheight}{162mm}
+\setlength{\textwidth}{84mm}
+\setlength{\textheight}{136mm}
 \usepackage{framed}
 \usepackage{microtype}
 \usepackage{soul}
@@ -217,7 +217,18 @@ as a proportion of the page width.</desc>
       <desc>Options to pass to the geometry package to set margins etc</desc>
    </doc>
   <!--<xsl:param name="latexGeometryOptions">twoside,tmargin=25mm,bmargin=30mm,inner=31.6mm,outer=63.3mm</xsl:param>-->
-  <xsl:param name="latexGeometryOptions">twoside,tmargin=40mm,bmargin=40mm,inner=76.6mm,outer=38.3mm</xsl:param>
+  <xsl:param name="latexGeometryOptions">
+    letterpaper,
+    layoutwidth=14cm,
+    layoutheight=20.3cm,
+    layouthoffset=4cm,
+    layoutvoffset=5cm,
+    tmargin=2cm,
+    rmargin=2.7cm,
+    bmargin=3.50cm,
+    lmargin=1.60cm,
+    bindingoffset=1cm
+  </xsl:param>
   
    <doc xmlns="http://www.oxygenxml.com/ns/doc/xsl" class="userpackage" type="string">
       <desc>The page style to use with the \pagestyle command (empty, plain, fancy, ...).</desc>
@@ -321,6 +332,8 @@ characters. The normal characters remain active for LaTeX commands.
     \if \@nextchar b5 \else
    \z@ \@chclass \z@ \@preamerr \z@ \fi \fi \fi \fi
    \fi \fi  \fi  \fi  \fi  \fi  \fi \fi \fi \fi \fi \fi}
+
+<xsl:call-template name="fallback-characters"/>
 \gdef\arraybackslash{\let\\=\@arraycr}
 \def\@textsubscript#1{{\m@th\ensuremath{_{\mbox{\fontsize\sf@size\z@#1}}}}}
 \def\Panel#1#2#3#4{\multicolumn{#3}{){\columncolor{#2}}#4}{#1}}
@@ -333,7 +346,7 @@ characters. The normal characters remain active for LaTeX commands.
 <!-- SJH: Added rules for editorial symbols. -->
 \def\gap{\asterisk ⁎\asterisk ⁎\asterisk ⁎}
 \def\sic#1{†#1†}
-\def\supplied#1{\anglefont ⟨#1\anglefont ⟩}
+\def\supplied#1{⟨#1⟩}
 \def\surplus#1{[#1]}
 \def\persName{}\def\name{}
 \def\placeName{}
@@ -610,6 +623,8 @@ characters. The normal characters remain active for LaTeX commands.
 \Xbeforenumber[A]{10pt}
 \Xparafootsep{$\parallel$}
 \Xragged[A]{R}
+\Xbeforenotes[B]{2em} % Space before apparatus begins
+\Xafterrule[B]{0.75em} % Space after note rule
 \Xnotenumfont{\normalfont\bfseries}
 \lineation{page}
 \linenummargin{inner}
@@ -669,7 +684,7 @@ characters. The normal characters remain active for LaTeX commands.
 \fancyfoot[CE]{}
 \fancyfoot[RE]{\TheID}
 \fancypagestyle{plain}{\fancyhead{}\renewcommand{\headrulewidth}{0pt}}</xsl:text>
-<xsl:call-template name="fallback-characters"/>
+     
 <xsl:call-template name="hyperref"/>
    </xsl:template>
 
@@ -692,27 +707,31 @@ characters. The normal characters remain active for LaTeX commands.
   </doc>
 <xsl:template name="fallback-characters">
   <xsl:text>
-% Fallback characters
+% Fallback characters (thanks to Andrew Dunning) 
 \usepackage{newunicodechar}
 \newfontfamily{\fallbackfontMUFI}{Junicode}
 \DeclareTextFontCommand{\textfallbackMUFI}{\fallbackfontMUFI}
 \newunicodechar{⸝}{\textfallbackMUFI{⸝}}
 \newunicodechar{⸵}{\textfallbackMUFI{}} % MUFI PUA
 \newunicodechar{⍪}{\textfallbackMUFI{}} % MUFI PUA
+
+% Characters for angle brackets for supplied text.
+\newunicodechar{⟨}{\textfallbackMUFI{⟨}}
+\newunicodechar{⟩}{\textfallbackMUFI{⟩}}
+
+% Siglum character
 \newfontfamily{\siglumcharacter}{Zapf Dingbats}
 \DeclareTextFontCommand{\textsiglumcharacter}{\siglumcharacter}
 \newunicodechar{✠}{\textsiglumcharacter{✠}}
-% Characters for angle brackets for supplied text.
-\newfontfamily{\anglefont}{KadmosU}
-\newunicodechar{⟨}{{\anglefont ⟨}}
-\newunicodechar{⟩}{{\anglefont ⟩}}
+   
 % Asterisk character for gap.
 \newfontfamily{\asterisk}{Junicode}
-\newunicodechar{⁎}{{\asterisk ⁎}}
+\newunicodechar{⁎}{\asterisk{⁎}}
+   
 % Stigma
 \newfontfamily{\fallbackfontStigma}{KadmosU}
 \DeclareTextFontCommand{\textfallbackStigma}{\fallbackfontStigma}
-\newunicodechar{ϛ}{\textfallbackStigma{ϛ}}
+\newunicodechar{ϛ}{\textfallbackStigma{ϛ}}   
 </xsl:text>
 </xsl:template>
   
@@ -723,7 +742,7 @@ characters. The normal characters remain active for LaTeX commands.
   </doc>
 <xsl:template name="hyperref">
   <xsl:text>
-\usepackage[linktoc=all,colorlinks=true,linkcolor=black,anchorcolor=black,citecolor=black,filecolor=black,menucolor=black,runcolor=black,urlcolor=black]{hyperref}
+\usepackage[linktoc=all,colorlinks=true,linkcolor=black,anchorcolor=black,citecolor=black,filecolor=black,menucolor=black,runcolor=black,urlcolor=black,breaklinks]{hyperref}
 \hypersetup{</xsl:text><xsl:value-of select="$hyperSetup"/><xsl:text>}
 % Set the font for URLs to the regular font for the document.
 \urlstyle{same}</xsl:text>  
