@@ -48,26 +48,50 @@ of this software, even if advised of the possibility of such damage.
          <p>Copyright: 2013, TEI Consortium</p>
       </desc>
    </doc>
-  <xsl:template match="tei:listPerson">
+  <xsl:template match="//tei:body//tei:listPerson|//tei:front//tei:listPerson">
     <xsl:if test="tei:head"> 
-      <xsl:text>\leftline{\textbf{</xsl:text>
+      <xsl:text>\vspace{1.5\baselineskip}</xsl:text>
+      <xsl:text>&#10;</xsl:text>
+      <xsl:text>\leftline{\large\uppercase{</xsl:text>
       <xsl:for-each select="tei:head">
         <xsl:apply-templates/>
       </xsl:for-each>
       <xsl:text>}} </xsl:text>
+      <xsl:text>&#10;</xsl:text>
+      <xsl:text>\vspace{0.5\baselineskip}</xsl:text>
     </xsl:if>
-    \begin{bibitemlist}{1}
-    <xsl:for-each select="tei:person">
-      <xsl:text>\bibitem</xsl:text><xsl:call-template name="person"/>      
-    </xsl:for-each>
-      \end{bibitemlist}
+    <xsl:choose>
+      <xsl:when test="@type='characters'">
+        <xsl:text>&#10;</xsl:text>
+        <xsl:for-each select="tei:person">
+          <xsl:text>\leftline{</xsl:text><xsl:call-template name="person"/><xsl:text>}</xsl:text>
+          <xsl:text>&#10;</xsl:text>
+        </xsl:for-each>
+      </xsl:when>
+      <xsl:otherwise>
+        <xsl:text>&#10;\begin{bibitemlist}{1}&#10;</xsl:text>
+        <xsl:for-each select="tei:person">
+          <xsl:text>\bibitem</xsl:text>
+          <xsl:call-template name="person"/>      
+        </xsl:for-each>
+        <xsl:text>\end{bibitemlist}&#10;</xsl:text>
+      </xsl:otherwise>
+    </xsl:choose>
   </xsl:template>
   
   <xsl:template match="tei:listPerson/tei:person" name="person">
-    <xsl:text>[</xsl:text><xsl:value-of select="descendant::tei:persName/tei:abbr[@type='siglum']"/><xsl:text>]{</xsl:text><xsl:value-of select="@xml:id"/><xsl:text>}  </xsl:text>
-    <xsl:value-of select="descendant::tei:persName/text()"/>
-    <xsl:text>. </xsl:text><xsl:apply-templates select="descendant::tei:note"/>
-    <xsl:text>&#10;</xsl:text>
+    <xsl:choose>
+      <xsl:when test="../@type='characters'">
+        <xsl:text>{</xsl:text><xsl:value-of select="@xml:id"/><xsl:text>}</xsl:text>
+        <xsl:value-of select="descendant::tei:persName/text()"/>
+      </xsl:when>
+      <xsl:otherwise>
+        <xsl:text>[</xsl:text><xsl:value-of select="descendant::tei:persName/tei:abbr[@type='siglum']"/><xsl:text>]{</xsl:text><xsl:value-of select="@xml:id"/><xsl:text>}  </xsl:text>
+        <xsl:value-of select="descendant::tei:persName/text()"/>
+        <xsl:text>. </xsl:text><xsl:apply-templates select="descendant::tei:note"/>
+        <xsl:text>&#10;</xsl:text>
+      </xsl:otherwise>
+    </xsl:choose>
   </xsl:template>
 
   <xsl:template match="tei:affiliation|tei:email">

@@ -166,14 +166,16 @@
       <xsl:when test="parent::tei:castList"/>
       <xsl:when test="parent::tei:figure"/>
       <xsl:when test="parent::tei:list"/>
-      <xsl:when test="parent::tei:lg"> \subsection*{\uppercase{<xsl:apply-templates/>}} </xsl:when>
+      <xsl:when test="parent::tei:lg">&#10;\subsection*{\uppercase{<xsl:apply-templates/>}} </xsl:when>
       <xsl:when test="parent::tei:front or parent::tei:body or parent::tei:back"> 
         <xsl:text>\section*{</xsl:text><xsl:apply-templates/><xsl:text>}</xsl:text>
       </xsl:when>
       <xsl:when test="parent::tei:div[@xml:id = 'preface']">
         <xsl:text>\section*{</xsl:text><xsl:apply-templates/><xsl:text>}&#10;\pagestyle{fancy}</xsl:text>
       </xsl:when>
-      <xsl:when test="ancestor::tei:div[@type = 'edition'] or ancestor::tei:div[@type = 'commentary']">
+      
+      <!-- This is for the title of the work itself, or of the commentary. -->
+      <xsl:when test="parent::tei:div[@type = 'edition'] or parent::tei:div[@type = 'commentary']">
         <xsl:text>\subsection[{</xsl:text>
         <xsl:apply-templates/>
         <xsl:text>}]{\centering\uppercase{\so{</xsl:text>
@@ -182,12 +184,22 @@
         <xsl:value-of select="parent::tei:div/@xml:id"/>
         <xsl:text>}&#10;\pagestyle{fancy}</xsl:text>
       </xsl:when>
-      <xsl:when test="parent::tei:div[@type = 'textpart']">
-        <xsl:text>&#10;&#10;\paragraph*{</xsl:text>
-        <xsl:apply-templates/>
-        <xsl:text>}\label{</xsl:text>
+      
+      <!-- This is for the title of individual sections, so that the titles can be included in the apparatus. -->
+      <xsl:when test="ancestor::tei:div[@type = 'edition'] and parent::tei:div[@type = 'textpart']">
+        <xsl:text>&#10;\vspace{2\baselineskip} % Whitespace&#10;</xsl:text>
+        <xsl:text>&#10;&#10;\beginnumbering &#10;</xsl:text>
+        <xsl:text>\pstart&#10;</xsl:text>
+        <xsl:text>\noindent&#10;</xsl:text>
+        <xsl:text>\label{</xsl:text>
         <xsl:value-of select="parent::tei:div/@xml:id"/>
-        <xsl:text>}</xsl:text>
+        <xsl:text>}&#10;</xsl:text>
+        <xsl:text>\textbf{</xsl:text>
+        <xsl:apply-templates/>
+        <xsl:text>}&#10;</xsl:text>
+        <xsl:text>\pend&#10;</xsl:text>
+        <xsl:text>\endnumbering&#10;</xsl:text>
+        <xsl:text>&#10;\vspace{1\baselineskip} % Whitespace&#10;</xsl:text>
       </xsl:when>
       <xsl:when test="parent::tei:table"/>
       <xsl:otherwise>
@@ -230,13 +242,13 @@
           <xsl:otherwise>[{<xsl:value-of select="tei:escapeChars(., .)"/>}]</xsl:otherwise>
         </xsl:choose>
         <xsl:choose>
-          <!-- SJH: Set the subsection headings in small caps. -->
+          <!-- SJH: Set the subsection headings in italics. -->
           <xsl:when test="$depth = '1' and not(parent::tei:div[@type = 'textpart'])">
-            <xsl:text>{\scshape{</xsl:text>
+            <xsl:text>{\textit{</xsl:text>
             <xsl:apply-templates/>
             <xsl:text>}}&#10;</xsl:text>
           </xsl:when>
-          <!-- SJH: Set subsubsection headings in small caps -->
+          <!-- SJH: Set subsubsection headings in italics -->
           <xsl:when test="$depth = '2'">
             <xsl:text>{\scshape{</xsl:text>
             <xsl:apply-templates/>

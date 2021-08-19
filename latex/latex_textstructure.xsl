@@ -154,7 +154,6 @@ of this software, even if advised of the possibility of such damage.
         <xsl:text>
 \begin{titlepage} % Suppresses headers and footers on the title page
 \centering % Center everything on the title page
-\scshape % Use small caps for all text on the title page
         
 %------------------------------------------------
 %	Title
@@ -180,7 +179,7 @@ Edited By
 
 \vspace{0.5\baselineskip} % Whitespace before the editors
 
-{\scshape\Large </xsl:text>
+{\Large </xsl:text>
         <xsl:value-of select="//tei:titleStmt/tei:editor"/>
         <xsl:text>} % Editor list
         
@@ -191,18 +190,18 @@ Edited By
 %------------------------------------------------
 %	Series
 %------------------------------------------------
-\vspace{4\baselineskip} % Whitespace below the title and editor block
+\vspace{3\baselineskip} % Whitespace below the title and editor block
 
-{\scshape\Large </xsl:text>
+{\Large </xsl:text>
         <xsl:value-of select="//tei:titleStmt/tei:sponsor"/>
         <xsl:text>}\\
 \medskip % Whitespace
-{\scshape\Large </xsl:text>
+{\Large </xsl:text>
         <xsl:value-of select="//tei:seriesStmt/tei:title"/>
         <xsl:text>}\\
 \vspace{1\baselineskip} % Whitespace
 
-{\scshape \normalsize </xsl:text>
+{\normalsize </xsl:text>
         <xsl:value-of select="//tei:seriesStmt/tei:respStmt/tei:name"/>
         <xsl:text>, General Editor}\\
                         
@@ -233,7 +232,7 @@ Edited By
 \vspace*{\baselineskip} % White space at the top of the page
 \vspace{6\baselineskip} % Whitespace
 \centering
-{\scshape \LARGE </xsl:text>
+{\LARGE </xsl:text>
         <xsl:value-of select="//tei:publicationStmt/tei:publisher"/>
         <xsl:text>}\\</xsl:text>
         <xsl:value-of select="//tei:publicationStmt/tei:address/tei:street"/>
@@ -252,7 +251,7 @@ Edited By
 
 \flushleft
 \small
-{\scshape </xsl:text><xsl:value-of select="//tei:publicationStmt/tei:publisher"/><xsl:text>} publishes the \textit{</xsl:text><xsl:value-of select="//tei:seriesStmt/tei:title"/><xsl:text>} under the authority of </xsl:text><xsl:value-of select="//tei:publicationStmt/tei:authority"/><xsl:text>. Individual volumes are reviewed and sponsored by the Society for Classical Studies, the Medieval Academy of America, or the Renaissance Society of America, depending on the era of the text(s).
+{</xsl:text><xsl:value-of select="//tei:publicationStmt/tei:publisher"/><xsl:text>} publishes the \textit{</xsl:text><xsl:value-of select="//tei:seriesStmt/tei:title"/><xsl:text>} under the authority of </xsl:text><xsl:value-of select="//tei:publicationStmt/tei:authority"/><xsl:text>. Individual volumes are reviewed and sponsored by the Society for Classical Studies, the Medieval Academy of America, or the Renaissance Society of America, depending on the era of the text(s).
 
 \vspace{1\baselineskip} % Whitespace
 
@@ -432,10 +431,16 @@ Volumes are published under the </xsl:text><xsl:value-of select="//tei:publicati
     <xsl:template match="tei:back/tei:div/tei:head">
         <xsl:text>
         &#10;&#10;\newpage
-\thispagestyle{plain}
-\subsection[{</xsl:text><xsl:value-of select="."/><xsl:text>}]{\centering\uppercase{\so{</xsl:text><xsl:value-of select="."/><xsl:text>}}}</xsl:text>
-\pagestyle{fancy}
-\setcounter{page}{1}
+&#10;\thispagestyle{plain}
+&#10;\subsection[{</xsl:text>
+        <xsl:value-of select="."/>
+        <xsl:text>}]{\centering\uppercase{\so{</xsl:text>
+        <xsl:value-of select="."/>
+        <xsl:text>}}}\label{</xsl:text>
+        <xsl:value-of select="parent::tei:div/@xml:id"/>
+        <xsl:text>}&#10;</xsl:text>
+        <xsl:text>\pagestyle{fancy}
+&#10;\setcounter{page}{1}</xsl:text>
     </xsl:template>
 
   <xsl:template match="/tei:text" priority="999">

@@ -172,10 +172,10 @@ the beginning of the document</desc>
  pdfauthor={<xsl:sequence
  select="replace(string-join(tei:generateAuthor(.),''),'\\[A-z]+','')"/>}]{hyperref}
 \hyperbaseurl{<xsl:value-of select="$baseURL"/>}-->
-<xsl:if test="count(key('APP',1))&gt;0">
+<!--<xsl:if test="count(key('APP',1))&gt;0">-->
 \usepackage{reledmac}
 <xsl:call-template name="ledmacOptions"/>
-</xsl:if>
+<!--</xsl:if>-->
 
    </xsl:template>
 
@@ -344,9 +344,9 @@ characters. The normal characters remain active for LaTeX commands.
 \def\reg{}
 \def\ref{}
 <!-- SJH: Added rules for editorial symbols. -->
-\def\gap{\asterisk ⁎\asterisk ⁎\asterisk ⁎}
+\def\gap{⁎ ⁎ ⁎}
 \def\sic#1{†#1†}
-\def\supplied#1{⟨#1⟩}
+\def\supplied#1{&lt;#1&gt;}
 \def\surplus#1{[#1]}
 \def\persName{}\def\name{}
 \def\placeName{}
@@ -478,15 +478,15 @@ characters. The normal characters remain active for LaTeX commands.
 \renewcommand\subsubsection{\@startsection{subsubsection}{3}{\z@}%
   {4ex\@plus -0.35ex \@minus -.2ex}%
   {2ex \@plus .2ex}%
-  {\reset@font\fontfamily{lmr}\large\scshape\selectfont}}
+  {\reset@font\fontfamily{lmr}\large}}
  \renewcommand\paragraph{\@startsection{paragraph}{4}{\z@}%
   {3ex \@plus-0.35ex \@minus -0.2ex}%
   {1ex \@plus .2ex}%
-  {\reset@font\normalsize\fontfamily{lmr}\bfseries}}
+  {\reset@font\normalsize\fontfamily{lmr}\textit}}
 \renewcommand\subparagraph{\@startsection{subparagraph}{5}{\parindent}%
   {1.5ex \@plus1ex \@minus .2ex}%
   {-1em}%
-  {\reset@font\normalsize\bfseries}}
+  {\reset@font\normalsize\textit}}
   
 </xsl:if>
 \def\l@section#1#2{\addpenalty{\@secpenalty} \addvspace{1.0em plus 1pt}
@@ -714,20 +714,12 @@ characters. The normal characters remain active for LaTeX commands.
 \newunicodechar{⸝}{\textfallbackMUFI{⸝}}
 \newunicodechar{⸵}{\textfallbackMUFI{}} % MUFI PUA
 \newunicodechar{⍪}{\textfallbackMUFI{}} % MUFI PUA
-
-% Characters for angle brackets for supplied text.
-\newunicodechar{⟨}{\textfallbackMUFI{⟨}}
-\newunicodechar{⟩}{\textfallbackMUFI{⟩}}
-
+% Asterisk character for gap.
+\newunicodechar{⁎}{\textfallbackMUFI{⁎}}
 % Siglum character
 \newfontfamily{\siglumcharacter}{Zapf Dingbats}
 \DeclareTextFontCommand{\textsiglumcharacter}{\siglumcharacter}
 \newunicodechar{✠}{\textsiglumcharacter{✠}}
-   
-% Asterisk character for gap.
-\newfontfamily{\asterisk}{Junicode}
-\newunicodechar{⁎}{\asterisk{⁎}}
-   
 % Stigma
 \newfontfamily{\fallbackfontStigma}{KadmosU}
 \DeclareTextFontCommand{\textfallbackStigma}{\fallbackfontStigma}
