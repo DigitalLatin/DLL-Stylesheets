@@ -173,6 +173,8 @@ the beginning of the document</desc>
  select="replace(string-join(tei:generateAuthor(.),''),'\\[A-z]+','')"/>}]{hyperref}
 \hyperbaseurl{<xsl:value-of select="$baseURL"/>}-->
 <!--<xsl:if test="count(key('APP',1))&gt;0">-->
+
+% Reledmac options
 \usepackage{reledmac}
 <xsl:call-template name="ledmacOptions"/>
 <!--</xsl:if>-->
@@ -218,6 +220,7 @@ as a proportion of the page width.</desc>
    </doc>
   <!--<xsl:param name="latexGeometryOptions">twoside,tmargin=25mm,bmargin=30mm,inner=31.6mm,outer=63.3mm</xsl:param>-->
   <xsl:param name="latexGeometryOptions">
+    twoside,
     letterpaper,
     layoutwidth=14cm,
     layoutheight=20.3cm,
@@ -332,7 +335,6 @@ characters. The normal characters remain active for LaTeX commands.
     \if \@nextchar b5 \else
    \z@ \@chclass \z@ \@preamerr \z@ \fi \fi \fi \fi
    \fi \fi  \fi  \fi  \fi  \fi  \fi \fi \fi \fi \fi \fi}
-
 <xsl:call-template name="fallback-characters"/>
 \gdef\arraybackslash{\let\\=\@arraycr}
 \def\@textsubscript#1{{\m@th\ensuremath{_{\mbox{\fontsize\sf@size\z@#1}}}}}
@@ -344,9 +346,11 @@ characters. The normal characters remain active for LaTeX commands.
 \def\reg{}
 \def\ref{}
 <!-- SJH: Added rules for editorial symbols. -->
-\def\gap{⁎ ⁎ ⁎}
+
+
+\def\gap{\lower 2pt \hbox{ * * * }}
 \def\sic#1{†#1†}
-\def\supplied#1{&lt;#1&gt;}
+\def\supplied#1{⟨#1⟩}
 \def\surplus#1{[#1]}
 \def\persName{}\def\name{}
 \def\placeName{}
@@ -373,6 +377,7 @@ characters. The normal characters remain active for LaTeX commands.
 \newenvironment{rubric}{}{}
 \newenvironment{titlePart}{}{\par }
 \newenvironment{copyrightPage}{}{}
+\newenvironment{acknowledgmentsPage}{}{}
 <xsl:text disable-output-escaping="yes">
 \newcolumntype{L}[1]{){\raggedright\arraybackslash}p{#1}}
 \newcolumntype{C}[1]{){\centering\arraybackslash}p{#1}}
@@ -486,7 +491,7 @@ characters. The normal characters remain active for LaTeX commands.
 \renewcommand\subparagraph{\@startsection{subparagraph}{5}{\parindent}%
   {1.5ex \@plus1ex \@minus .2ex}%
   {-1em}%
-  {\reset@font\normalsize\textit}}
+  {\reset@font\normalsize\textbf}}
   
 </xsl:if>
 \def\l@section#1#2{\addpenalty{\@secpenalty} \addvspace{1.0em plus 1pt}
@@ -620,18 +625,23 @@ characters. The normal characters remain active for LaTeX commands.
    </doc>
 <xsl:template name="ledmacOptions">
 <xsl:text>
-\Xbeforenumber[A]{10pt}
-\Xparafootsep{$\parallel$}
-\Xragged[A]{R}
-\Xbeforenotes[B]{2em} % Space before apparatus begins
-\Xafterrule[B]{0.75em} % Space after note rule
-\Xnotenumfont{\normalfont\bfseries}
 \lineation{page}
 \linenummargin{inner}
+\Xnotenumfont{\normalfont\bfseries}
+
+% Settings for familiar notes
+\Xbeforenumber[A]{10pt}
 \Xarrangement[A]{paragraph}
 \Xnumberonlyfirstinline[A]
+\Xragged[A]{R}
+
+% Settings for apparatus criticus notes
+\Xbeforenotes[B]{2em} % Space before apparatus begins
+\Xafterrule[B]{0.75em} % Space after note rule 
 \Xarrangement[B]{paragraph}
+\Xragged[B]{R}
 \Xnumberonlyfirstinline[B]
+\Xafternote[B]{0.5em}
 </xsl:text>
 </xsl:template>
 
@@ -674,7 +684,7 @@ characters. The normal characters remain active for LaTeX commands.
 \fancyhf{} 
 \setlength{\headheight}{14pt}
 \fancyhead[LE]{\thepage}
-\fancyhead[CE]{\leftmark}
+\fancyhead[CE]{\nouppercase{\leftmark}}
 \fancyhead[RO]{\thepage}
 \fancyhead[CO]{\rightmark}
 \fancyfoot[RO]{}
@@ -714,16 +724,19 @@ characters. The normal characters remain active for LaTeX commands.
 \newunicodechar{⸝}{\textfallbackMUFI{⸝}}
 \newunicodechar{⸵}{\textfallbackMUFI{}} % MUFI PUA
 \newunicodechar{⍪}{\textfallbackMUFI{}} % MUFI PUA
+\newunicodechar{⟨}{\textfallbackMUFI{⟨}}
+\newunicodechar{⟩}{\textfallbackMUFI{⟩}}
 % Asterisk character for gap.
-\newunicodechar{⁎}{\textfallbackMUFI{⁎}}
+%\newunicodechar{∗}{\textfallbackMUFI{*}}
 % Siglum character
 \newfontfamily{\siglumcharacter}{Zapf Dingbats}
 \DeclareTextFontCommand{\textsiglumcharacter}{\siglumcharacter}
 \newunicodechar{✠}{\textsiglumcharacter{✠}}
 % Stigma
-\newfontfamily{\fallbackfontStigma}{KadmosU}
+\newfontfamily{\fallbackfontStigma}{New Athena Unicode}
 \DeclareTextFontCommand{\textfallbackStigma}{\fallbackfontStigma}
-\newunicodechar{ϛ}{\textfallbackStigma{ϛ}}   
+\newunicodechar{Ϛ}{\textfallbackStigma{Ϛ}}
+\newunicodechar{ϛ}{\textfallbackStigma{ϛ}}
 </xsl:text>
 </xsl:template>
   

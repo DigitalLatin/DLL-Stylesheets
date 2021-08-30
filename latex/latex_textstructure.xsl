@@ -196,7 +196,7 @@ Edited By
         <xsl:value-of select="//tei:titleStmt/tei:sponsor"/>
         <xsl:text>}\\
 \medskip % Whitespace
-{\Large </xsl:text>
+{\large </xsl:text>
         <xsl:value-of select="//tei:seriesStmt/tei:title"/>
         <xsl:text>}\\
 \vspace{1\baselineskip} % Whitespace
@@ -262,14 +262,22 @@ Volumes are published under the </xsl:text><xsl:value-of select="//tei:publicati
 \textcopyright \thinspace </xsl:text><xsl:value-of select="//tei:titleStmt/tei:editor"/><xsl:text>, </xsl:text><xsl:value-of select="//tei:publicationStmt/tei:date"/><xsl:text>.
 
 \vspace{2\baselineskip} % Whitespace
-
+\newpage
+\thispagestyle{empty}
+\end{copyrightPage}
+\begin{acknowledgmentsPage}
+{\LARGE Acknowledgments}
+\begin{itemize}
 </xsl:text>
         <xsl:for-each select="//tei:titleStmt/tei:respStmt">
+            <xsl:text>\item </xsl:text>
             <xsl:value-of select="tei:resp"/><xsl:text> </xsl:text><xsl:value-of select="tei:name"/><xsl:text>.</xsl:text>
-            <xsl:text>&#10;\newline&#10;</xsl:text>
+            <xsl:text>&#10;</xsl:text>
         </xsl:for-each>
-        <xsl:text>
-\end{copyrightPage}
+<xsl:text>
+\end{itemize}
+\end{acknowledgmentsPage}
+\cleardoublepage
 \newpage
 </xsl:text>
     </xsl:template>
@@ -330,6 +338,9 @@ Volumes are published under the </xsl:text><xsl:value-of select="//tei:publicati
                 <xsl:text>&#10;\setcounter{footnote}{0}</xsl:text>
                 <xsl:text>&#10;\newpage</xsl:text>
             </xsl:if>
+        </xsl:when>
+        <xsl:when test="parent::tei:front|parent::tei:body|parent::tei:back">
+            <xsl:apply-templates/>
         </xsl:when>
         <xsl:otherwise>
             <xsl:apply-templates/>
@@ -428,7 +439,7 @@ Volumes are published under the </xsl:text><xsl:value-of select="//tei:publicati
         <xsl:apply-templates/>
     </xsl:template>
     
-    <xsl:template match="tei:back/tei:div/tei:head">
+    <!--<xsl:template match="tei:back/tei:div/tei:head">
         <xsl:text>
         &#10;&#10;\newpage
 &#10;\thispagestyle{plain}
@@ -441,7 +452,7 @@ Volumes are published under the </xsl:text><xsl:value-of select="//tei:publicati
         <xsl:text>}&#10;</xsl:text>
         <xsl:text>\pagestyle{fancy}
 &#10;\setcounter{page}{1}</xsl:text>
-    </xsl:template>
+    </xsl:template>-->
 
   <xsl:template match="/tei:text" priority="999">
     <xsl:call-template name="wrapRootText"/>

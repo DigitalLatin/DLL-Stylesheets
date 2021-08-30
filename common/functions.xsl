@@ -1043,6 +1043,7 @@ of this software, even if advised of the possibility of such damage.
       <xsl:choose>
         <xsl:when test="tei:match(@rend,'numbered')">true</xsl:when>
         <xsl:when test="tei:match(@rend,'ordered')">true</xsl:when>
+        <xsl:when test="tei:match(@rend,'lettered')">true</xsl:when>
         <xsl:when test="@type='ordered'">true</xsl:when>
         <xsl:otherwise>false</xsl:otherwise>
       </xsl:choose>

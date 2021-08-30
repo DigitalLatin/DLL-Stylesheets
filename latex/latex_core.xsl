@@ -166,41 +166,6 @@
       <xsl:when test="parent::tei:castList"/>
       <xsl:when test="parent::tei:figure"/>
       <xsl:when test="parent::tei:list"/>
-      <xsl:when test="parent::tei:lg">&#10;\subsection*{\uppercase{<xsl:apply-templates/>}} </xsl:when>
-      <xsl:when test="parent::tei:front or parent::tei:body or parent::tei:back"> 
-        <xsl:text>\section*{</xsl:text><xsl:apply-templates/><xsl:text>}</xsl:text>
-      </xsl:when>
-      <xsl:when test="parent::tei:div[@xml:id = 'preface']">
-        <xsl:text>\section*{</xsl:text><xsl:apply-templates/><xsl:text>}&#10;\pagestyle{fancy}</xsl:text>
-      </xsl:when>
-      
-      <!-- This is for the title of the work itself, or of the commentary. -->
-      <xsl:when test="parent::tei:div[@type = 'edition'] or parent::tei:div[@type = 'commentary']">
-        <xsl:text>\subsection[{</xsl:text>
-        <xsl:apply-templates/>
-        <xsl:text>}]{\centering\uppercase{\so{</xsl:text>
-        <xsl:apply-templates/>
-        <xsl:text>}}}\label{</xsl:text>
-        <xsl:value-of select="parent::tei:div/@xml:id"/>
-        <xsl:text>}&#10;\pagestyle{fancy}</xsl:text>
-      </xsl:when>
-      
-      <!-- This is for the title of individual sections, so that the titles can be included in the apparatus. -->
-      <xsl:when test="ancestor::tei:div[@type = 'edition'] and parent::tei:div[@type = 'textpart']">
-        <xsl:text>&#10;\vspace{2\baselineskip} % Whitespace&#10;</xsl:text>
-        <xsl:text>&#10;&#10;\beginnumbering &#10;</xsl:text>
-        <xsl:text>\pstart&#10;</xsl:text>
-        <xsl:text>\noindent&#10;</xsl:text>
-        <xsl:text>\label{</xsl:text>
-        <xsl:value-of select="parent::tei:div/@xml:id"/>
-        <xsl:text>}&#10;</xsl:text>
-        <xsl:text>\textbf{</xsl:text>
-        <xsl:apply-templates/>
-        <xsl:text>}&#10;</xsl:text>
-        <xsl:text>\pend&#10;</xsl:text>
-        <xsl:text>\endnumbering&#10;</xsl:text>
-        <xsl:text>&#10;\vspace{1\baselineskip} % Whitespace&#10;</xsl:text>
-      </xsl:when>
       <xsl:when test="parent::tei:table"/>
       <xsl:otherwise>
         <xsl:variable name="depth">
@@ -221,7 +186,7 @@
           </xsl:when>
           <xsl:otherwise>
             <xsl:choose>
-              <xsl:when test="$depth = 0">section</xsl:when>
+              <xsl:when test="$depth = 0">newpage&#10;\thispagestyle{plain}&#10;\section</xsl:when>
               <xsl:when test="$depth = 1">subsection</xsl:when>
               <xsl:when test="$depth = 2">subsubsection</xsl:when>
               <xsl:when test="$depth = 3">paragraph</xsl:when>
@@ -230,7 +195,7 @@
             </xsl:choose>
           </xsl:otherwise>
         </xsl:choose>
-        <xsl:choose>
+        <!--<xsl:choose>
           <xsl:when
             test="
               parent::tei:body or ancestor::tei:floatingText or
@@ -240,35 +205,98 @@
               or (ancestor::tei:front and $numberFrontHeadings = '')"
             >*</xsl:when>
           <xsl:otherwise>[{<xsl:value-of select="tei:escapeChars(., .)"/>}]</xsl:otherwise>
-        </xsl:choose>
+        </xsl:choose>-->
         <xsl:choose>
-          <!-- SJH: Set the subsection headings in italics. -->
-          <xsl:when test="$depth = '1' and not(parent::tei:div[@type = 'textpart'])">
-            <xsl:text>{\textit{</xsl:text>
+          <xsl:when test="parent::tei:lg">&#10;\subsection*{\uppercase{<xsl:apply-templates/>}} </xsl:when>
+          
+          <!-- First Order Heads -->
+          <xsl:when test="$depth = '0'">
+            <xsl:text>[{</xsl:text>
             <xsl:apply-templates/>
-            <xsl:text>}}&#10;</xsl:text>
+            <xsl:text>}]{\centering\uppercase{\so{</xsl:text>
+            <xsl:apply-templates/>
+            <xsl:text>}}}\label{</xsl:text>
+            <xsl:value-of select="parent::tei:div/@xml:id"/>
+            <xsl:text>}</xsl:text>
+            <xsl:text>&#10;\vspace{2\baselineskip} % Whitespace</xsl:text>
+              <xsl:if test="ancestor::tei:front/tei:div">
+                <xsl:text>&#10;&#10;\pagestyle{fancy}&#10;</xsl:text>   
+              </xsl:if>
+              <xsl:if test="ancestor::tei:body">
+                <xsl:text>&#10;&#10;\pagestyle{fancy}&#10;
+                  &#10;\fancyhead[C]{</xsl:text><xsl:value-of select="self::tei:head"/><xsl:text>}</xsl:text>   
+              </xsl:if>
+            <!-- This is for the title of the commentary, with a reset of the fancyheader. -->
+              <xsl:if test="ancestor::tei:back">
+                <xsl:text>&#10;&#10;\pagestyle{fancy}&#10;</xsl:text>
+                    <xsl:text>&#10;\fancyhead[LE]{\thepage}</xsl:text>
+                    <xsl:text>&#10;\fancyhead[CE]{</xsl:text><xsl:value-of select="ancestor::tei:div/tei:head"/><xsl:text>}</xsl:text>
+                    <xsl:text>&#10;\fancyhead[RO]{\thepage}</xsl:text>
+                    <xsl:text>&#10;\fancyhead[CO]{\rightmark}&#10;</xsl:text>
+              </xsl:if>
+            </xsl:when>
+            <!--<xsl:otherwise><xsl:text>*{</xsl:text><xsl:apply-templates/><xsl:text>}\label{</xsl:text>
+              <xsl:value-of select="parent::tei:div/@xml:id"/>
+              <xsl:text>}&#10;</xsl:text>
+            </xsl:otherwise>-->
+
+            <!-- Second Order Heads -->
+          <xsl:when test="$depth = '1'">
+            <xsl:choose>
+              <xsl:when test="ancestor::tei:front">
+                <xsl:text>{</xsl:text>
+                <xsl:apply-templates/>
+                <xsl:text>}&#10;</xsl:text>
+              </xsl:when>
+              <!-- This is for the title of individual sections of the edition, so that the titles can be included in the apparatus. -->
+              <xsl:when
+                test="ancestor::tei:body and parent::tei:div[@type = 'textpart']">
+                <xsl:text>&#10;\vspace{2\baselineskip} % Whitespace&#10;</xsl:text>
+                <xsl:text>&#10;&#10;\beginnumbering &#10;</xsl:text>
+                <xsl:text>\pstart&#10;</xsl:text>
+                <xsl:text>\noindent&#10;</xsl:text>
+                <xsl:text>\label{</xsl:text>
+                <xsl:value-of select="parent::tei:div/@xml:id"/>
+                <xsl:text>}&#10;</xsl:text>
+                <xsl:text>\textbf{</xsl:text>
+                <xsl:apply-templates/>
+                <xsl:text>}&#10;</xsl:text>
+                <xsl:text>\pend&#10;</xsl:text>
+                <xsl:text>\endnumbering&#10;</xsl:text>
+                <xsl:text>&#10;\vspace{1\baselineskip} % Whitespace&#10;</xsl:text>
+              </xsl:when>
+              <xsl:when test="ancestor::tei:back">
+                <xsl:text>[{</xsl:text>
+                <xsl:apply-templates/>
+                <xsl:text>}]{\centering\uppercase{\so{</xsl:text>
+                <xsl:apply-templates/>
+                <xsl:text>}}}\label{</xsl:text>
+                <xsl:value-of select="parent::tei:div/@xml:id"/>
+                <xsl:text>}</xsl:text>
+              </xsl:when>
+            </xsl:choose>
           </xsl:when>
-          <!-- SJH: Set subsubsection headings in italics -->
-          <xsl:when test="$depth = '2'">
-            <xsl:text>{\scshape{</xsl:text>
+          
+          <!-- Third Order Heads -->
+          <!-- SJH: Set subsubsection headings for front and back to follow default -->
+          <xsl:when test="$depth = '2' and (ancestor::tei:front or ancestor::tei:back)">
+            <xsl:text>{</xsl:text>
             <xsl:apply-templates/>
-            <xsl:text>}}</xsl:text>
+            <xsl:text>}&#10;</xsl:text>
           </xsl:when>
           <xsl:otherwise>
             <xsl:text>{</xsl:text>
             <xsl:apply-templates/>
-            <xsl:text>}</xsl:text>
+            <xsl:text>}\label{</xsl:text>
+                <xsl:value-of select="parent::tei:div/@xml:id"/>
+                <xsl:text>}</xsl:text>
+                <xsl:text>&#10;</xsl:text>
           </xsl:otherwise>
         </xsl:choose>
-        <xsl:if test="../@xml:id">
-          <xsl:text>\label{</xsl:text>
-          <xsl:value-of select="../@xml:id"/>
-          <xsl:text>}</xsl:text>
-        </xsl:if>
       </xsl:otherwise>
     </xsl:choose>
   </xsl:template>
-
+  
   <doc xmlns="http://www.oxygenxml.com/ns/doc/xsl">
     <desc>Process element head in heading mode</desc>
   </doc>

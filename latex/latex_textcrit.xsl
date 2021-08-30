@@ -121,7 +121,7 @@
       <xsl:text>\Bfootnote</xsl:text>
       <!-- Logic for handling a lemma with or without witness or source -->
       <xsl:choose>
-        <!-- If the lemma doesn't have a witness or a source, just insert the lemma, followed by ]. -->
+        <!-- If the lemma doesn't have a witness or a source, just insert the lemma, followed by ], which Reledmac inserts automatically by default (\Xlemmaseparator). -->
         <xsl:when test="not(@wit) and not(@source)">
           <xsl:if test="tei:lem[@rend = 'none']">
             <xsl:text/>
@@ -297,6 +297,7 @@
             <xsl:apply-templates select="following-sibling::tei:note[last() and not(@target)]"/>
             <xsl:text>}</xsl:text>
           </xsl:if>
+          <xsl:text> $\parallel$ </xsl:text>
         </xsl:otherwise>
       </xsl:choose>
     </xsl:for-each>
