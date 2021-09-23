@@ -95,12 +95,15 @@ of this software, even if advised of the possibility of such damage.
     </xsl:choose>
   </xsl:template>
   <doc xmlns="http://www.oxygenxml.com/ns/doc/xsl">
-      <desc>[latex] <param name="target">target</param>
-         <param name="ptr">ptr</param>
-         <param name="dest">dest</param>
-         <param name="body">body</param>
+      <desc>[latex]
+        Template for making internal links.
       </desc>
-   </doc>
+    <param name="target"/>
+    <param name="class"/>
+    <param name="ptr"/>
+    <param name="dest"/>
+    <param name="body"/>
+  </doc>
   <xsl:template name="makeInternalLink">
       <xsl:param name="target"/>
       <xsl:param name="class"/>
@@ -117,7 +120,7 @@ of this software, even if advised of the possibility of such damage.
             <xsl:text>\hyperlink{</xsl:text>
             <xsl:value-of select="$dest"/>
             <xsl:text>}{</xsl:text>
-            <xsl:value-of select="$body"/>
+            <xsl:choose><xsl:when test="self::tei:ref"><xsl:value-of select="."/></xsl:when><xsl:otherwise><xsl:value-of select="$body"/></xsl:otherwise></xsl:choose>
             <xsl:text>}</xsl:text>
           </xsl:when>
           <xsl:when test="not($body = '')">

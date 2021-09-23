@@ -282,7 +282,7 @@ of this software, even if advised of the possibility of such damage.
       <xsl:when test="local-name()='label'">
         <xsl:text>\textbf{</xsl:text>
         <xsl:apply-templates/>
-        <xsl:text> }</xsl:text>
+        <xsl:text>}</xsl:text>
       </xsl:when>
       <xsl:when test="not($style)">
         <xsl:sequence select="concat('{\',local-name(),' ')"/>

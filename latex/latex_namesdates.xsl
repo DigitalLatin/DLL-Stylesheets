@@ -48,8 +48,8 @@ of this software, even if advised of the possibility of such damage.
          <p>Copyright: 2013, TEI Consortium</p>
       </desc>
    </doc>
-  <xsl:template match="//tei:body//tei:listPerson|//tei:front//tei:listPerson">
-    <xsl:if test="tei:head"> 
+  <xsl:template match="//tei:front//tei:listPerson|//tei:body//tei:listPerson">
+   <!--<xsl:if test="tei:head"> 
       <xsl:text>\vspace{1.5\baselineskip}</xsl:text>
       <xsl:text>&#10;</xsl:text>
       <xsl:text>\leftline{\large\uppercase{</xsl:text>
@@ -59,19 +59,21 @@ of this software, even if advised of the possibility of such damage.
       <xsl:text>}} </xsl:text>
       <xsl:text>&#10;</xsl:text>
       <xsl:text>\vspace{0.5\baselineskip}</xsl:text>
-    </xsl:if>
+    </xsl:if>-->
     <xsl:choose>
-      <xsl:when test="@type='characters'">
-        <xsl:text>&#10;</xsl:text>
+      <xsl:when test="//tei:listPerson[@type='characters']">
+        <xsl:text>&#10;{\large \scshape{</xsl:text>
+        <xsl:value-of select="tei:head"/>
+        <xsl:text>}&#10;\begin{itemize}&#10;</xsl:text>
         <xsl:for-each select="tei:person">
-          <xsl:text>\leftline{</xsl:text><xsl:call-template name="person"/><xsl:text>}</xsl:text>
-          <xsl:text>&#10;</xsl:text>
+          <xsl:text>\item[] </xsl:text><xsl:call-template name="person"/><xsl:text>&#10;</xsl:text>
         </xsl:for-each>
+        <xsl:text>\end{itemize}</xsl:text>
       </xsl:when>
       <xsl:otherwise>
         <xsl:text>&#10;\begin{bibitemlist}{1}&#10;</xsl:text>
         <xsl:for-each select="tei:person">
-          <xsl:text>\bibitem</xsl:text>
+          <xsl:text>&#10;\bibitem</xsl:text>
           <xsl:call-template name="person"/>      
         </xsl:for-each>
         <xsl:text>\end{bibitemlist}&#10;</xsl:text>
@@ -79,11 +81,10 @@ of this software, even if advised of the possibility of such damage.
     </xsl:choose>
   </xsl:template>
   
-  <xsl:template match="tei:listPerson/tei:person" name="person">
+  <xsl:template match="//tei:person" name="person">
     <xsl:choose>
-      <xsl:when test="../@type='characters'">
-        <xsl:text>{</xsl:text><xsl:value-of select="@xml:id"/><xsl:text>}</xsl:text>
-        <xsl:value-of select="descendant::tei:persName/text()"/>
+      <xsl:when test="parent::tei:listPerson[@type='characters']">
+        <xsl:text>\hypertarget{</xsl:text><xsl:value-of select="@xml:id"/><xsl:text>}{</xsl:text><xsl:value-of select="descendant::tei:persName/text()"/><xsl:text>}</xsl:text>
       </xsl:when>
       <xsl:otherwise>
         <xsl:text>[</xsl:text><xsl:value-of select="descendant::tei:persName/tei:abbr[@type='siglum']"/><xsl:text>]{</xsl:text><xsl:value-of select="@xml:id"/><xsl:text>}  </xsl:text>

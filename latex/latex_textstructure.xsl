@@ -339,9 +339,6 @@ Volumes are published under the </xsl:text><xsl:value-of select="//tei:publicati
                 <xsl:text>&#10;\newpage</xsl:text>
             </xsl:if>
         </xsl:when>
-        <xsl:when test="parent::tei:front|parent::tei:body|parent::tei:back">
-            <xsl:apply-templates/>
-        </xsl:when>
         <xsl:otherwise>
             <xsl:apply-templates/>
         </xsl:otherwise>

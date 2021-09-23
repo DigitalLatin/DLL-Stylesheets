@@ -60,7 +60,7 @@
     <xsl:template match="tei:castGroup">
         <xsl:text>\begin{itemize} </xsl:text>
         <xsl:apply-templates/>
-        <xsl:text>&#10;\end{itemize}</xsl:text>
+        <xsl:text>\end{itemize}</xsl:text>
     </xsl:template>
     <doc xmlns="http://www.oxygenxml.com/ns/doc/xsl">
         <desc>Process element castItem</desc>

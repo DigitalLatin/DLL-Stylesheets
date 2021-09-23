@@ -320,13 +320,31 @@
     <!-- Close the apparatus note. -->
     <xsl:text>}}</xsl:text>
   </xsl:template>
+  
+  <doc xmlns="http://www.oxygenxml.com/ns/doc/xsl">
+    <desc>Process element note with @type = 'parallel' for the apparatus testium/fontium.</desc>
+  </doc>
+  <xsl:template match="//tei:note[@type='parallel']">
+    <xsl:text>\edtext{}{\Afootnote[nosep]{</xsl:text>
+    <xsl:apply-templates/>
+    <!--<xsl:if test="@xml:id">
+      <xsl:text>\label{</xsl:text>
+      <xsl:value-of select="@xml:id"/>
+      <xsl:text>}</xsl:text>
+    </xsl:if>-->
+    <xsl:text>}}</xsl:text>
+  </xsl:template>
 
-  <xsl:template match="tei:div[@type = 'edition']/tei:div">
+  <xsldoc:doc xmlns:xsldoc="http://www.oxygenxml.com/ns/doc/xsl">
+    <xsldoc:desc>
+      <p>Processing tei:l and tei:p with line numbering.</p>
+    </xsldoc:desc>
+  </xsldoc:doc>
+  <xsl:template match="tei:div[@type='edition']//tei:div//tei:div">
     <xsl:apply-templates select="tei:head"/>
     <xsl:choose>
       <!-- poetry -->
-      <xsl:when test="tei:l | tei:lg">&#10;\beginnumbering &#10;\pstart &#10;<xsl:apply-templates
-        select="*[not(self::tei:head)]"/>&#10;\pend &#10;\endnumbering &#10;</xsl:when>
+      <xsl:when test="tei:l | tei:lg">&#10;\beginnumbering &#10;\pstart &#10;<xsl:apply-templates/>&#10;\pend &#10;\endnumbering &#10;</xsl:when>
       <!-- prose -->
       <xsl:when test="tei:p | tei:ab">&#10;\beginnumbering &#10;<xsl:apply-templates
         select="*[not(self::tei:head)]"/>&#10;\endnumbering &#10;</xsl:when>
