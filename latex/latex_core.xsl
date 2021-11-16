@@ -158,7 +158,7 @@
     <xsl:apply-templates/>
     <xsl:text>}</xsl:text>
   </xsl:template>
-  
+
   <doc xmlns="http://www.oxygenxml.com/ns/doc/xsl">
     <desc>Process element head</desc>
   </doc>
@@ -167,11 +167,13 @@
       <xsl:when test="parent::tei:castList"/>
       <xsl:when test="parent::tei:figure"/>
       <xsl:when test="parent::tei:list"/>
-      <xsl:when test="parent::tei:lg">
+      <!--<xsl:when test="parent::tei:lg">
         <xsl:text>&#10;\vspace{2\baselineskip} % Whitespace&#10;</xsl:text>
-        <xsl:text>&#10;\subsection*{</xsl:text><xsl:apply-templates/><xsl:text>}</xsl:text>
+        <xsl:text>&#10;\subsection*{</xsl:text>
+        <xsl:apply-templates/>
+        <xsl:text>}</xsl:text>
         <xsl:text>&#10;\vspace{1\baselineskip} % Whitespace&#10;</xsl:text>
-      </xsl:when>
+      </xsl:when>-->
       <xsl:when test="parent::tei:table"/>
       <xsl:otherwise>
         <xsl:variable name="depth">
@@ -196,9 +198,7 @@
               <xsl:when test="$depth = 1">
                 <xsl:if test="parent::tei:div[@type = 'textpart']">
                   <xsl:text>vspace{2\baselineskip} % Whitespace&#10;</xsl:text>
-                  <!--<xsl:text>&#10;&#10;\beginnumbering &#10;</xsl:text>
-                  <xsl:text>\pstart&#10;</xsl:text>
-                  <xsl:text>\noindent&#10;\</xsl:text>--><xsl:text>\</xsl:text>
+                  <xsl:text>\</xsl:text>
                 </xsl:if>subsection</xsl:when>
               <xsl:when test="$depth = 2">subsubsection</xsl:when>
               <xsl:when test="$depth = 3">paragraph</xsl:when>
@@ -218,7 +218,7 @@
             >*</xsl:when>
           <xsl:otherwise>[{<xsl:value-of select="tei:escapeChars(., .)"/>}]</xsl:otherwise>
         </xsl:choose>-->
-        
+
         <xsl:choose>
           <!-- First Order Heads -->
           <xsl:when test="$depth = '0'">
@@ -230,28 +230,32 @@
             <xsl:value-of select="parent::tei:div/@xml:id"/>
             <xsl:text>}</xsl:text>
             <xsl:text>&#10;\vspace{2\baselineskip} % Whitespace</xsl:text>
-              <xsl:if test="ancestor::tei:front/tei:div">
-                <xsl:text>&#10;&#10;\pagestyle{fancy}&#10;</xsl:text>   
-              </xsl:if>
-              <xsl:if test="ancestor::tei:body">
-                <xsl:text>&#10;&#10;\pagestyle{fancy}&#10;
-                  &#10;\fancyhead[C]{</xsl:text><xsl:value-of select="self::tei:head"/><xsl:text>}</xsl:text>   
-              </xsl:if>
+            <xsl:if test="ancestor::tei:front/tei:div">
+              <xsl:text>&#10;&#10;\pagestyle{fancy}&#10;</xsl:text>
+            </xsl:if>
+            <xsl:if test="ancestor::tei:body">
+              <xsl:text>&#10;&#10;\pagestyle{fancy}&#10;
+                  &#10;\fancyhead[C]{</xsl:text>
+              <xsl:value-of select="self::tei:head"/>
+              <xsl:text>}</xsl:text>
+            </xsl:if>
             <!-- This is for the title of the commentary, with a reset of the fancyheader. -->
-              <xsl:if test="ancestor::tei:back">
-                <xsl:text>&#10;&#10;\pagestyle{fancy}&#10;</xsl:text>
-                    <xsl:text>&#10;\fancyhead[LE]{\thepage}</xsl:text>
-                    <xsl:text>&#10;\fancyhead[CE]{</xsl:text><xsl:value-of select="ancestor::tei:div/tei:head"/><xsl:text>}</xsl:text>
-                    <xsl:text>&#10;\fancyhead[RO]{\thepage}</xsl:text>
-                    <xsl:text>&#10;\fancyhead[CO]{\rightmark}&#10;</xsl:text>
-              </xsl:if>
-            </xsl:when>
-            <!--<xsl:otherwise><xsl:text>*{</xsl:text><xsl:apply-templates/><xsl:text>}\label{</xsl:text>
+            <xsl:if test="ancestor::tei:back">
+              <xsl:text>&#10;&#10;\pagestyle{fancy}&#10;</xsl:text>
+              <xsl:text>&#10;\fancyhead[LE]{\thepage}</xsl:text>
+              <xsl:text>&#10;\fancyhead[CE]{</xsl:text>
+              <xsl:value-of select="ancestor::tei:div/tei:head"/>
+              <xsl:text>}</xsl:text>
+              <xsl:text>&#10;\fancyhead[RO]{\thepage}</xsl:text>
+              <xsl:text>&#10;\fancyhead[CO]{\rightmark}&#10;</xsl:text>
+            </xsl:if>
+          </xsl:when>
+          <!--<xsl:otherwise><xsl:text>*{</xsl:text><xsl:apply-templates/><xsl:text>}\label{</xsl:text>
               <xsl:value-of select="parent::tei:div/@xml:id"/>
               <xsl:text>}&#10;</xsl:text>
             </xsl:otherwise>-->
 
-            <!-- Second Order Heads -->
+          <!-- Second Order Heads -->
           <xsl:when test="$depth = '1'">
             <xsl:choose>
               <xsl:when test="ancestor::tei:front">
@@ -260,16 +264,13 @@
                 <xsl:text>}&#10;</xsl:text>
               </xsl:when>
               <!-- This is for the title of individual sections of the edition, so that the titles can be included in the apparatus. -->
-              <xsl:when
-                test="ancestor::tei:body and parent::tei:div[@type = 'textpart']">
+              <xsl:when test="ancestor::tei:body and parent::tei:div[@type = 'textpart']">
                 <xsl:text>{</xsl:text>
                 <xsl:apply-templates/>
                 <xsl:text>}</xsl:text>
                 <xsl:text>\label{</xsl:text>
                 <xsl:value-of select="parent::tei:div/@xml:id"/>
                 <xsl:text>}&#10;</xsl:text>
-                <!--<xsl:text>\pend&#10;</xsl:text>
-                <xsl:text>\endnumbering&#10;</xsl:text>-->
                 <xsl:text>&#10;\vspace{1\baselineskip} % Whitespace&#10;</xsl:text>
               </xsl:when>
               <xsl:when test="ancestor::tei:back">
@@ -283,33 +284,26 @@
               </xsl:when>
             </xsl:choose>
           </xsl:when>
-          
+
           <!-- Third Order Heads -->
           <xsl:when test="$depth = '2'">
-            <xsl:choose>
-              <xsl:when test="ancestor::tei:front or ancestor::tei:back">
-                <xsl:text>{</xsl:text>
-                <xsl:apply-templates/>
-                <xsl:text>}&#10;</xsl:text>
-              </xsl:when>
-              <xsl:when test="parent::tei:div[@type = 'textpart']">
-                <xsl:text>Bonkers</xsl:text>
-              </xsl:when>
-            </xsl:choose>
+            <xsl:text>{</xsl:text>
+            <xsl:apply-templates/>
+            <xsl:text>}&#10;</xsl:text>
           </xsl:when>
           <xsl:otherwise>
             <xsl:text>{</xsl:text>
             <xsl:apply-templates/>
             <xsl:text>}\label{</xsl:text>
-                <xsl:value-of select="parent::tei:div/@xml:id"/>
-                <xsl:text>}</xsl:text>
-                <xsl:text>&#10;</xsl:text>
+            <xsl:value-of select="parent::tei:div/@xml:id"/>
+            <xsl:text>}</xsl:text>
+            <xsl:text>&#10;</xsl:text>
           </xsl:otherwise>
         </xsl:choose>
       </xsl:otherwise>
     </xsl:choose>
   </xsl:template>
-  
+
   <doc xmlns="http://www.oxygenxml.com/ns/doc/xsl">
     <desc>Process element head in heading mode</desc>
   </doc>
@@ -781,7 +775,7 @@
       <xsl:when test="parent::tei:div[@xml:id = 'appendix-critica']">
         <xsl:text>&#10;\noindent </xsl:text>
       </xsl:when>
-      <xsl:when test="preceding-sibling::*[1][self::tei:quote[@rend='blockquote']]">
+      <xsl:when test="preceding-sibling::*[1][self::tei:quote[@rend = 'blockquote']]">
         <xsl:text>&#10;\noindent </xsl:text>
       </xsl:when>
       <xsl:otherwise>
@@ -893,7 +887,7 @@
   </doc>
   <xsl:template match="tei:quote">
     <xsl:choose>
-      <xsl:when test="@type='apparatus'">
+      <xsl:when test="@type = 'apparatus'">
         <xsl:text>&#10;\begingroup</xsl:text>
         <xsl:text>&#10;\fontsize{9pt}{10pt}\selectfont</xsl:text>
         <xsl:text>&#10;\begin{</xsl:text>
@@ -909,10 +903,12 @@
         <xsl:sequence select="tei:makeHyperTarget(@xml:id)"/>
         <xsl:apply-templates/>
       </xsl:when>
-      <xsl:when test="@rend='inline'">
-        <xsl:text>``</xsl:text><xsl:apply-templates/><xsl:text>''</xsl:text>
+      <xsl:when test="@rend = 'inline'">
+        <xsl:text>``</xsl:text>
+        <xsl:apply-templates/>
+        <xsl:text>''</xsl:text>
       </xsl:when>
-      <xsl:when test="not(tei:isInline(.) and @type='apparatus')">
+      <xsl:when test="not(tei:isInline(.) and @type = 'apparatus')">
         <xsl:text>&#10;&#10;\begin{</xsl:text>
         <xsl:value-of select="$quoteEnv"/>
         <xsl:text>}</xsl:text>
@@ -921,7 +917,7 @@
         <xsl:text>\end{</xsl:text>
         <xsl:value-of select="$quoteEnv"/>
         <xsl:text>}&#10;</xsl:text>
-      </xsl:when>      
+      </xsl:when>
       <!-- SJH: Avoid having line breaks interrupt the quotation. This was an issue in Dunning's text. -->
       <xsl:when test="child::tei:lb">
         <xsl:text>`</xsl:text>
@@ -1032,6 +1028,16 @@
   </xsl:template>
 
   <doc xmlns="http://www.oxygenxml.com/ns/doc/xsl">
+    <desc>Process tei:lg
+    </desc>
+  </doc>
+  <xsl:template match="tei:lg">
+    <xsl:text>&#10;\pstart&#10;</xsl:text>
+    <xsl:apply-templates/>
+    <xsl:text>&#10;\pend&#10;</xsl:text>
+  </xsl:template>
+  
+  <doc xmlns="http://www.oxygenxml.com/ns/doc/xsl">
     <desc>If verseNumbering is requested, counts all the verse lines since the last container (<gi
         xmlns="">div1</gi> by default) and labels every fifth verse using a LaTeX box 3 ems wide.
     </desc>
@@ -1068,8 +1074,10 @@
         <xsl:apply-templates/>
         <xsl:text>\hfill\\</xsl:text>
       </xsl:when>
-      <xsl:when test="parent::tei:div[@type='textpart']">
-        <xsl:text>&#10;\leftline{</xsl:text><xsl:apply-templates/><xsl:text>}</xsl:text>
+      <xsl:when test="ancestor::tei:div[@type = 'textpart']">
+        <xsl:text>&#10;\leftline{</xsl:text>
+        <xsl:apply-templates/>
+        <xsl:text>}</xsl:text>
       </xsl:when>
       <xsl:otherwise>
         <xsl:text>&#10;\leftline{</xsl:text>
@@ -1184,12 +1192,12 @@
     <xsl:text>}</xsl:text>
   </xsl:template>
 
-<doc xmlns="http://www.oxygenxml.com/ns/doc/xsl">
-  <desc>Handle foreign.</desc>
-</doc>
-<xsl:template match="tei:foreign">
-  <xsl:text>\textit{</xsl:text>
-  <xsl:apply-templates/>
-  <xsl:text>}</xsl:text>
-</xsl:template>
+  <doc xmlns="http://www.oxygenxml.com/ns/doc/xsl">
+    <desc>Handle foreign.</desc>
+  </doc>
+  <xsl:template match="tei:foreign">
+    <xsl:text>\textit{</xsl:text>
+    <xsl:apply-templates/>
+    <xsl:text>}</xsl:text>
+  </xsl:template>
 </xsl:stylesheet>
