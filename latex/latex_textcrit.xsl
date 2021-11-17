@@ -344,7 +344,7 @@
     <!--<xsl:apply-templates select="tei:head"/>-->
     <xsl:choose>
       <!-- poetry -->
-      <xsl:when test="tei:l">&#10;\pstart &#10;<xsl:apply-templates/>&#10;\pend &#10;</xsl:when>
+      <xsl:when test="tei:l">&#10;\stanza &#10;<xsl:apply-templates/>&#10;\&amp; &#10;</xsl:when>
       <!-- prose -->
       <xsl:when test="tei:p | tei:ab">&#10;\beginnumbering &#10;<xsl:apply-templates/>&#10;\endnumbering &#10;</xsl:when>
     </xsl:choose>

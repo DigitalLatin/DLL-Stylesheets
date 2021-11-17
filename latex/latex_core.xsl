@@ -1032,12 +1032,12 @@
     </desc>
   </doc>
   <xsl:template match="tei:lg">
-    <xsl:text>&#10;\pstart&#10;</xsl:text>
+    <xsl:text>&#10;\stanza&#10;</xsl:text>
     <xsl:apply-templates/>
-    <xsl:text>&#10;\pend&#10;</xsl:text>
+    <xsl:text>&#10;\&amp;&#10;</xsl:text>
   </xsl:template>
   
-  <doc xmlns="http://www.oxygenxml.com/ns/doc/xsl">
+<!--  <doc xmlns="http://www.oxygenxml.com/ns/doc/xsl">
     <desc>If verseNumbering is requested, counts all the verse lines since the last container (<gi
         xmlns="">div1</gi> by default) and labels every fifth verse using a LaTeX box 3 ems wide.
     </desc>
@@ -1085,7 +1085,7 @@
         <xsl:text>}</xsl:text>
       </xsl:otherwise>
     </xsl:choose>
-  </xsl:template>
+  </xsl:template>-->
 
   <xsl:template match="tei:dell[tei:match(@rend, 'strikethrough')]">
     <xsl:text>\sout{</xsl:text>

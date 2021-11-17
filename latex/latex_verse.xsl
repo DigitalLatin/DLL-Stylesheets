@@ -52,6 +52,18 @@ of this software, even if advised of the possibility of such damage.
       </desc>
    </doc>
 
+    <doc xmlns="http://www.oxygenxml.com/ns/doc/xsl">
+        <desc>
+            <p>Process element l</p>
+            <p>Each line in \stanza must be terminated with an ampersand.</p>
+        </desc>
+    </doc>
+
+<xsl:template match="tei:l">
+    <xsl:apply-templates/>&amp;&#10;
+</xsl:template>
+    
+    
   <doc xmlns="http://www.oxygenxml.com/ns/doc/xsl">
       <desc>
          <p>Process element caesura</p>

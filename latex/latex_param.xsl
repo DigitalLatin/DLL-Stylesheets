@@ -125,6 +125,7 @@ the beginning of the document</desc>
 \usepackage{setspace}
 % Allow alignment of images
 \usepackage[export]{adjustbox}
+\usepackage[characterstyle=imprimerie-verse]{thalie}
 </xsl:text>
 <xsl:text>
 \definecolor{shadecolor}{gray}{0.95}
@@ -200,7 +201,7 @@ as a proportion of the page width.</desc>
    </doc>
    <xsl:param name="quoteEnv">quote</xsl:param>
 
-   <doc xmlns="http://www.oxygenxml.com/ns/doc/xsl" class="layout" type="boolean">
+  <!-- <doc xmlns="http://www.oxygenxml.com/ns/doc/xsl" class="layout" type="boolean">
       <desc>Whether to number lines of poetry</desc>t
    </doc>
    <xsl:param name="verseNumbering">false</xsl:param>
@@ -214,7 +215,7 @@ as a proportion of the page width.</desc>
       <desc>When numbering poetry, when to restart the sequence; this must be the name of a TEI element</desc>
    </doc>
    <xsl:param name="resetVerseLineNumbering">div1</xsl:param>
-
+-->
    <doc xmlns="http://www.oxygenxml.com/ns/doc/xsl" class="userpackage" type="string">
       <desc>Options to pass to the geometry package to set margins etc</desc>
    </doc>
