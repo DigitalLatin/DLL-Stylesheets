@@ -632,6 +632,11 @@
         <xsl:text>\end{msitemlist}</xsl:text>
       </xsl:when>
       <xsl:when test="parent::tei:listWit">
+        <xsl:if test="child::tei:head">
+          <xsl:text>\textbf{</xsl:text>
+          <xsl:value-of select="child::tei:head"/>
+          <xsl:text>}</xsl:text>
+        </xsl:if>
         <xsl:text>&#10;</xsl:text>
         <xsl:text>&#10;</xsl:text>
         <xsl:text>\begin{msitemlist}{1}</xsl:text>
@@ -643,6 +648,11 @@
         <xsl:text>\end{msitemlist}</xsl:text>
       </xsl:when>
       <xsl:when test="parent::tei:witness">
+        <xsl:if test="child::tei:head">
+          <xsl:text>\textbf{</xsl:text>
+          <xsl:value-of select="child::tei:head"/>
+          <xsl:text>}</xsl:text>
+        </xsl:if>
         <xsl:text>&#10;</xsl:text>
         <xsl:text>\begin{msitemlist}{1}</xsl:text>
         <xsl:for-each select="tei:witness">
@@ -653,6 +663,11 @@
         <xsl:text>\end{msitemlist}</xsl:text>
       </xsl:when>
       <xsl:when test="parent::tei:div[@xml:id = 'bibliography-early-editions']">
+        <xsl:if test="child::tei:head">
+          <xsl:text>\textbf{</xsl:text>
+          <xsl:value-of select="child::tei:head"/>
+          <xsl:text>}</xsl:text>
+        </xsl:if>
         <xsl:text>\begin{bibitemlist}{1}</xsl:text>
         <xsl:for-each select="tei:witness">
           <xsl:text> \bibitem</xsl:text>
