@@ -340,15 +340,21 @@
       <p>Processing tei:l and tei:p with line numbering.</p>
     </xsldoc:desc>
   </xsldoc:doc>
-  <xsl:template match="tei:div[@type='edition']//tei:div//tei:div">
+  <!--<xsl:template match="tei:div[@type='edition']//tei:div//tei:div">
     <xsl:apply-templates select="tei:head"/>
     <xsl:choose>
-      <!-- poetry -->
+      <!-\- poetry -\->
       <xsl:when test="tei:l | tei:lg">&#10;\beginnumbering &#10;\pstart &#10;<xsl:apply-templates/>&#10;\pend &#10;\endnumbering &#10;</xsl:when>
-      <!-- prose -->
+      <!-\- prose -\->
       <xsl:when test="tei:p | tei:ab">&#10;\beginnumbering &#10;<xsl:apply-templates
         select="*[not(self::tei:head)]"/>&#10;\endnumbering &#10;</xsl:when>
     </xsl:choose>
+  </xsl:template>-->
+  
+  <xsl:template match="tei:div[@type='edition']">
+    <xsl:text>&#10;\beginnumbering&#10;</xsl:text>
+    <xsl:apply-templates/>
+    <xsl:text>&#10;\endnumbering&#10;</xsl:text>
   </xsl:template>
 
   <!-- Don't render these elements. -->
