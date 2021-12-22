@@ -27,7 +27,12 @@
       <p>Copyright: 2013, TEI Consortium</p>
     </desc>
   </doc>
-
+  <doc xmlns="http://www.oxygenxml.com/ns/doc/xsl">
+    <desc>
+      <p>For processing the apparatus fontium, see the template for tei:cit in latex_core.xsl.</p>
+    </desc>
+  </doc>
+  
   <doc xmlns="http://www.oxygenxml.com/ns/doc/xsl">
     <desc>
       <p>Override common_textcrit.xsl's template for tei:app.</p>
