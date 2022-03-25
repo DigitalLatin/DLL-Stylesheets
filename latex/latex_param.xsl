@@ -117,8 +117,8 @@ the beginning of the document</desc>
       <xsl:text>]{geometry}
 <!--\setlength{\textwidth}{115mm}
 \setlength{\textheight}{173mm}-->
-\setlength{\textwidth}{84mm}
-\setlength{\textheight}{136mm}
+<!--\setlength{\textwidth}{84mm}
+\setlength{\textheight}{136mm}-->
 \usepackage{framed}
 \usepackage{microtype}
 \usepackage{soul}
@@ -222,15 +222,19 @@ as a proportion of the page width.</desc>
   <!--<xsl:param name="latexGeometryOptions">twoside,tmargin=25mm,bmargin=30mm,inner=31.6mm,outer=63.3mm</xsl:param>-->
   <xsl:param name="latexGeometryOptions">
     twoside,
-    layoutwidth=14cm,
-    layoutheight=20.3cm,
-    layouthoffset=4cm,
-    layoutvoffset=5cm,
-    tmargin=2cm,
-    rmargin=2.7cm,
-    bmargin=3.50cm,
-    lmargin=1.60cm,
-    bindingoffset=1cm
+    paperheight=185mm,
+    paperwidth=129mm,
+    layoutheight=165mm,
+    layoutwidth=115mm,
+    textheight=145mm,
+    textwidth=90mm,
+    headsep=5mm,
+    top=20mm,
+    outer=15mm,
+    bottom=30mm,
+    inner=10mm,
+    hoffset=5mm,
+    voffset=10mm
   </xsl:param>
   
    <doc xmlns="http://www.oxygenxml.com/ns/doc/xsl" class="userpackage" type="string">
@@ -453,8 +457,8 @@ characters. The normal characters remain active for LaTeX commands.
 	 \paperheight297mm
        </xsl:when>
        <xsl:when test="$latexPaperSize='letterpaper'">
-	 \paperwidth216mm
-	 \paperheight279mm
+         \paperwidth210mm
+         \paperheight297mm
        </xsl:when>
 	 <xsl:otherwise>
 	 </xsl:otherwise>
