@@ -67,6 +67,7 @@
       </xsl:when>
       <!-- Apparatus Fontium -->
       <xsl:when test="ancestor::tei:div[@type = 'edition']">
+        <!-- Test for the type of quotation and handle accordingly. -->
         <xsl:if test="child::tei:quote[@rend = 'blockquote']">
           <xsl:text>\begin{</xsl:text>
           <xsl:value-of select="$quoteEnv"/>
@@ -75,12 +76,43 @@
         <xsl:if test="child::tei:quote[@rend = 'inline']">
           <xsl:text>``</xsl:text>
         </xsl:if>
+        <!-- Insert the quotation into \edtext{} -->
         <xsl:text>\edtext{</xsl:text>
-        <xsl:apply-templates select="*[not(self::tei:bibl)]"/>
-        <xsl:text>}{\Afootnote[nosep]{</xsl:text>
         
-        <!-- SAM: WORK HERE TO FIX THE BIBLIOGRAPHY DATA SO THAT IT DOESN'T ALL COME OUT IN \TEXTIT{} -->
-        <xsl:apply-templates select="tei:bibl"/>
+        
+        <xsl:choose>
+          <xsl:when test="count(tokenize(normalize-space(child::tei:quote), ' ')) &gt; 5">
+            <xsl:value-of select="tokenize(normalize-space(child::tei:quote), ' ')[1]"/><xsl:text> … </xsl:text> <xsl:value-of select="tokenize(normalize-space(child::tei:quote), ' ')[last()]"/>
+          </xsl:when>
+          <xsl:otherwise>
+            <xsl:apply-templates select="*[not(self::tei:bibl)]"/>
+          </xsl:otherwise>
+        </xsl:choose>
+        <!-- Start the Afootnote -->
+        <xsl:text>}{\Afootnote{</xsl:text>
+        <!-- SAM: Come back to this and handle it with listBibl. You'll need to update the guidelines for this eventually, since they accommodate only one bibl. -->
+        <!-- Process the bibl entry or entries. -->
+        <xsl:for-each select="tei:bibl">
+          <xsl:if test="tei:author">
+            <xsl:value-of select="tei:author"/>
+          </xsl:if>
+          <xsl:if test="tei:title">
+            <xsl:text>\textit{</xsl:text>
+            <xsl:value-of select="tei:title"/>
+            <xsl:text>}</xsl:text>
+          </xsl:if>
+          <xsl:if test="tei:biblScope">
+            <xsl:value-of select="tei:biblScope"/>
+          </xsl:if>
+          <xsl:choose>
+            <xsl:when test="not(position() = last())">
+              <xsl:text>, </xsl:text>
+            </xsl:when>
+            <xsl:otherwise>
+              <xsl:text>. </xsl:text>
+            </xsl:otherwise>
+          </xsl:choose>
+        </xsl:for-each>
         <xsl:text>}</xsl:text>
         <xsl:if test="child::tei:quote[@rend = 'blockquote']">
           <xsl:text>\end{</xsl:text>
@@ -223,12 +255,17 @@
             <xsl:choose>
               <xsl:when test="$depth = 0">newpage&#10;\thispagestyle{plain}&#10;\section</xsl:when>
               <xsl:when test="$depth = 1">
-                <xsl:if test="parent::tei:div[@type = 'textpart']">
+                <xsl:choose>
+                  <xsl:when test="parent::tei:div[@type = 'textpart']">
                   <xsl:text>vspace{2\baselineskip} % Whitespace&#10;</xsl:text>
-                  <!--<xsl:text>&#10;&#10;\beginnumbering &#10;</xsl:text>
-                  <xsl:text>\pstart&#10;</xsl:text>
-                  <xsl:text>\noindent&#10;\</xsl:text>--><xsl:text>\</xsl:text>
-                </xsl:if>subsection</xsl:when>
+                  <xsl:text>\</xsl:text>
+                </xsl:when>
+                <xsl:when test="ancestor::tei:div[@xml:id = 'bibliography']">
+                  <xsl:text>vspace{1.25em} % Whitespace&#10;</xsl:text>
+                  <xsl:text>\</xsl:text>
+                </xsl:when>
+                </xsl:choose><xsl:text>subsection</xsl:text>
+              </xsl:when>
               <xsl:when test="$depth = 2">subsubsection</xsl:when>
               <xsl:when test="$depth = 3">paragraph</xsl:when>
               <xsl:when test="$depth = 4">subparagraph</xsl:when>
@@ -649,10 +686,13 @@
   <xsl:template match="tei:listWit">
     <xsl:choose>
       <xsl:when test="parent::tei:div[@xml:id = 'bibliography-manuscripts']">
+        <xsl:text>&#10;</xsl:text>
+        <xsl:text>\vspace{1.5em}&#10;</xsl:text>
         <xsl:if test="child::tei:head">
-          <xsl:text>\textbf{</xsl:text>
+          <xsl:text>&#10;</xsl:text>
+          <xsl:text>{\large{</xsl:text>
           <xsl:value-of select="child::tei:head"/>
-          <xsl:text>}</xsl:text>
+          <xsl:text>}}</xsl:text>
         </xsl:if>
         <xsl:text>&#10;</xsl:text>
         <xsl:text>\begin{msitemlist}{1}&#10;</xsl:text>
@@ -665,9 +705,12 @@
       </xsl:when>
       <xsl:when test="parent::tei:listWit">
         <xsl:if test="child::tei:head">
-          <xsl:text>\textbf{</xsl:text>
+          <xsl:text>&#10;</xsl:text>
+          <xsl:text>&#10;</xsl:text>
+          <xsl:text>\vspace{1em}&#10;</xsl:text>
+          <xsl:text>{\large{</xsl:text>
           <xsl:value-of select="child::tei:head"/>
-          <xsl:text>}</xsl:text>
+          <xsl:text>}}</xsl:text>
         </xsl:if>
         <xsl:text>&#10;</xsl:text>
         <xsl:text>&#10;</xsl:text>
@@ -681,9 +724,12 @@
       </xsl:when>
       <xsl:when test="parent::tei:witness">
         <xsl:if test="child::tei:head">
-          <xsl:text>\textbf{</xsl:text>
+          <xsl:text>&#10;</xsl:text>
+          <xsl:text>&#10;</xsl:text>
+          <xsl:text>\vspace{1em}&#10;</xsl:text>
+          <xsl:text>{\large{</xsl:text>
           <xsl:value-of select="child::tei:head"/>
-          <xsl:text>}</xsl:text>
+          <xsl:text>}}</xsl:text>
         </xsl:if>
         <xsl:text>&#10;</xsl:text>
         <xsl:text>\begin{msitemlist}{1}&#10;</xsl:text>
@@ -696,6 +742,8 @@
       </xsl:when>
       <xsl:when test="parent::tei:div[@xml:id = 'bibliography-early-editions']">
         <xsl:if test="child::tei:head">
+          <xsl:text>&#10;</xsl:text>
+          <xsl:text>&#10;</xsl:text>
           <xsl:text>\textbf{</xsl:text>
           <xsl:value-of select="child::tei:head"/>
           <xsl:text>}</xsl:text>

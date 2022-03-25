@@ -278,7 +278,8 @@ Volumes are published under the </xsl:text><xsl:value-of select="//tei:publicati
 \end{itemize}
 \end{acknowledgmentsPage}
 \cleardoublepage
-\newpage
+\pagenumbering{roman}
+\tableofcontents
 </xsl:text>
     </xsl:template>
     
@@ -298,6 +299,13 @@ Volumes are published under the </xsl:text><xsl:value-of select="//tei:publicati
   <xsl:template match="tei:body">
     <xsl:if test="not(ancestor::tei:floatingText) and not(preceding::tei:body) and preceding::tei:front">
       <xsl:text>&#10;\mainmatter </xsl:text>
+        <!-- SJH: Added this, following https://tex.stackexchange.com/a/154465/257027 -->
+        <xsl:text>&#10;\pagenumbering{arabic}</xsl:text>
+        <xsl:text>&#10;\patchcmd{\chapter}</xsl:text>
+        <xsl:text>&#10;{\clearpage}</xsl:text>
+        <xsl:text>&#10;{\cleardoublepage}</xsl:text>
+        <xsl:text>&#10;{}</xsl:text>
+        <xsl:text>&#10;{}</xsl:text>
     </xsl:if>
       <xsl:text>&#10;\def\endstanzaextra{\pstart\centering-\-\-\-\-\-\-\-\-\skipnumbering\pend}</xsl:text>
       <xsl:text>&#10;\thispagestyle{plain}&#10;</xsl:text>

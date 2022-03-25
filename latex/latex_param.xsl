@@ -109,6 +109,7 @@ the beginning of the document</desc>
    </doc>
    <xsl:template name="latexPackages">
       <xsl:text>
+\usepackage{etoolbox}       
 \usepackage[</xsl:text>
       <xsl:value-of select="$latexPaperSize"/>
       <xsl:text>,</xsl:text>
@@ -221,7 +222,6 @@ as a proportion of the page width.</desc>
   <!--<xsl:param name="latexGeometryOptions">twoside,tmargin=25mm,bmargin=30mm,inner=31.6mm,outer=63.3mm</xsl:param>-->
   <xsl:param name="latexGeometryOptions">
     twoside,
-    letterpaper,
     layoutwidth=14cm,
     layoutheight=20.3cm,
     layouthoffset=4cm,
@@ -558,6 +558,12 @@ characters. The normal characters remain active for LaTeX commands.
   {\def\@noitemerr
     {\@latex@warning{Empty `bibitemlist' environment}}%
     \endlist}
+<!-- SJH: Added this to deal with numbering of front matter. From https://tex.stackexchange.com/a/154465/257027 -->
+\let\origdoublepage\cleardoublepage
+\renewcommand{\cleardoublepage}{%
+     \clearpage
+     {\pagestyle{empty}\origdoublepage}%
+}
 <!-- SJH: Added this to cope with different requirements for manuscript items. -->
 \newenvironment{msitemlist}[1]{%
   \list{}%
