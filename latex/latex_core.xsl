@@ -68,61 +68,52 @@
       <!-- Apparatus Fontium -->
       <xsl:when test="ancestor::tei:div[@type = 'edition']">
         <!-- Test for the type of quotation and handle accordingly. -->
-        <xsl:if test="child::tei:quote[@rend = 'blockquote']">
-          <xsl:text>\begin{</xsl:text>
-          <xsl:value-of select="$quoteEnv"/>
-          <xsl:text>}&#10;</xsl:text>
-        </xsl:if>
-        <xsl:if test="child::tei:quote[@rend = 'inline']">
-          <xsl:text>``</xsl:text>
-        </xsl:if>
-        <!-- Insert the quotation into \edtext{} -->
-        <xsl:text>\edtext{</xsl:text>
-        
-        
         <xsl:choose>
-          <xsl:when test="count(tokenize(normalize-space(child::tei:quote), ' ')) &gt; 5">
-            <xsl:value-of select="tokenize(normalize-space(child::tei:quote), ' ')[1]"/><xsl:text> … </xsl:text> <xsl:value-of select="tokenize(normalize-space(child::tei:quote), ' ')[last()]"/>
+          <xsl:when test="child::tei:quote[@rend = 'blockquote']">
+            <xsl:text>\begin{</xsl:text>
+            <xsl:value-of select="$quoteEnv"/>
+            <xsl:text>}&#10;</xsl:text>
           </xsl:when>
           <xsl:otherwise>
-            <xsl:apply-templates select="*[not(self::tei:bibl)]"/>
+            <xsl:text>``</xsl:text>
           </xsl:otherwise>
         </xsl:choose>
+        <xsl:apply-templates select="child::tei:quote"/>
+        <!-- Insert an empty \edtext{} following by a \lemma that will shorten the quotation for insertion into the apparatus fontium. -->
+        <xsl:text>\edtext{}</xsl:text>
+            <xsl:text>{\lemma{</xsl:text>
+            <xsl:value-of select="tokenize(normalize-space(child::tei:quote), ' ')[1]"/><xsl:text> … </xsl:text> <xsl:value-of select="tokenize(normalize-space(child::tei:quote), ' ')[last()]"/>
+            <xsl:text>}</xsl:text>
         <!-- Start the Afootnote -->
-        <xsl:text>}{\Afootnote{</xsl:text>
-        <!-- SAM: Come back to this and handle it with listBibl. You'll need to update the guidelines for this eventually, since they accommodate only one bibl. -->
+        <xsl:text>\Afootnote{</xsl:text>
         <!-- Process the bibl entry or entries. -->
-        <xsl:for-each select="tei:bibl">
+        <xsl:if test="child::tei:listBibl">
+          <xsl:for-each select="child::tei:listBibl/tei:bibl">
           <xsl:if test="tei:author">
-            <xsl:value-of select="tei:author"/>
+            <xsl:value-of select="tei:author"/><xsl:text> </xsl:text>
           </xsl:if>
           <xsl:if test="tei:title">
             <xsl:text>\textit{</xsl:text>
             <xsl:value-of select="tei:title"/>
-            <xsl:text>}</xsl:text>
+            <xsl:text>} </xsl:text>
           </xsl:if>
           <xsl:if test="tei:biblScope">
             <xsl:value-of select="tei:biblScope"/>
           </xsl:if>
-          <xsl:choose>
-            <xsl:when test="not(position() = last())">
-              <xsl:text>, </xsl:text>
-            </xsl:when>
-            <xsl:otherwise>
-              <xsl:text>. </xsl:text>
-            </xsl:otherwise>
-          </xsl:choose>
-        </xsl:for-each>
-        <xsl:text>}</xsl:text>
-        <xsl:if test="child::tei:quote[@rend = 'blockquote']">
-          <xsl:text>\end{</xsl:text>
-          <xsl:value-of select="$quoteEnv"/>
-          <xsl:text>}&#10;</xsl:text>
+          </xsl:for-each>
         </xsl:if>
-        <xsl:if test="child::tei:quote[@rend = 'inline']">
-          <xsl:text>''</xsl:text>
+        <xsl:if test="child::tei:note">
+          <xsl:apply-templates select="child::tei:note"/>
         </xsl:if>
         <xsl:text>}</xsl:text>
+        <xsl:choose>
+          <xsl:when test="child::tei:quote[@rend = 'blockquote']"><xsl:text>\end{</xsl:text>
+            <xsl:value-of select="$quoteEnv"/>
+            <xsl:text>}&#10;</xsl:text></xsl:when>
+          <xsl:otherwise>
+            <xsl:text>}''</xsl:text>
+          </xsl:otherwise>
+        </xsl:choose>
       </xsl:when>
       <xsl:otherwise>
         <xsl:value-of select="$preQuote"/>

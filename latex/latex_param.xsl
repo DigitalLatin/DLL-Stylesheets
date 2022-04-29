@@ -408,7 +408,7 @@ characters. The normal characters remain active for LaTeX commands.
       </desc>
    </doc>
    <xsl:template name="latexBabel">
-<xsl:text>\usepackage[english]{babel}</xsl:text>
+<xsl:text>\usepackage[english,greek]{babel}</xsl:text>
 </xsl:template>
 
 
@@ -483,7 +483,7 @@ characters. The normal characters remain active for LaTeX commands.
 \renewcommand\subsection{\@startsection{subsection}{2}{\z@}%
   {5ex\@plus -0.5ex \@minus- .2ex}%
   {2.5ex \@plus .2ex}%
-  {\reset@font\Large\fontfamily{lmr}}}
+  {\reset@font\fontfamily{lmr}\Large}}
 \renewcommand\subsubsection{\@startsection{subsubsection}{3}{\z@}%
   {4ex\@plus -0.35ex \@minus -.2ex}%
   {2ex \@plus .2ex}%
@@ -639,8 +639,9 @@ characters. The normal characters remain active for LaTeX commands.
 \linenummargin{inner}
 \Xnotenumfont{\normalfont\bfseries}
 
-% Settings for familiar notes
-\Xbeforenumber[A]{10pt}
+% Settings for familiar notes (e.g., apparatus fontium)
+\Xbeforenotes[A]{2em} % Space before apparatus begins
+\Xafterrule[A]{0.75em} % Space after note rule 
 \Xarrangement[A]{paragraph}
 \Xnumberonlyfirstinline[A]
 \Xragged[A]{R}
