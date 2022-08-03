@@ -79,37 +79,50 @@
           </xsl:otherwise>
         </xsl:choose>
         <xsl:apply-templates select="child::tei:quote"/>
-        <!-- Insert an empty \edtext{} following by a \lemma that will shorten the quotation for insertion into the apparatus fontium. -->
+        <!-- SJH: Insert an empty \edtext{} following by a \lemma 
+          that will shorten the quotation for insertion into the apparatus fontium. 
+          I'm doing it this way to avoid conflicts with apparatus criticus entries within a quotation, 
+          as sometimes happens.-->
         <xsl:text>\edtext{}</xsl:text>
-            <xsl:text>{\lemma{</xsl:text>
-            <xsl:value-of select="tokenize(normalize-space(child::tei:quote), ' ')[1]"/><xsl:text> … </xsl:text> <xsl:value-of select="tokenize(normalize-space(child::tei:quote), ' ')[last()]"/>
-            <xsl:text>}</xsl:text>
-        <!-- Start the Afootnote -->
+        <!-- Use the \lemma tag from Reledmac to customize what is printed in the apparatus fontium -->
+        <xsl:text>{\lemma{</xsl:text>
+        <!-- Shorten the quotation to the first and last words, separated by an ellipsis. -->
+        <!--<xsl:value-of select="tokenize(normalize-space(child::tei:quote), ' ')[1]"/>-->
+        <!--<xsl:text> … </xsl:text>-->
+        <!-- Come back to this. This will pick up a lemma & a variant if an <app> is the last part of the quotation. -->
+        <!--<xsl:value-of select="tokenize(normalize-space(child::tei:quote), ' ')[last()]"/>-->
+        <xsl:value-of select="$quoteEnv"/>
+        <xsl:text>}</xsl:text>
+        <!-- Start the apparatus fontium data with \Afootnote -->
         <xsl:text>\Afootnote{</xsl:text>
-        <!-- Process the bibl entry or entries. -->
+        <!-- Process the bibl entry or entries. Unfortunately, this requires a very specific format. It would be better to process bibl with a mode here, maybe.-->
         <xsl:if test="child::tei:listBibl">
           <xsl:for-each select="child::tei:listBibl/tei:bibl">
-          <xsl:if test="tei:author">
-            <xsl:value-of select="tei:author"/><xsl:text> </xsl:text>
-          </xsl:if>
-          <xsl:if test="tei:title">
-            <xsl:text>\textit{</xsl:text>
-            <xsl:value-of select="tei:title"/>
-            <xsl:text>} </xsl:text>
-          </xsl:if>
-          <xsl:if test="tei:biblScope">
-            <xsl:value-of select="tei:biblScope"/>
-          </xsl:if>
+            <xsl:if test="tei:author">
+              <xsl:value-of select="tei:author"/>
+              <xsl:text> </xsl:text>
+            </xsl:if>
+            <xsl:if test="tei:title">
+              <xsl:text>\textit{</xsl:text>
+              <xsl:value-of select="tei:title"/>
+              <xsl:text>} </xsl:text>
+            </xsl:if>
+            <xsl:if test="tei:biblScope">
+              <xsl:value-of select="tei:biblScope"/>
+            </xsl:if>
           </xsl:for-each>
         </xsl:if>
+        <!-- SJH: For some reason, this doesn't capture ALL of the data in <note>. I need to figure out why. -->
         <xsl:if test="child::tei:note">
           <xsl:apply-templates select="child::tei:note"/>
         </xsl:if>
         <xsl:text>}</xsl:text>
         <xsl:choose>
-          <xsl:when test="child::tei:quote[@rend = 'blockquote']"><xsl:text>\end{</xsl:text>
+          <xsl:when test="child::tei:quote[@rend = 'blockquote']">
+            <xsl:text>\end{</xsl:text>
             <xsl:value-of select="$quoteEnv"/>
-            <xsl:text>}&#10;</xsl:text></xsl:when>
+            <xsl:text>}&#10;</xsl:text>
+          </xsl:when>
           <xsl:otherwise>
             <xsl:text>}''</xsl:text>
           </xsl:otherwise>
@@ -248,14 +261,15 @@
               <xsl:when test="$depth = 1">
                 <xsl:choose>
                   <xsl:when test="parent::tei:div[@type = 'textpart']">
-                  <xsl:text>vspace{2\baselineskip} % Whitespace&#10;</xsl:text>
-                  <xsl:text>\</xsl:text>
-                </xsl:when>
-                <xsl:when test="ancestor::tei:div[@xml:id = 'bibliography']">
-                  <xsl:text>vspace{1.25em} % Whitespace&#10;</xsl:text>
-                  <xsl:text>\</xsl:text>
-                </xsl:when>
-                </xsl:choose><xsl:text>subsection</xsl:text>
+                    <xsl:text>vspace{2\baselineskip} % Whitespace&#10;</xsl:text>
+                    <xsl:text>\</xsl:text>
+                  </xsl:when>
+                  <xsl:when test="ancestor::tei:div[@xml:id = 'bibliography']">
+                    <xsl:text>vspace{1.25em} % Whitespace&#10;</xsl:text>
+                    <xsl:text>\</xsl:text>
+                  </xsl:when>
+                </xsl:choose>
+                <xsl:text>subsection</xsl:text>
               </xsl:when>
               <xsl:when test="$depth = 2">subsubsection</xsl:when>
               <xsl:when test="$depth = 3">paragraph</xsl:when>
@@ -353,7 +367,9 @@
                 <xsl:text>}&#10;</xsl:text>
               </xsl:when>
               <xsl:when test="parent::tei:div[@type = 'textpart']">
-                <xsl:text>Bonkers</xsl:text>
+                <xsl:text>{</xsl:text>
+                <xsl:apply-templates/>
+                <xsl:text>}&#10;</xsl:text>
               </xsl:when>
             </xsl:choose>
           </xsl:when>
@@ -751,7 +767,7 @@
   </xsl:template>
 
   <doc xmlns="http://www.oxygenxml.com/ns/doc/xsl">
-    <desc>Process abbr so that it does appear in apparatus, but not in the bibliography.</desc>
+    <desc>Process abbr with type "siglum" so that it does appear in apparatus, but not in the bibliography.</desc>
   </doc>
   <xsl:template match="tei:abbr[@type = 'siglum']" mode="biblio"/>
 
