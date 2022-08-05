@@ -152,6 +152,8 @@ of this software, even if advised of the possibility of such damage.
     </doc>
     <xsl:template name="titlePage">
         <xsl:text>
+% Insert an unnumbered blank page first.
+\myemptypage
 \begin{titlepage} % Suppresses headers and footers on the title page
 \centering % Center everything on the title page
         
@@ -216,7 +218,7 @@ Edited By
 %------------------------------------------------
 
 \begin{figure}[h] % Position the logo here on the page.
-\includegraphics[scale=0.50]{DLL.eps} % Logo of DLL
+\includegraphics[scale=0.50]{../images/DLL.eps} % Logo of DLL
 \centering % Center the logo.
 \end{figure}
 

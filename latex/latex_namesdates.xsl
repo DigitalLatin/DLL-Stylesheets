@@ -95,8 +95,26 @@ of this software, even if advised of the possibility of such damage.
       </xsl:when>
       <!-- When the listPerson is just a list of names (e.g., in the front or back mater) -->
       <xsl:when test="ancestor::tei:front or ancestor::tei:back">
-        <xsl:text>[</xsl:text><xsl:value-of select="child::tei:persName/tei:abbr[@type='siglum']"/><xsl:text>]{</xsl:text><xsl:value-of select="@xml:id"/><xsl:text>}  </xsl:text>
-        <!-- TODO: Write some logic to get specific fields and to exclude abbr -->
+        <xsl:text>[</xsl:text><xsl:value-of select="child::tei:persName/tei:abbr[@type='siglum']"/><xsl:text>]{</xsl:text><xsl:value-of select="@xml:id"/><xsl:text>}</xsl:text>
+        <xsl:choose>
+          <xsl:when test="child::tei:persName/(tei:surname or tei:forename or tei:addName)">
+            <xsl:if test="child::tei:persName/tei:surname and child::tei:persName/tei:addname">
+              <xsl:value-of select="child::tei:persName/tei:surname"/><xsl:text> </xsl:text><xsl:value-of select="child::tei:persName/tei:addName"/><xsl:text>, </xsl:text>
+            </xsl:if>
+            <xsl:if test="child::tei:persName/tei:surname and not(child::tei:persName/tei:addName)">
+              <xsl:value-of select="child::tei:persName/tei:surname"/><xsl:text>, </xsl:text>
+            </xsl:if>
+            <xsl:if test="child::tei:persName/tei:addName and not(child::tei:persName/tei:surname)">
+              <xsl:value-of select="child::tei:persName/tei:addName"/><xsl:text>, </xsl:text>
+            </xsl:if>
+            <xsl:if test="child::tei:persName/tei:forename">
+              <xsl:value-of select="child::tei:persName/tei:forename"/><xsl:text> </xsl:text>
+            </xsl:if>
+          </xsl:when>
+          <xsl:otherwise>
+            <xsl:value-of select="child::tei:persName/text()"/>
+          </xsl:otherwise>
+        </xsl:choose>     
         <xsl:text>&#10;</xsl:text>
       </xsl:when>
       <xsl:otherwise>

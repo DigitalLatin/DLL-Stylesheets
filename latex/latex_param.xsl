@@ -442,8 +442,10 @@ characters. The normal characters remain active for LaTeX commands.
          <p>All the LaTeX setup which affects page layout</p>
       </desc>
    </doc>
+  
    <xsl:template name="latexLayout">
-     <xsl:choose>
+     <!-- Commenting this out since the page size is set in the geometry block. -->
+     <!--<xsl:choose>
        <xsl:when test="$latexPaperSize='a3paper'">
 	 \paperwidth297mm
 	 \paperheight420mm
@@ -462,7 +464,7 @@ characters. The normal characters remain active for LaTeX commands.
        </xsl:when>
 	 <xsl:otherwise>
 	 </xsl:otherwise>
-       </xsl:choose>       
+       </xsl:choose>-->       
 \def\@pnumwidth{1.55em}
 \def\@tocrmarg {2.55em}
 \def\@dotsep{4.5}
@@ -704,7 +706,18 @@ characters. The normal characters remain active for LaTeX commands.
 \fancyfoot[LE]{}
 \fancyfoot[CE]{}
 \fancyfoot[RE]{\TheID}
-\fancypagestyle{plain}{\fancyhead{}\renewcommand{\headrulewidth}{0pt}}</xsl:text>
+\fancypagestyle{plain}{\fancyhead{}\renewcommand{\headrulewidth}{0pt}}
+      
+% For unnumbered blank pages.
+% Thanks to https://math-linux.com/latex-26/faq/latex-faq/article/latex-how-to-insert-a-blank-or-empty-page-with-or-without-numbering-thispagestyle-newpage-usepackage-afterpage
+\usepackage{afterpage}
+  \newcommand\myemptypage{
+       \null
+       \thispagestyle{empty}
+       \addtocounter{page}{-1}
+       \newpage
+    }
+</xsl:text>
      
 <xsl:call-template name="hyperref"/>
    </xsl:template>
