@@ -48,7 +48,7 @@ of this software, even if advised of the possibility of such damage.
          <p>Copyright: 2013, TEI Consortium</p>
       </desc>
    </doc>
-  <xsl:template match="//tei:front//tei:listPerson|//tei:body//tei:listPerson">
+  <xsl:template match="tei:listPerson">
    <!--<xsl:if test="tei:head"> 
       <xsl:text>\vspace{1.5\baselineskip}</xsl:text>
       <xsl:text>&#10;</xsl:text>
@@ -70,13 +70,20 @@ of this software, even if advised of the possibility of such damage.
         </xsl:for-each>
         <xsl:text>\end{itemize}</xsl:text>
       </xsl:when>
-      <xsl:otherwise>
+      <xsl:when test="ancestor::tei:div[@xml:id='bibliography']">
         <xsl:text>&#10;\begin{bibitemlist}{1}&#10;</xsl:text>
         <xsl:for-each select="tei:person">
           <xsl:text>&#10;\bibitem</xsl:text>
           <xsl:call-template name="person"/>      
         </xsl:for-each>
         <xsl:text>\end{bibitemlist}&#10;</xsl:text>
+      </xsl:when>
+      <xsl:otherwise>
+        <xsl:text>\begin{itemize}&#10;</xsl:text>
+        <xsl:for-each select="tei:person">
+          <xsl:text>&#10;\item</xsl:text><xsl:call-template name="person"/>          
+        </xsl:for-each>
+        <xsl:text>\end{itemize}</xsl:text>
       </xsl:otherwise>
     </xsl:choose>
   </xsl:template>
@@ -85,6 +92,36 @@ of this software, even if advised of the possibility of such damage.
     <xsl:choose>
       <xsl:when test="parent::tei:listPerson[@type='characters']">
         <xsl:text>\hypertarget{</xsl:text><xsl:value-of select="@xml:id"/><xsl:text>}{</xsl:text><xsl:value-of select="descendant::tei:persName/text()"/><xsl:text>}</xsl:text>
+      </xsl:when>
+      <xsl:when test="ancestor::tei:div[@xml:id='bibliography-list-of-people']">
+        <xsl:text>[</xsl:text><xsl:value-of select="descendant::tei:persName/tei:abbr[@type='siglum']"/><xsl:text>]{</xsl:text><xsl:value-of select="@xml:id"/><xsl:text>}  </xsl:text>
+        <xsl:value-of select="descendant::tei:persName/text()"/>
+        <xsl:text>. </xsl:text><xsl:apply-templates select="descendant::tei:note"/>
+        <xsl:text>&#10;</xsl:text>
+      </xsl:when>
+      <!-- When the listPerson is just a list of names (e.g., in the front or back mater) -->
+      <xsl:when test="ancestor::tei:front or ancestor::tei:back">
+        <xsl:text>[</xsl:text><xsl:value-of select="child::tei:persName/tei:abbr[@type='siglum']"/><xsl:text>]{</xsl:text><xsl:value-of select="@xml:id"/><xsl:text>}</xsl:text>
+        <xsl:choose>
+          <xsl:when test="child::tei:persName/(tei:surname or tei:forename or tei:addName)">
+            <xsl:if test="child::tei:persName/tei:surname and child::tei:persName/tei:addname">
+              <xsl:value-of select="child::tei:persName/tei:surname"/><xsl:text> </xsl:text><xsl:value-of select="child::tei:persName/tei:addName"/><xsl:text>, </xsl:text>
+            </xsl:if>
+            <xsl:if test="child::tei:persName/tei:surname and not(child::tei:persName/tei:addName)">
+              <xsl:value-of select="child::tei:persName/tei:surname"/><xsl:text>, </xsl:text>
+            </xsl:if>
+            <xsl:if test="child::tei:persName/tei:addName and not(child::tei:persName/tei:surname)">
+              <xsl:value-of select="child::tei:persName/tei:addName"/><xsl:text>, </xsl:text>
+            </xsl:if>
+            <xsl:if test="child::tei:persName/tei:forename">
+              <xsl:value-of select="child::tei:persName/tei:forename"/><xsl:text> </xsl:text>
+            </xsl:if>
+          </xsl:when>
+          <xsl:otherwise>
+            <xsl:value-of select="child::tei:persName/text()"/>
+          </xsl:otherwise>
+        </xsl:choose>     
+        <xsl:text>&#10;</xsl:text>
       </xsl:when>
       <xsl:otherwise>
         <xsl:text>[</xsl:text><xsl:value-of select="descendant::tei:persName/tei:abbr[@type='siglum']"/><xsl:text>]{</xsl:text><xsl:value-of select="@xml:id"/><xsl:text>}  </xsl:text>
@@ -108,8 +145,8 @@ of this software, even if advised of the possibility of such damage.
   <xsl:template match="//tei:geogName|tei:persName|tei:placeName">
     <xsl:choose>
       <xsl:when test="@ref">
-        <xsl:text>\href{</xsl:text>
-        <xsl:value-of select="@ref"/>
+        <xsl:text>\ref{</xsl:text>
+        <xsl:value-of select="translate(@ref,'#','')"/>
         <xsl:text>}{</xsl:text>
         <xsl:choose>
           <xsl:when test="tei:app/tei:lem">
