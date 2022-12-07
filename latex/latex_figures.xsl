@@ -262,11 +262,7 @@ of this software, even if advised of the possibility of such damage.
 	</xsl:when>
       </xsl:choose>
       <xsl:variable name="pic">
-	<xsl:text>\includegraphics[</xsl:text>
-	<xsl:call-template name="graphicsAttributes">
-          <xsl:with-param name="mode">latex</xsl:with-param>
-	</xsl:call-template>
-	<xsl:text>]{</xsl:text>
+	<xsl:text>\includegraphics[width=\textwidth]{</xsl:text>
 	<xsl:choose>
           <xsl:when test="$realFigures='true'">
 	    <xsl:sequence select="tei:resolveURI(.,@url)"/>

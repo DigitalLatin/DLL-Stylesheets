@@ -757,15 +757,32 @@
         </xsl:if>
         <xsl:text>&#10;\begin{bibitemlist}{1}</xsl:text>
         <xsl:for-each select="tei:witness">
+          <xsl:text>&#10;</xsl:text>
           <xsl:text> \bibitem</xsl:text>
           <xsl:apply-templates/>
-          <xsl:text>&#10;</xsl:text>
         </xsl:for-each>
         <xsl:text>\end{bibitemlist}</xsl:text>
       </xsl:when>
     </xsl:choose>
   </xsl:template>
 
+  <doc xmlns="http://www.oxygenxml.com/ns/doc/xsl">
+    <desc>Don't process msIdentifier.</desc>
+  </doc>
+  <xsl:template match="tei:msIdentifier"/>
+  
+  <doc xmlns="http://www.oxygenxml.com/ns/doc/xsl">
+    <desc>Process physDesc.</desc>
+  </doc>
+  <xsl:template match="tei:physDesc">
+    <xsl:text>&#10;&#10;\textit{Hands}&#10;</xsl:text>
+    <xsl:text>\begin{itemize}&#10;</xsl:text>
+    <xsl:for-each select="descendant::tei:handNote">
+      <xsl:text>\item </xsl:text><xsl:apply-templates/><xsl:text>&#10;</xsl:text>
+    </xsl:for-each>
+    <xsl:text>\end{itemize}</xsl:text>
+  </xsl:template>
+  
   <doc xmlns="http://www.oxygenxml.com/ns/doc/xsl">
     <desc>Process abbr with type "siglum" so that it does appear in apparatus, but not in the bibliography.</desc>
   </doc>
@@ -895,7 +912,7 @@
       <xsl:call-template name="numberParagraph"/>
     </xsl:if>
     <!-- SJH: Removing superscript from paragraph numbers. -->
-    <xsl:if test="@n">
+    <xsl:if test="@n and ancestor::tei:div[@type = 'edition']">
       <xsl:text>\textbf{</xsl:text>
       <xsl:value-of select="@n"/>
       <xsl:text>} </xsl:text>

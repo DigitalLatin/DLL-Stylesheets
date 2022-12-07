@@ -93,6 +93,12 @@ of this software, even if advised of the possibility of such damage.
       <xsl:when test="parent::tei:listPerson[@type='characters']">
         <xsl:text>\hypertarget{</xsl:text><xsl:value-of select="@xml:id"/><xsl:text>}{</xsl:text><xsl:value-of select="descendant::tei:persName/text()"/><xsl:text>}</xsl:text>
       </xsl:when>
+      <xsl:when test="ancestor::tei:div[@xml:id='bibliography-list-of-people']">
+        <xsl:text>[</xsl:text><xsl:value-of select="descendant::tei:persName/tei:abbr[@type='siglum']"/><xsl:text>]{</xsl:text><xsl:value-of select="@xml:id"/><xsl:text>}  </xsl:text>
+        <xsl:value-of select="descendant::tei:persName/text()"/>
+        <xsl:text>. </xsl:text><xsl:apply-templates select="descendant::tei:note"/>
+        <xsl:text>&#10;</xsl:text>
+      </xsl:when>
       <!-- When the listPerson is just a list of names (e.g., in the front or back mater) -->
       <xsl:when test="ancestor::tei:front or ancestor::tei:back">
         <xsl:text>[</xsl:text><xsl:value-of select="child::tei:persName/tei:abbr[@type='siglum']"/><xsl:text>]{</xsl:text><xsl:value-of select="@xml:id"/><xsl:text>}</xsl:text>

@@ -152,15 +152,23 @@ of this software, even if advised of the possibility of such damage.
     </doc>
     <xsl:template name="titlePage">
         <xsl:text>
-% Insert an unnumbered blank page first.
-\myemptypage
+% Insert an unnumbered page first.
+
+\thispagestyle{empty}
+\vspace*{\fill} 
+
+\begin{center}
+This PDF is formatted to accommodate printing two pages per sheet in landscape mode.
+\end{center}
+
+\vspace*{\fill}
+\newpage
 \begin{titlepage} % Suppresses headers and footers on the title page
 \centering % Center everything on the title page
         
 %------------------------------------------------
 %	Title
 %------------------------------------------------
-\vspace*{\baselineskip} % White space at the top of the page
         
 \rule{\textwidth}{1.6pt}\vspace*{-\baselineskip}\vspace*{2pt} % Thick horizontal rule
 \rule{\textwidth}{0.4pt} % Thin horizontal rule
@@ -216,12 +224,6 @@ Edited By
 %------------------------------------------------
 %	Publisher
 %------------------------------------------------
-
-\begin{figure}[h] % Position the logo here on the page.
-\includegraphics[scale=0.50]{../images/DLL.eps} % Logo of DLL
-\centering % Center the logo.
-\end{figure}
-
 {\normalsize </xsl:text>
         <xsl:value-of select="//tei:publicationStmt/tei:date"/>
         <xsl:text>}        
@@ -232,7 +234,11 @@ Edited By
 \begin{copyrightPage}
 \thispagestyle{empty}
 \vspace*{\baselineskip} % White space at the top of the page
-\vspace{6\baselineskip} % Whitespace
+\begin{figure}[h] % Position the logo here on the page.
+\includegraphics[scale=0.50]{../images/DLL.eps} % Logo of DLL
+\centering % Center the logo.
+\end{figure}
+\vspace{2\baselineskip} % Whitespace
 \centering
 {\LARGE </xsl:text>
         <xsl:value-of select="//tei:publicationStmt/tei:publisher"/>
