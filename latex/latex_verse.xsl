@@ -42,10 +42,15 @@
             <xsl:when test="parent::tei:div[@subtype = 'poem']">
                 <xsl:text>&#10;\beginnumbering</xsl:text>
                 <xsl:text>&#10;\stanza&#10;</xsl:text>
-                <xsl:for-each select="tei:l"><xsl:apply-templates/><xsl:text>&amp;</xsl:text></xsl:for-each>
+                <xsl:for-each select="tei:l"><xsl:apply-templates/><xsl:text>&amp;&#10;</xsl:text></xsl:for-each>
                 <xsl:text>&#10;\&amp;&#10;</xsl:text>
                 <xsl:text>\endnumbering&#10;</xsl:text>
             </xsl:when>
+            <xsl:otherwise>
+                <xsl:text>&#10;\stanza&#10;</xsl:text>
+                <xsl:for-each select="tei:l"><xsl:apply-templates/><xsl:text>&amp;</xsl:text></xsl:for-each>
+                <xsl:text>&#10;\&amp;&#10;</xsl:text>
+            </xsl:otherwise>
         </xsl:choose>
     </xsl:template>
 
