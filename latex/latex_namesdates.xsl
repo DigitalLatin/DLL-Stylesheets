@@ -64,7 +64,7 @@ of this software, even if advised of the possibility of such damage.
       <xsl:when test="//tei:listPerson[@type='characters']">
         <xsl:text>&#10;{\large \scshape{</xsl:text>
         <xsl:value-of select="tei:head"/>
-        <xsl:text>}&#10;\begin{itemize}&#10;</xsl:text>
+        <xsl:text>}}&#10;\begin{itemize}&#10;</xsl:text>
         <xsl:for-each select="tei:person">
           <xsl:text>\item[] </xsl:text><xsl:call-template name="person"/><xsl:text>&#10;</xsl:text>
         </xsl:for-each>
