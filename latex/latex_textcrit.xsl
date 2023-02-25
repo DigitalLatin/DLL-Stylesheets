@@ -346,20 +346,20 @@
     <xsl:text>}}</xsl:text>
   </xsl:template>
 
-  <xsldoc:doc xmlns:xsldoc="http://www.oxygenxml.com/ns/doc/xsl">
+  <!--<xsldoc:doc xmlns:xsldoc="http://www.oxygenxml.com/ns/doc/xsl">
     <xsldoc:desc>
       <p>Processing tei:l and tei:p with line numbering.</p>
     </xsldoc:desc>
   </xsldoc:doc>
   <xsl:template match="tei:div[@type = 'edition']//tei:div//tei:div">
     <xsl:choose>
-      <!-- poetry -->
-      <!--<xsl:when test="parent::tei:div[@subtype='poem']/tei:lg/tei:l">&#10;BONGO!<xsl:apply-templates/>&#10;\&amp; &#10;</xsl:when>-->
-      <!-- prose -->
+      <!-\- poetry -\->
+      <xsl:when test="tei:lg/tei:l"><xsl:apply-templates/>&#10;\&amp; &#10;</xsl:when>
+      <!-\- prose -\->
       <xsl:when test="tei:p | tei:ab">&#10;\beginnumbering
         &#10;<xsl:apply-templates/>&#10;\endnumbering &#10;</xsl:when>
     </xsl:choose>
-  </xsl:template>
+  </xsl:template>-->
 
   <!-- Don't render these elements. -->
   <xsl:template match="tei:note[parent::tei:app//(tei:l | tei:p)]"/>
