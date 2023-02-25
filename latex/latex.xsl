@@ -321,36 +321,36 @@ of this software, even if advised of the possibility of such damage.
       <desc>division-like object</desc>
    </doc>
 
-  <xsl:template name="makeSection">
-    <xsl:param name="level"/>
-    <xsl:param name="heading"/>
-    <xsl:param name="implicitBlock">false</xsl:param>
-    <xsl:text>&#10;</xsl:text>
-    <xsl:choose>
-      <xsl:when test="$level=1">\section</xsl:when>
-      <xsl:when test="$level=2">\subsection</xsl:when>
-      <xsl:when test="$level=3">\subsubsection</xsl:when>
-      <xsl:when test="$level=4">\paragraph</xsl:when>
-    </xsl:choose>
-    <xsl:text>{</xsl:text>
-    <xsl:value-of select="$heading"/>
-    <xsl:text>}&#10;</xsl:text>
-    <xsl:choose>
-      <xsl:when test="$implicitBlock='true'">
-        <xsl:text>\par&#10;</xsl:text>
-        <xsl:apply-templates/>
-        <xsl:text>\par&#10;</xsl:text>
-      </xsl:when>
-      <xsl:when test="*">
-        <xsl:apply-templates/>
-      </xsl:when>
-      <xsl:otherwise>
-        <xsl:text>\par&#10;</xsl:text>
-        <xsl:apply-templates/>
-        <xsl:text>\par&#10;</xsl:text>
-      </xsl:otherwise>
-    </xsl:choose>
-  </xsl:template>
+   <xsl:template name="makeSection">
+     <xsl:param name="level"/>
+      <xsl:param name="heading"/>
+      <xsl:param name="implicitBlock">false</xsl:param>
+      <xsl:text>&#10;</xsl:text>
+      <xsl:choose>
+	<xsl:when test="$level=1">\section</xsl:when>
+	<xsl:when test="$level=2">\subsection</xsl:when>
+	<xsl:when test="$level=3">\subsubsection</xsl:when>
+	<xsl:when test="$level=4">\paragraph</xsl:when>
+      </xsl:choose>
+      <xsl:text>{</xsl:text>
+      <xsl:value-of select="$heading"/>
+      <xsl:text>}&#10;</xsl:text>
+      <xsl:choose>
+	<xsl:when test="$implicitBlock='true'">
+	  <xsl:text>\par&#10;</xsl:text>
+	  <xsl:apply-templates/>
+	  <xsl:text>\par&#10;</xsl:text>
+	</xsl:when>
+	<xsl:when test="*">
+	  <xsl:apply-templates/>
+	</xsl:when>
+	<xsl:otherwise>
+	  <xsl:text>\par&#10;</xsl:text>
+	  <xsl:apply-templates/>
+	  <xsl:text>\par&#10;</xsl:text>
+	</xsl:otherwise>
+      </xsl:choose>
+    </xsl:template>
     
   <doc xmlns="http://www.oxygenxml.com/ns/doc/xsl">
       <desc>text with a label</desc>
