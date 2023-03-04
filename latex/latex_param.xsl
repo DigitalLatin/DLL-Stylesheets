@@ -177,6 +177,9 @@ the beginning of the document</desc>
 
 % Reledmac options
 \usepackage{reledmac}
+% Set stanza indents to 0 for one line per stanza line.
+\setstanzaindents{5,1,1}
+\setcounter{stanzaindentsrepetition}{1}
 <xsl:call-template name="ledmacOptions"/>
 <!--</xsl:if>-->
 
@@ -380,12 +383,12 @@ characters. The normal characters remain active for LaTeX commands.
 \newenvironment{copyrightPage}{}{}
 \newenvironment{acknowledgmentsPage}{}{}
 <xsl:text disable-output-escaping="yes">
-\newcolumntype{L}[1]{){\raggedright\arraybackslash}p{#1}}
-\newcolumntype{C}[1]{){\centering\arraybackslash}p{#1}}
-\newcolumntype{R}[1]{){\raggedleft\arraybackslash}p{#1}}
-\newcolumntype{P}[1]{){\arraybackslash}p{#1}}
-\newcolumntype{B}[1]{){\arraybackslash}b{#1}}
-\newcolumntype{M}[1]{){\arraybackslash}m{#1}}
+\newcolumntype{L}[1]{>{\raggedright\arraybackslash}p{#1}}
+\newcolumntype{C}[1]{>{\centering\arraybackslash}p{#1}}
+\newcolumntype{R}[1]{>{\raggedleft\arraybackslash}p{#1}}
+\newcolumntype{P}[1]{>{\arraybackslash}p{#1}}
+\newcolumntype{B}[1]{>{\arraybackslash}b{#1}}
+\newcolumntype{M}[1]{>{\arraybackslash}m{#1}}
 \definecolor{label}{gray}{0.75}
 \def\unusedattribute#1{\sout{\textcolor{label}{#1}}}
 \DeclareRobustCommand*{\xref}{\hyper@normalise\xref@}
