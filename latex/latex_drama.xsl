@@ -84,14 +84,7 @@
         <xsl:apply-templates/>
         <xsl:text>\end{itemize} </xsl:text>
     </xsl:template>
-    <doc xmlns="http://www.oxygenxml.com/ns/doc/xsl">
-        <desc>Process elementp/tei:stage</desc>
-    </doc>
-    <xsl:template match="tei:p/tei:stage">
-        <xsl:text>\textit{</xsl:text>
-        <xsl:apply-templates/>
-        <xsl:text>}</xsl:text>
-    </xsl:template>
+    
     <doc xmlns="http://www.oxygenxml.com/ns/doc/xsl">
         <desc>Process element role</desc>
     </doc>
@@ -133,6 +126,7 @@
         <xsl:text>\end{description}
 </xsl:text>
     </xsl:template>
+    
     <doc xmlns="http://www.oxygenxml.com/ns/doc/xsl">
         <desc>Process element sp/tei:p</desc>
     </doc>
@@ -140,6 +134,7 @@
         <xsl:text>&#10;&#10;</xsl:text>
         <xsl:apply-templates/>
     </xsl:template>
+    
     <doc xmlns="http://www.oxygenxml.com/ns/doc/xsl">
         <desc>Process element stage</desc>
     </doc>
@@ -148,16 +143,16 @@
             <xsl:when test="@type = 'setting'">
                 <xsl:choose>
                     <xsl:when test="preceding-sibling::tei:head[1]">
-                        <xsl:text>{\centering\textit{</xsl:text>
+                        <!--<xsl:text>&#10;\pstart&#10;</xsl:text>-->
+                        <xsl:text>\textit{</xsl:text>
                         <xsl:apply-templates/>
-                        <xsl:text>}}</xsl:text>
-                        <xsl:text>&#10;\newline&#10;</xsl:text>
+                        <xsl:text>}</xsl:text>
+                        <!--<xsl:text>&#10;\pend&#10;</xsl:text>-->
                     </xsl:when>
                     <xsl:otherwise>
                         <xsl:text>\textit{</xsl:text>
                         <xsl:apply-templates/>
                         <xsl:text>}</xsl:text>
-                        <xsl:text>&#10;\newline&#10;</xsl:text>
                     </xsl:otherwise>
                 </xsl:choose>
             </xsl:when>
@@ -174,6 +169,7 @@
             </xsl:otherwise>
         </xsl:choose>
     </xsl:template>
+    
     <doc xmlns="http://www.oxygenxml.com/ns/doc/xsl">
         <desc>Process element sp/tei:stage</desc>
     </doc>
