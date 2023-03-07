@@ -64,11 +64,20 @@ of this software, even if advised of the possibility of such damage.
       <xsl:when test="//tei:listPerson[@type='characters']">
         <xsl:text>&#10;{\large \scshape{</xsl:text>
         <xsl:value-of select="tei:head"/>
-        <xsl:text>}}&#10;\begin{itemize}&#10;</xsl:text>
+        <xsl:text>}}&#10;\begin{dramatis}&#10;</xsl:text>
         <xsl:for-each select="tei:person">
-          <xsl:text>\item[] </xsl:text><xsl:call-template name="person"/><xsl:text>&#10;</xsl:text>
+          <xsl:text>\character</xsl:text><xsl:call-template name="person"/><xsl:text>&#10;</xsl:text>
         </xsl:for-each>
-        <xsl:text>\end{itemize}</xsl:text>
+        <xsl:if test="child::tei:listPerson[@type='character_group']">
+          <xsl:text>\begin{charactergroup}[2.5cm]{</xsl:text>
+          <xsl:value-of select="tei:head"/>
+          <xsl:text>}</xsl:text>
+          <xsl:for-each select="tei:person">
+            <xsl:text>\character</xsl:text><xsl:call-template name="person"/><xsl:text>&#10;</xsl:text>
+          </xsl:for-each>
+        </xsl:if>
+        <xsl:text>\end{dramatis}&#10;</xsl:text>
+        <xsl:text>\newpage&#10;</xsl:text>
       </xsl:when>
       <xsl:otherwise>
         <xsl:text>&#10;\begin{bibitemlist}{1}&#10;</xsl:text>
@@ -84,7 +93,7 @@ of this software, even if advised of the possibility of such damage.
   <xsl:template match="//tei:person" name="person">
     <xsl:choose>
       <xsl:when test="parent::tei:listPerson[@type='characters']">
-        <xsl:text>\hypertarget{</xsl:text><xsl:value-of select="@xml:id"/><xsl:text>}{</xsl:text><xsl:value-of select="descendant::tei:persName/text()"/><xsl:text>}</xsl:text>
+        <xsl:text>[cmd={</xsl:text><xsl:value-of select="@xml:id"/><xsl:text>}, drama={</xsl:text><xsl:value-of select="descendant::tei:persName/text()"/><xsl:text>}]{</xsl:text><xsl:value-of select="descendant::tei:persName/text()"/><xsl:text>}</xsl:text>
       </xsl:when>
       <xsl:otherwise>
         <xsl:text>[</xsl:text><xsl:value-of select="descendant::tei:persName/tei:abbr[@type='siglum']"/><xsl:text>]{</xsl:text><xsl:value-of select="@xml:id"/><xsl:text>}  </xsl:text>
