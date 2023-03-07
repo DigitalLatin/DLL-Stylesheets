@@ -143,11 +143,11 @@
             <xsl:when test="@type = 'setting'">
                 <xsl:choose>
                     <xsl:when test="preceding-sibling::tei:head[1]">
-                        <!--<xsl:text>&#10;\pstart&#10;</xsl:text>-->
-                        <xsl:text>\textit{</xsl:text>
+                        <xsl:text>&#10;\pstart&#10;</xsl:text>
+                        <xsl:text>\begin{dida}&#10;</xsl:text>
                         <xsl:apply-templates/>
-                        <xsl:text>}</xsl:text>
-                        <!--<xsl:text>&#10;\pend&#10;</xsl:text>-->
+                        <xsl:text>&#10;\end{dida}&#10;</xsl:text>
+                        <xsl:text>\pend&#10;&#10;</xsl:text>
                     </xsl:when>
                     <xsl:otherwise>
                         <xsl:text>\textit{</xsl:text>
@@ -157,7 +157,7 @@
                 </xsl:choose>
             </xsl:when>
             <xsl:when test="(@type='entrance' or @type = 'delivery' or @type = 'business' or @type='exit')">
-                <xsl:text>\textit{</xsl:text>
+                <xsl:text>\did{</xsl:text>
                 <xsl:apply-templates/>
                 <xsl:text>}</xsl:text>
             </xsl:when>
