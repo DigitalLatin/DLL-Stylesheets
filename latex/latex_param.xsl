@@ -139,6 +139,31 @@ the beginning of the document</desc>
 
 \renewcommand{\@cite}[1]{#1}
 
+% Reledmac options
+\usepackage{reledmac}
+
+% Set stanza indents to 0 for one line per stanza line.
+\setstanzaindents{5,1,1}
+\setcounter{stanzaindentsrepetition}{1}
+
+% \lineation{page} Comment this for continuous line numbering
+\linenummargin{inner}
+\Xnotenumfont{\normalfont\bfseries}
+
+% Settings for familiar notes
+\Xbeforenumber[A]{10pt}
+\Xarrangement[A]{paragraph}
+\Xnumberonlyfirstinline[A]
+\Xragged[A]{R}
+
+% Settings for apparatus criticus notes
+\Xbeforenotes[B]{2em} % Space before apparatus begins
+\Xafterrule[B]{0.75em} % Space after note rule 
+\Xarrangement[B]{paragraph}
+\Xragged[B]{R}
+\Xnumberonlyfirstinline[B]
+\Xafternote[B]{0.5em}
+
 </xsl:text>
 <!-- SJH: Added calls to templates to handle some LDLT requirements. -->
 <xsl:call-template name="section-numbering"/>
@@ -174,16 +199,7 @@ the beginning of the document</desc>
  select="replace(string-join(tei:generateAuthor(.),''),'\\[A-z]+','')"/>}]{hyperref}
 \hyperbaseurl{<xsl:value-of select="$baseURL"/>}-->
 <!--<xsl:if test="count(key('APP',1))&gt;0">-->
-
-% Reledmac options
-\usepackage{reledmac}
-% Set stanza indents to 0 for one line per stanza line.
-\setstanzaindents{5,1,1}
-\setcounter{stanzaindentsrepetition}{1}
-<xsl:call-template name="ledmacOptions"/>
-<!--</xsl:if>-->
-
-   </xsl:template>
+</xsl:template>
 
    <doc xmlns="http://www.oxygenxml.com/ns/doc/xsl" class="layout" type="float">
       <desc>When processing a "pb" element, decide what to generate: "active"
@@ -621,33 +637,6 @@ characters. The normal characters remain active for LaTeX commands.
       </xsl:text>   
       <xsl:call-template name="latexPreambleHook"/>
    </xsl:template>
-
-   <doc xmlns="http://www.oxygenxml.com/ns/doc/xsl" class="layout">
-      <desc>
-         <p>LaTeX setup commands for ledmac package</p>
-      </desc>
-   </doc>
-<xsl:template name="ledmacOptions">
-<xsl:text>
-\lineation{page}
-\linenummargin{inner}
-\Xnotenumfont{\normalfont\bfseries}
-
-% Settings for familiar notes
-\Xbeforenumber[A]{10pt}
-\Xarrangement[A]{paragraph}
-\Xnumberonlyfirstinline[A]
-\Xragged[A]{R}
-
-% Settings for apparatus criticus notes
-\Xbeforenotes[B]{2em} % Space before apparatus begins
-\Xafterrule[B]{0.75em} % Space after note rule 
-\Xarrangement[B]{paragraph}
-\Xragged[B]{R}
-\Xnumberonlyfirstinline[B]
-\Xafternote[B]{0.5em}
-</xsl:text>
-</xsl:template>
 
    <doc xmlns="http://www.oxygenxml.com/ns/doc/xsl" class="layout">
       <desc>
