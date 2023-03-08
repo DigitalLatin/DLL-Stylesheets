@@ -280,9 +280,16 @@ of this software, even if advised of the possibility of such damage.
         <xsl:text>}</xsl:text>	    
       </xsl:when>
       <xsl:when test="local-name()='label'">
-        <xsl:text>\textbf{</xsl:text>
-        <xsl:apply-templates/>
-        <xsl:text>}</xsl:text>
+        <xsl:choose>
+          <xsl:when test="ancestor::tei:div[@subtype='drama']">
+            <xsl:apply-templates/>
+          </xsl:when>
+          <xsl:otherwise>
+            <xsl:text>\textbf{</xsl:text>
+            <xsl:apply-templates/>
+            <xsl:text>}</xsl:text>
+          </xsl:otherwise>
+          </xsl:choose>
       </xsl:when>
       <xsl:when test="not($style)">
         <xsl:sequence select="concat('{\',local-name(),' ')"/>
