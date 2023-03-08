@@ -158,7 +158,7 @@
             </xsl:when>
             <xsl:when test="(@type='entrance' or @type = 'delivery' or @type = 'business' or @type='exit')">
                 <xsl:text>\did{</xsl:text>
-                <xsl:apply-templates/>
+                <xsl:value-of select="normalize-space(translate(., '()', ''))"/>
                 <xsl:text>}</xsl:text>
             </xsl:when>
             <xsl:otherwise>
