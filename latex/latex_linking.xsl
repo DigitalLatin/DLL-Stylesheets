@@ -119,7 +119,7 @@ of this software, even if advised of the possibility of such damage.
           <xsl:when test="parent::tei:label">
             <xsl:choose>
               <xsl:when test="ancestor::tei:div[@subtype='drama']">
-                <xsl:text>\</xsl:text><xsl:value-of select="$dest"/>
+                <xsl:text>\</xsl:text><xsl:value-of select="translate($dest,'-_','')"/>
               </xsl:when>
               <xsl:otherwise>
                 <xsl:text>\hyperlink{</xsl:text>
