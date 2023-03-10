@@ -125,7 +125,7 @@ the beginning of the document</desc>
 \usepackage{setspace}
 % Allow alignment of images
 \usepackage[export]{adjustbox}
-\usepackage[characterstyle=imprimerie-verse]{thalie}
+\usepackage[characterstyle=simple,playstyle=bigcenter]{thalie}
 </xsl:text>
 <xsl:text>
 \definecolor{shadecolor}{gray}{0.95}
@@ -143,7 +143,7 @@ the beginning of the document</desc>
 \usepackage{reledmac}
 
 % Set stanza indents to 0 for one line per stanza line.
-\setstanzaindents{5,1,1}
+\setstanzaindents{1,1,1}
 \setcounter{stanzaindentsrepetition}{1}
 
 % \lineation{page} Comment this for continuous line numbering
@@ -298,11 +298,12 @@ characters. The normal characters remain active for LaTeX commands.
   \def\textKorean{\fontspec{Baekmuk Gulim} }
   \setmonofont{<xsl:value-of select="$typewriterFont"/>}
   <xsl:if test="not($sansFont='')">
-    \setsansfont{<xsl:value-of select="$sansFont"/>}
+    <xsl:text>\setsansfont{</xsl:text><xsl:value-of select="$sansFont"/><xsl:text>}</xsl:text>
   </xsl:if>
-  <xsl:if test="not($romanFont='')">
+  <!--<xsl:if test="not($romanFont='')">
     \setromanfont{<xsl:value-of select="$romanFont"/>}
-  </xsl:if>
+  </xsl:if>-->
+  \setmainfont[SmallCapsFont={Bodoni 72 Smallcaps},SmallCapsFeatures={Letters=SmallCaps},]{Baskerville}
 \else
   \IfFileExists{utf8x.def}%
    {\usepackage[utf8x]{inputenc}
