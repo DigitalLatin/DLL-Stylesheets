@@ -154,7 +154,8 @@ the beginning of the document</desc>
 \Xnotenumfont{\normalfont\bfseries}
 
 % Settings for familiar notes
-\Xbeforenumber[A]{10pt}
+\Xbeforenotes[B]{2em} % Space before apparatus begins
+\Xafterrule[B]{0.5em} % Space after note rule 
 \Xarrangement[A]{paragraph}
 \Xnumberonlyfirstinline[A]
 \Xragged[A]{R}
