@@ -431,20 +431,6 @@
   </xsl:template>
   
   <doc xmlns="http://www.oxygenxml.com/ns/doc/xsl">
-    <desc>Process element label with @speaker.</desc>
-  </doc>
-  <xsl:template match="tei:label[@type='speaker']">
-    <xsl:choose>
-      <xsl:when test="child::tei:ref">
-        <xsl:apply-templates/>
-      </xsl:when>
-      <xsl:otherwise>
-        <xsl:text>\disposablecharacter{</xsl:text><xsl:value-of select="translate(.,'.','')"/><xsl:text>}</xsl:text>
-      </xsl:otherwise>
-    </xsl:choose>
-  </xsl:template>
-
-  <doc xmlns="http://www.oxygenxml.com/ns/doc/xsl">
     <desc>Process element label in normal mode when it is the child of a list.</desc>
   </doc>
   <xsl:template match="tei:list/tei:label"/>
@@ -1169,8 +1155,17 @@
     <desc>Handle foreign.</desc>
   </doc>
   <xsl:template match="tei:foreign">
-    <xsl:text>\textit{</xsl:text>
-    <xsl:apply-templates/>
-    <xsl:text>}</xsl:text>
+    <xsl:choose>
+      <!-- If the text is in Greek, don't italicize it. -->
+      <xsl:when test="@xml:lang='grc'">
+        <xsl:apply-templates/>
+      </xsl:when>
+      <!-- Otherwise, do italicize it. -->
+      <xsl:otherwise>
+        <xsl:text>\textit{</xsl:text>
+        <xsl:apply-templates/>
+        <xsl:text>}</xsl:text>
+      </xsl:otherwise>
+    </xsl:choose>
   </xsl:template>
 </xsl:stylesheet>
