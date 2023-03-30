@@ -197,7 +197,7 @@
               <xsl:when test="$depth = 0">newpage&#10;\thispagestyle{plain}&#10;\section</xsl:when>
               <xsl:when test="$depth = 1">
                 <xsl:if test="parent::tei:div[@type = 'textpart']">
-                  <xsl:text>vspace{2\baselineskip} % Whitespace&#10;</xsl:text>
+                  <xsl:text>newpage&#10;\vspace{2\baselineskip} % Whitespace&#10;</xsl:text>
                   <xsl:text>\</xsl:text>
                 </xsl:if>subsection</xsl:when>
               <xsl:when test="$depth = 2">subsubsection</xsl:when>
