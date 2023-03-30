@@ -140,14 +140,17 @@ the beginning of the document</desc>
 \renewcommand{\@cite}[1]{#1}
 
 % Reledmac options
-\usepackage{reledmac}
+\usepackage[antilabe]{reledmac}
 
 % Set stanza indents to 0 for one line per stanza line.
-\setstanzaindents{1,1,1}
+\setstanzaindents{1,0,1}
 \setcounter{stanzaindentsrepetition}{1}
 
-% \lineation{page} Comment this for continuous line numbering
-\linenummargin{inner}
+% Set the edition's line numbering to restart on every page.
+\lineation{page}
+
+% Cause the actual line numbers to be displayed in the opposite margin from the edition's line numbers.
+\linenumannotationothersidetrue
 \Xnotenumfont{\normalfont\bfseries}
 
 % Settings for familiar notes
