@@ -123,6 +123,12 @@ the beginning of the document</desc>
 \usepackage{soul}
 \usepackage{leading}
 \usepackage{setspace}
+
+% Separate font handling for captions
+\usepackage{caption}
+% Set the font size of the caption to \small
+\captionsetup[figure]{font=small}
+
 % Allow alignment of images
 \usepackage[export]{adjustbox}
 \usepackage[characterstyle=simple,playstyle=bigcenter]{thalie}
@@ -407,12 +413,12 @@ characters. The normal characters remain active for LaTeX commands.
 \newenvironment{copyrightPage}{}{}
 \newenvironment{acknowledgmentsPage}{}{}
 <xsl:text disable-output-escaping="yes">
-\newcolumntype{L}[1]{>{\raggedright\arraybackslash}p{#1}}
-\newcolumntype{C}[1]{>{\centering\arraybackslash}p{#1}}
-\newcolumntype{R}[1]{>{\raggedleft\arraybackslash}p{#1}}
-\newcolumntype{P}[1]{>{\arraybackslash}p{#1}}
-\newcolumntype{B}[1]{>{\arraybackslash}b{#1}}
-\newcolumntype{M}[1]{>{\arraybackslash}m{#1}}
+\newcolumntype{L}[1]{>){\raggedright\arraybackslash}p{#1}}
+\newcolumntype{C}[1]{>){\centering\arraybackslash}p{#1}}
+\newcolumntype{R}[1]{>){\raggedleft\arraybackslash}p{#1}}
+\newcolumntype{P}[1]{){\arraybackslash}p{#1}}
+\newcolumntype{B}[1]{>){\arraybackslash}b{#1}}
+\newcolumntype{M}[1]{>){\arraybackslash}m{#1}}
 \definecolor{label}{gray}{0.75}
 \def\unusedattribute#1{\sout{\textcolor{label}{#1}}}
 \DeclareRobustCommand*{\xref}{\hyper@normalise\xref@}
