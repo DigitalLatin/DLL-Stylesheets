@@ -114,8 +114,6 @@ the beginning of the document</desc>
       <xsl:text>,</xsl:text>
       <xsl:value-of select="$latexGeometryOptions"/>
       <xsl:text>]{geometry}
-<!--\setlength{\textwidth}{115mm}
-\setlength{\textheight}{173mm}-->
 \setlength{\textwidth}{84mm}
 \setlength{\textheight}{136mm}
 \usepackage{framed}
@@ -145,6 +143,9 @@ the beginning of the document</desc>
 
 \renewcommand{\@cite}[1]{#1}
 
+% For enhancing lists
+\usepackage{enumitem}
+
 % Reledmac options
 \usepackage[antilabe]{reledmac}
 
@@ -163,11 +164,11 @@ the beginning of the document</desc>
 \Xnotenumfont{\normalfont\bfseries}
 
 % Settings for familiar notes
-\Xbeforenotes[B]{2em} % Space before apparatus begins
-\Xafterrule[B]{0.5em} % Space after note rule 
-\Xarrangement[A]{paragraph}
-\Xnumberonlyfirstinline[A]
-\Xragged[A]{R}
+\Xbeforenotes[A,C]{2em} % Space before apparatus begins
+\Xafterrule[A,C]{0.5em} % Space after note rule 
+\Xarrangement[A,C]{paragraph}
+\Xnumberonlyfirstinline[A,C]
+\Xragged[A,C]{R}
 
 % Settings for apparatus criticus notes
 \Xbeforenotes[B]{2em} % Space before apparatus begins
