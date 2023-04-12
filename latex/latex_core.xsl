@@ -265,6 +265,18 @@
               </xsl:when>
               <!-- This is for the title of individual sections of the edition, so that the titles can be included in the apparatus. -->
               <xsl:when test="ancestor::tei:body and parent::tei:div[@type = 'textpart']">
+                <!-- If the value of head is greater than 20 characters, let's create a short optional label for the running header at the top of the page. --> 
+                <xsl:if test="string-length(self::tei:head) > 20">
+                  <xsl:text>[</xsl:text>
+                  <xsl:variable name="words" select="tokenize(normalize-space(.), '\s+')"/>
+                  <xsl:for-each select="$words[position() &lt;= 3]">
+                    <xsl:value-of select="."/>
+                    <xsl:if test="position() != last()">
+                      <xsl:text> </xsl:text>
+                    </xsl:if>
+                  </xsl:for-each>
+                  <xsl:text> … ]</xsl:text>
+                </xsl:if>
                 <xsl:text>{</xsl:text>
                 <xsl:apply-templates/>
                 <xsl:text>}</xsl:text>
@@ -303,7 +315,30 @@
       </xsl:otherwise>
     </xsl:choose>
   </xsl:template>
-
+  
+  <doc xmlns="http://www.oxygenxml.com/ns/doc/xsl">
+    <desc>"First three words" template for tei:head above</desc>
+  </doc>
+  <xsl:template name="get-first-three-words">
+    <xsl:param name="text"/>
+    <xsl:param name="count" select="1"/>
+    <xsl:param name="result" select="''"/>
+    <xsl:choose>
+      <xsl:when test="contains($text, ' ') and $count &lt;= 3">
+        <xsl:variable name="word" select="substring-before($text, ' ')"/>
+        <xsl:variable name="new-text" select="substring-after($text, ' ')"/>
+        <xsl:call-template name="get-first-three-words">
+          <xsl:with-param name="text" select="$new-text"/>
+          <xsl:with-param name="count" select="$count + 1"/>
+          <xsl:with-param name="result" select="concat($result, $word, ' ')"/>
+        </xsl:call-template>
+      </xsl:when>
+      <xsl:otherwise>
+        <xsl:value-of select="$result"/>
+      </xsl:otherwise>
+    </xsl:choose>
+  </xsl:template>
+  
   <doc xmlns="http://www.oxygenxml.com/ns/doc/xsl">
     <desc>Process element head in heading mode</desc>
   </doc>
@@ -508,7 +543,7 @@
     </xsl:if>
     <xsl:choose>
       <xsl:when test="tei:biblStruct and not(tei:bibl)">
-        <xsl:text>\begin{bibitemlist}{1}</xsl:text>
+        <xsl:text>&#10;\begin{bibitemlist}{1}&#10;</xsl:text>
         <xsl:for-each select="tei:biblStruct">
           <xsl:sort
             select="
@@ -534,7 +569,7 @@
         <xsl:apply-templates select="*[not(self::tei:head)]"/>
       </xsl:when>
       <xsl:otherwise>
-        <xsl:text>\begin{bibitemlist}{1}&#10;</xsl:text>
+        <xsl:text>&#10;\begin{bibitemlist}{1}&#10;</xsl:text>
         <xsl:apply-templates select="*[not(self::tei:head)]"/>
         <xsl:text>&#10;\end{bibitemlist}&#10;</xsl:text>
       </xsl:otherwise>
@@ -663,7 +698,7 @@
           <xsl:value-of select="child::tei:head"/>
           <xsl:text>}</xsl:text>
         </xsl:if>
-        <xsl:text>\begin{bibitemlist}{1}</xsl:text>
+        <xsl:text>&#10;\begin{bibitemlist}{1}&#10;</xsl:text>
         <xsl:for-each select="tei:witness">
           <xsl:text> \bibitem</xsl:text>
           <xsl:apply-templates/>
@@ -1167,5 +1202,25 @@
         <xsl:text>}</xsl:text>
       </xsl:otherwise>
     </xsl:choose>
+  </xsl:template>
+  
+  <doc xmlns="http://www.oxygenxml.com/ns/doc/xsl">
+    <desc>Handle interpGrp</desc>
+  </doc>
+  <xsl:template match="tei:interpGrp">
+    <xsl:text>&#10;\begin{itemize}[label={}]&#10;</xsl:text>
+      <xsl:apply-templates/>
+    <xsl:text>&#10;\end{itemize}&#10;</xsl:text>
+  </xsl:template>
+  
+  <doc xmlns="http://www.oxygenxml.com/ns/doc/xsl">
+    <desc>Handle interp</desc>
+  </doc>
+  <xsl:template match="tei:interp">
+    <xsl:text>\item[] {\hyperref[</xsl:text>
+    <xsl:value-of select="translate(@corresp,'#','')"/>
+    <xsl:text>]{</xsl:text>
+    <xsl:value-of select="normalize-space(self::tei:interp/text())"/>
+    <xsl:text>}}&#10;</xsl:text>
   </xsl:template>
 </xsl:stylesheet>
