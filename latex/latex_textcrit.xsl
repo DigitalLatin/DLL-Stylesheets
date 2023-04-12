@@ -341,13 +341,52 @@
   </doc>
   <xsl:template match="//tei:note[@type = 'parallel']">
     <xsl:text>\edtext{}{\Afootnote[nosep]{</xsl:text>
-    <xsl:apply-templates/>
-    <!--<xsl:if test="@xml:id">
-      <xsl:text>\label{</xsl:text>
-      <xsl:value-of select="@xml:id"/>
-      <xsl:text>}</xsl:text>
-    </xsl:if>-->
-    <xsl:text>}}</xsl:text>
+        <xsl:choose>
+          <xsl:when test="descendant::tei:bibl">
+            <xsl:for-each select="descendant::tei:bibl">
+              <xsl:if test="tei:author">
+                <xsl:for-each select="tei:author">
+                <xsl:choose>
+                  <xsl:when test="@role='vertit'">
+                    <xsl:text>(</xsl:text><xsl:value-of select="normalize-space(.)"/><xsl:text>)</xsl:text>
+                  </xsl:when>
+                  <xsl:otherwise>
+                    <xsl:value-of select="normalize-space(.)"/>  
+                  </xsl:otherwise>
+                </xsl:choose>
+                  <xsl:text> </xsl:text>
+                </xsl:for-each>
+              </xsl:if>
+            <xsl:if test="tei:title"><xsl:text>\textit{</xsl:text><xsl:value-of select="normalize-space(tei:title)"/><xsl:text>} </xsl:text></xsl:if>
+            <xsl:if test="tei:biblScope"><xsl:value-of select="normalize-space(tei:biblScope)"/></xsl:if>
+              <xsl:if test="following-sibling::*[1][self::tei:quote]">
+                <xsl:text>: \textit{</xsl:text>
+                <xsl:value-of select="normalize-space(following-sibling::*[1][self::tei:quote])"/>
+                <xsl:text>}</xsl:text>
+              </xsl:if>
+            </xsl:for-each>
+          </xsl:when>
+          <xsl:otherwise>
+            <xsl:apply-templates/>
+          </xsl:otherwise>
+        </xsl:choose>
+        <xsl:text>}}</xsl:text>
+  </xsl:template>
+  
+  <doc xmlns="http://www.oxygenxml.com/ns/doc/xsl">
+    <desc>Process element note with @type = 'commentary' for brief commentary notes.</desc>
+  </doc>
+  <xsl:template match="//tei:note[@type = 'commentary']">
+    <xsl:choose>
+      <xsl:when test="parent::tei:l">
+        <xsl:text>\edtext{}{\Cfootnote[nosep]{</xsl:text><xsl:apply-templates/><xsl:text>}}</xsl:text>
+      </xsl:when>
+      <xsl:otherwise>
+        <xsl:text>&#10;\pstart&#10;\edtext{}{\Cfootnote[nosep]{</xsl:text>
+        <xsl:apply-templates/>
+        <xsl:text>}}&#10;\pend&#10;</xsl:text>
+      </xsl:otherwise>
+    </xsl:choose>
   </xsl:template>
 
   <!--<xsldoc:doc xmlns:xsldoc="http://www.oxygenxml.com/ns/doc/xsl">
