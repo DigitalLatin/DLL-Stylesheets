@@ -201,7 +201,7 @@ Edited By
 %------------------------------------------------
 
 \begin{figure}[h] % Position the logo here on the page.
-\includegraphics[scale=0.50]{DLL.eps} % Logo of DLL
+\includegraphics[scale=0.50]{../images/DLL.eps} % Logo of DLL
 \centering % Center the logo.
 \end{figure}
 
@@ -264,36 +264,41 @@ Volumes are published under the </xsl:text>
 \newpage
 \thispagestyle{empty}
 \end{copyrightPage}
-\begin{acknowledgmentsPage}
-{\LARGE Acknowledgments}
-\begin{itemize}
 </xsl:text>
-        <xsl:for-each select="//tei:titleStmt/tei:respStmt | //tei:editionStmt/tei:respStmt">
-            <xsl:text>\item </xsl:text>
-            <xsl:value-of select="tei:resp"/>
-            <xsl:text>: </xsl:text>
-            <xsl:choose>
-                <xsl:when test="count(tei:name) = 1">
-                    <xsl:value-of select="tei:name"/>
-                    <xsl:text>.</xsl:text>
-                </xsl:when>
-                <xsl:otherwise>
-                    <xsl:for-each select="tei:name">
-                        <xsl:value-of select="."/>
-                        <xsl:choose>
-                            <xsl:when test="position() != last() ">
-                                <xsl:text>, </xsl:text>
-                            </xsl:when>
-                            <xsl:otherwise>.</xsl:otherwise>
-                        </xsl:choose>
-                    </xsl:for-each>
-                </xsl:otherwise>
-            </xsl:choose>
-            <xsl:text>&#10;</xsl:text>
-        </xsl:for-each>
-        <xsl:text>
-\end{itemize}
-\end{acknowledgmentsPage}
+        <xsl:if test="//tei:titleStmt/tei:respStmt | //tei:editionStmt/tei:respStmt">
+            <xsl:text>
+                &#10;\begin{acknowledgmentsPage}
+                {\LARGE Acknowledgments}
+                \begin{itemize}</xsl:text>
+            <xsl:for-each select="//tei:titleStmt/tei:respStmt | //tei:editionStmt/tei:respStmt">
+                <xsl:text>\item </xsl:text>
+                <xsl:value-of select="tei:resp"/>
+                <xsl:text>: </xsl:text>
+                <xsl:choose>
+                    <xsl:when test="count(tei:name) = 1">
+                        <xsl:value-of select="tei:name"/>
+                        <xsl:text>.</xsl:text>
+                    </xsl:when>
+                    <xsl:otherwise>
+                        <xsl:for-each select="tei:name">
+                            <xsl:value-of select="."/>
+                            <xsl:choose>
+                                <xsl:when test="position() != last() ">
+                                    <xsl:text>, </xsl:text>
+                                </xsl:when>
+                                <xsl:otherwise>.</xsl:otherwise>
+                            </xsl:choose>
+                        </xsl:for-each>
+                    </xsl:otherwise>
+                </xsl:choose>
+                <xsl:text>&#10;</xsl:text>
+            </xsl:for-each>
+            <xsl:text>
+                \end{itemize}&#10;
+                \end{acknowledgmentsPage}&#10;
+            </xsl:text>
+        </xsl:if>
+<xsl:text>
 \cleardoublepage
 \newpage
 </xsl:text>
