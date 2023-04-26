@@ -93,15 +93,20 @@ of this software, even if advised of the possibility of such damage.
   
   <xsl:template match="//tei:person" name="person">
     <xsl:choose>
-      <xsl:when test="parent::tei:listPerson[@type='characters' or 'character_group']">
-        <xsl:text>[cmd={</xsl:text><xsl:value-of select="translate(@xml:id,'-_','')"/><xsl:text>}, drama={</xsl:text><xsl:value-of select="descendant::tei:persName/text()"/><xsl:text>}]{</xsl:text><xsl:value-of select="descendant::tei:persName/text()"/><xsl:text>}</xsl:text>
+      <xsl:when test="ancestor::tei:div[@type='edition' and subtype='drama']">
+        <xsl:choose>
+          <xsl:when test="parent::tei:listPerson[@type='characters' or 'character_group']">
+            <xsl:text>[cmd={</xsl:text><xsl:value-of select="translate(@xml:id,'-_','')"/><xsl:text>}, drama={</xsl:text><xsl:value-of select="descendant::tei:persName/text()"/><xsl:text>}]{</xsl:text><xsl:value-of select="descendant::tei:persName/text()"/><xsl:text>}</xsl:text>
+          </xsl:when>
+          <xsl:otherwise>
+            <xsl:text>[</xsl:text><xsl:value-of select="descendant::tei:persName/tei:abbr[@type='siglum']"/><xsl:text>]{</xsl:text><xsl:value-of select="@xml:id"/><xsl:text>}  </xsl:text>
+            <xsl:value-of select="descendant::tei:persName/text()"/>
+            <xsl:text>. </xsl:text><xsl:apply-templates select="descendant::tei:note"/>
+            <xsl:text>&#10;</xsl:text>
+          </xsl:otherwise>
+        </xsl:choose>
       </xsl:when>
-      <xsl:otherwise>
-        <xsl:text>[</xsl:text><xsl:value-of select="descendant::tei:persName/tei:abbr[@type='siglum']"/><xsl:text>]{</xsl:text><xsl:value-of select="@xml:id"/><xsl:text>}  </xsl:text>
-        <xsl:value-of select="descendant::tei:persName/text()"/>
-        <xsl:text>. </xsl:text><xsl:apply-templates select="descendant::tei:note"/>
-        <xsl:text>&#10;</xsl:text>
-      </xsl:otherwise>
+      
     </xsl:choose>
   </xsl:template>
 
