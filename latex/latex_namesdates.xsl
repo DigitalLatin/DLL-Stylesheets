@@ -48,7 +48,7 @@ of this software, even if advised of the possibility of such damage.
          <p>Copyright: 2013, TEI Consortium</p>
       </desc>
    </doc>
-  <xsl:template match="//tei:front//tei:listPerson|//tei:body//tei:listPerson">
+  <xsl:template match="//tei:listPerson">
    <!--<xsl:if test="tei:head"> 
       <xsl:text>\vspace{1.5\baselineskip}</xsl:text>
       <xsl:text>&#10;</xsl:text>
@@ -93,8 +93,18 @@ of this software, even if advised of the possibility of such damage.
   
   <xsl:template match="//tei:person" name="person">
     <xsl:choose>
-      <xsl:when test="parent::tei:listPerson[@type='characters']">
-        <xsl:text>\hypertarget{</xsl:text><xsl:value-of select="@xml:id"/><xsl:text>}{</xsl:text><xsl:value-of select="descendant::tei:persName/text()"/><xsl:text>}</xsl:text>
+      <xsl:when test="ancestor::tei:div[@type='edition' and subtype='drama']">
+        <xsl:choose>
+          <xsl:when test="parent::tei:listPerson[@type='characters' or 'character_group']">
+            <xsl:text>[cmd={</xsl:text><xsl:value-of select="translate(@xml:id,'-_','')"/><xsl:text>}, drama={</xsl:text><xsl:value-of select="descendant::tei:persName/text()"/><xsl:text>}]{</xsl:text><xsl:value-of select="descendant::tei:persName/text()"/><xsl:text>}</xsl:text>
+          </xsl:when>
+          <xsl:otherwise>
+            <xsl:text>[</xsl:text><xsl:value-of select="descendant::tei:persName/tei:abbr[@type='siglum']"/><xsl:text>]{</xsl:text><xsl:value-of select="@xml:id"/><xsl:text>}  </xsl:text>
+            <xsl:value-of select="descendant::tei:persName/text()"/>
+            <xsl:text>. </xsl:text><xsl:apply-templates select="descendant::tei:note"/>
+            <xsl:text>&#10;</xsl:text>
+          </xsl:otherwise>
+        </xsl:choose>
       </xsl:when>
       <xsl:when test="ancestor::tei:div[@xml:id='bibliography-list-of-people']">
         <xsl:text>[</xsl:text><xsl:value-of select="descendant::tei:persName/tei:abbr[@type='siglum']"/><xsl:text>]{</xsl:text><xsl:value-of select="@xml:id"/><xsl:text>}  </xsl:text>
@@ -147,7 +157,7 @@ of this software, even if advised of the possibility of such damage.
   <xsl:template match="//tei:geogName|tei:persName|tei:placeName">
     <xsl:choose>
       <xsl:when test="@ref">
-        <xsl:text>\href[</xsl:text>
+        <xsl:text>\hyperref[</xsl:text>
         <xsl:value-of select="@ref"/>
         <xsl:text>]{</xsl:text>
         <xsl:choose>
@@ -172,7 +182,8 @@ of this software, even if advised of the possibility of such damage.
       </xsl:when>
       <xsl:otherwise>
         <xsl:value-of select="text()"/>
-      </xsl:otherwise></xsl:choose>
-    
+      </xsl:otherwise>
+    </xsl:choose>
   </xsl:template>
 </xsl:stylesheet>
+
