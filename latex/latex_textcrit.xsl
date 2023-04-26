@@ -29,8 +29,106 @@
   </doc>
 
   <doc xmlns="http://www.oxygenxml.com/ns/doc/xsl">
+    <desc>Process element cit for the apparatus fontium as an \Afootnote in reledmac.</desc>
+  </doc>
+  <xsl:template match="tei:cit">
+    <xsl:choose>
+      <xsl:when test="ancestor::tei:div[@type='edition']">
+        <xsl:value-of select="$preQuote"/>
+        <xsl:apply-templates select="tei:quote"/>
+        <xsl:value-of select="$postQuote"/>
+        <xsl:text>\edtext{}{\Afootnote[nosep]{</xsl:text>
+        <xsl:choose>
+          <xsl:when test="descendant::tei:bibl">
+            <xsl:for-each select="descendant::tei:bibl">
+              <xsl:if test="tei:author">
+                <xsl:for-each select="tei:author">
+                  <xsl:choose>
+                    <xsl:when test="@role='vertit'">
+                      <xsl:text>(</xsl:text><xsl:value-of select="normalize-space(.)"/><xsl:text>)</xsl:text>
+                    </xsl:when>
+                    <xsl:otherwise>
+                      <xsl:value-of select="normalize-space(.)"/>  
+                    </xsl:otherwise>
+                  </xsl:choose>
+                  <xsl:text> </xsl:text>
+                </xsl:for-each>
+              </xsl:if>
+              <xsl:if test="tei:title"><xsl:text>\textit{</xsl:text><xsl:value-of select="normalize-space(tei:title)"/><xsl:text>} </xsl:text></xsl:if>
+              <xsl:if test="tei:biblScope">
+                <xsl:for-each select="tei:biblScope">
+                  <xsl:value-of select="normalize-space(tei:biblScope)"/>
+                  <xsl:if test="position() != last()">.</xsl:if>
+                  <xsl:if test="position() = last()">. </xsl:if>
+                </xsl:for-each>
+              </xsl:if>
+              <xsl:if test="following-sibling::*[1][self::tei:quote]">
+                <xsl:text>: \textit{</xsl:text>
+                <xsl:value-of select="normalize-space(following-sibling::*[1][self::tei:quote])"/>
+                <xsl:text>}</xsl:text>
+              </xsl:if>
+            </xsl:for-each>
+          </xsl:when>
+          <xsl:otherwise>
+            <xsl:apply-templates/>
+          </xsl:otherwise>
+        </xsl:choose>
+        <xsl:text>}}</xsl:text>      
+    </xsl:when>
+    <xsl:otherwise>
+      <xsl:apply-templates/>
+    </xsl:otherwise>
+    </xsl:choose>
+  </xsl:template>
+
+  <doc xmlns="http://www.oxygenxml.com/ns/doc/xsl">
+    <desc>Process element note with @type = 'parallel' for the apparatus testium/fontium
+      using \Bfootnote in reledmac.</desc>
+  </doc>
+  <xsl:template match="//tei:note[@type = 'parallel']">
+    <xsl:text>\edtext{}{\Bfootnote[nosep]{</xsl:text>
+    <xsl:choose>
+      <xsl:when test="descendant::tei:bibl">
+        <xsl:for-each select="descendant::tei:bibl">
+          <xsl:if test="tei:author">
+            <xsl:for-each select="tei:author">
+              <xsl:choose>
+                <xsl:when test="@role='vertit'">
+                  <xsl:text>(</xsl:text><xsl:value-of select="normalize-space(.)"/><xsl:text>)</xsl:text>
+                </xsl:when>
+                <xsl:otherwise>
+                  <xsl:value-of select="normalize-space(.)"/>  
+                </xsl:otherwise>
+              </xsl:choose>
+              <xsl:text> </xsl:text>
+            </xsl:for-each>
+          </xsl:if>
+          <xsl:if test="tei:title"><xsl:text>\textit{</xsl:text><xsl:value-of select="normalize-space(tei:title)"/><xsl:text>} </xsl:text></xsl:if>
+          <xsl:if test="tei:biblScope">
+            <xsl:for-each select="tei:biblScope">
+              <xsl:value-of select="normalize-space(tei:biblScope)"/>
+              <xsl:if test="position() != last()">.</xsl:if>
+              <xsl:if test="position() = last()">. </xsl:if>
+            </xsl:for-each>
+          </xsl:if>
+          <xsl:if test="following-sibling::*[1][self::tei:quote]">
+            <xsl:text>: \textit{</xsl:text>
+            <xsl:value-of select="normalize-space(following-sibling::*[1][self::tei:quote])"/>
+            <xsl:text>}</xsl:text>
+          </xsl:if>
+        </xsl:for-each>
+      </xsl:when>
+      <xsl:otherwise>
+        <xsl:apply-templates/>
+      </xsl:otherwise>
+    </xsl:choose>
+    <xsl:text>}}</xsl:text>
+  </xsl:template>
+
+  <doc xmlns="http://www.oxygenxml.com/ns/doc/xsl">
     <desc>
-      <p>Override common_textcrit.xsl's template for tei:app.</p>
+      <p>Override common_textcrit.xsl's template for apparatus criticus (using tei:app)
+        using \Cfootnote in reledmac.</p>
       <p>This is needed especially to avoid rendering tei:app with @type="transposition", since PDF
         output can't render dynamic swapping of readings.</p>
     </desc>
@@ -118,12 +216,12 @@
           <xsl:text>}</xsl:text>
         </xsl:when>
         <xsl:otherwise>
-          <!-- Otherwise, just open the bracket for the Bfootnote string. We're using \Bfootnote, since \Afootnote should be reserved for an apparatus fontium. -->
+          <!-- Otherwise, just open the bracket for the Cfootnote string. We're using \Cfootnote, since \Afootnote should be reserved for an apparatus fontium. -->
           <xsl:text>{</xsl:text>
         </xsl:otherwise>
       </xsl:choose>
-      <!-- \Bfootnote{} is where a note should be placed. We're using \Bfootnote, since \Afootnote should be reserved for an apparatus fontium. -->
-      <xsl:text>\Bfootnote</xsl:text>
+      <!-- \Cfootnote{} is where a note should be placed. We're using \Cfootnote, since \Afootnote should be reserved for an apparatus fontium. -->
+      <xsl:text>\Cfootnote</xsl:text>
       <!-- Logic for handling a lemma with or without witness or source -->
       <xsl:choose>
         <!-- If the lemma doesn't have a witness or a source, just insert the lemma, followed by ], which Reledmac inserts automatically by default (\Xlemmaseparator). -->
@@ -325,7 +423,7 @@
     <xsldoc:param name="lemma">The parameter 'lemma' occurs in the appLemma template
       above.</xsldoc:param>
   </xsldoc:doc>
-  <!-- The goal: \edtext{lemma}{ \Bfootnote {\textit{witnesses} \textit{sources} \textit{note} | reading \textit{witness} \textit{source} \textit{note} | reading \textit{witness} \textit{source} \textit{note}}} -->
+  <!-- The goal: \edtext{lemma}{ \Cfootnote {\textit{witnesses} \textit{sources} \textit{note} | reading \textit{witness} \textit{source} \textit{note} | reading \textit{witness} \textit{source} \textit{note}}} -->
   <xsl:template name="makeAppEntry">
     <xsl:param name="lemma"/>
     <xsl:call-template name="appLemma"/>
@@ -334,43 +432,6 @@
     </xsl:if>
     <!-- Close the apparatus note. -->
     <xsl:text>}}</xsl:text>
-  </xsl:template>
-
-  <doc xmlns="http://www.oxygenxml.com/ns/doc/xsl">
-    <desc>Process element note with @type = 'parallel' for the apparatus testium/fontium.</desc>
-  </doc>
-  <xsl:template match="//tei:note[@type = 'parallel']">
-    <xsl:text>\edtext{}{\Afootnote[nosep]{</xsl:text>
-        <xsl:choose>
-          <xsl:when test="descendant::tei:bibl">
-            <xsl:for-each select="descendant::tei:bibl">
-              <xsl:if test="tei:author">
-                <xsl:for-each select="tei:author">
-                <xsl:choose>
-                  <xsl:when test="@role='vertit'">
-                    <xsl:text>(</xsl:text><xsl:value-of select="normalize-space(.)"/><xsl:text>)</xsl:text>
-                  </xsl:when>
-                  <xsl:otherwise>
-                    <xsl:value-of select="normalize-space(.)"/>  
-                  </xsl:otherwise>
-                </xsl:choose>
-                  <xsl:text> </xsl:text>
-                </xsl:for-each>
-              </xsl:if>
-            <xsl:if test="tei:title"><xsl:text>\textit{</xsl:text><xsl:value-of select="normalize-space(tei:title)"/><xsl:text>} </xsl:text></xsl:if>
-            <xsl:if test="tei:biblScope"><xsl:value-of select="normalize-space(tei:biblScope)"/></xsl:if>
-              <xsl:if test="following-sibling::*[1][self::tei:quote]">
-                <xsl:text>: \textit{</xsl:text>
-                <xsl:value-of select="normalize-space(following-sibling::*[1][self::tei:quote])"/>
-                <xsl:text>}</xsl:text>
-              </xsl:if>
-            </xsl:for-each>
-          </xsl:when>
-          <xsl:otherwise>
-            <xsl:apply-templates/>
-          </xsl:otherwise>
-        </xsl:choose>
-        <xsl:text>}}</xsl:text>
   </xsl:template>
   
   <doc xmlns="http://www.oxygenxml.com/ns/doc/xsl">
