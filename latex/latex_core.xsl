@@ -179,6 +179,9 @@
         <xsl:variable name="depth">
           <xsl:apply-templates mode="depth" select=".."/>
         </xsl:variable>
+        <xsl:if test="child::tei:app">
+          <xsl:text>&#10;\pstart</xsl:text>
+        </xsl:if>
         <xsl:text>&#10;\</xsl:text>
         <xsl:choose>
           <xsl:when test="$documentclass = 'book'">
@@ -302,6 +305,9 @@
             <xsl:text>{</xsl:text>
             <xsl:apply-templates/>
             <xsl:text>}&#10;</xsl:text>
+            <xsl:if test="child::tei:app">
+              <xsl:text>\pend&#10;</xsl:text>
+            </xsl:if>
           </xsl:when>
           <xsl:otherwise>
             <xsl:text>{</xsl:text>
@@ -1222,5 +1228,12 @@
     <xsl:text>]{</xsl:text>
     <xsl:value-of select="normalize-space(self::tei:interp/text())"/>
     <xsl:text>}}&#10;</xsl:text>
+  </xsl:template>
+  
+  <doc xmlns="http://www.oxygenxml.com/ns/doc/xsl">
+    <desc>Handle mentioned</desc>
+  </doc>
+  <xsl:template match="tei:mentioned">
+    <xsl:text>\textit{</xsl:text><xsl:apply-templates/><xsl:text>}</xsl:text>
   </xsl:template>
 </xsl:stylesheet>
