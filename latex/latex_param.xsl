@@ -115,7 +115,6 @@ the beginning of the document</desc>
       <xsl:text>,</xsl:text>
       <xsl:value-of select="$latexGeometryOptions"/>
       <xsl:text>]{geometry}
-\usepackage{framed}
 
 % Typesetting
 \usepackage{microtype}
