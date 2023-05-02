@@ -122,6 +122,8 @@ the beginning of the document</desc>
 \usepackage{leading}
 \usepackage{setspace}
 \usepackage[normalem]{ulem}
+\usepackage{fancyvrb}
+\usepackage{fancyhdr}
 \usepackage{titlesec}
 \usepackage{titletoc}
 
