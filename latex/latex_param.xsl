@@ -109,37 +109,42 @@ the beginning of the document</desc>
    </doc>
    <xsl:template name="latexPackages">
       <xsl:text>
+% Page layout
 \usepackage[</xsl:text>
       <xsl:value-of select="$latexPaperSize"/>
       <xsl:text>,</xsl:text>
       <xsl:value-of select="$latexGeometryOptions"/>
       <xsl:text>]{geometry}
-\setlength{\textwidth}{84mm}
-\setlength{\textheight}{136mm}
 \usepackage{framed}
+
+% Typesetting
 \usepackage{microtype}
 \usepackage{soul}
 \usepackage{leading}
 \usepackage{setspace}
+\usepackage[normalem]{ulem}
+\usepackage{titlesec}
+\usepackage{titletoc}
+
+% Use thalie for drama texts
+\usepackage[characterstyle=simple,playstyle=bigcenter]{thalie}
 
 % Separate font handling for captions
 \usepackage{caption}
 % Set the font size of the caption to \small
 \captionsetup[figure]{font=small}
 
-% Allow alignment of images
-\usepackage[export]{adjustbox}
-\usepackage[characterstyle=simple,playstyle=bigcenter]{thalie}
-</xsl:text>
-<xsl:text>
+% Ability to put notes in the margins
+\usepackage{marginnote}
+
 \definecolor{shadecolor}{gray}{0.95}
 \usepackage{longtable}
-\usepackage[normalem]{ulem}
-\usepackage{fancyvrb}
-\usepackage{fancyhdr}
+
+% Images
+\usepackage[export]{adjustbox}
 \usepackage{graphicx}
 \graphicspath{ {./images/} }
-\usepackage{marginnote}
+
 
 \renewcommand{\@cite}[1]{#1}
 
@@ -264,7 +269,9 @@ as a proportion of the page width.</desc>
     rmargin=2.7cm,
     bmargin=3.50cm,
     lmargin=1.60cm,
-    bindingoffset=1cm
+    bindingoffset=1cm,
+    textwidth=8.4cm,
+    textheight=13.6cm
   </xsl:param>
   
    <doc xmlns="http://www.oxygenxml.com/ns/doc/xsl" class="userpackage" type="string">
@@ -371,36 +378,80 @@ characters. The normal characters remain active for LaTeX commands.
    \z@ \@chclass \z@ \@preamerr \z@ \fi \fi \fi \fi
    \fi \fi  \fi  \fi  \fi  \fi  \fi \fi \fi \fi \fi \fi}
 <xsl:call-template name="fallback-characters"/>
+% Redefine \\ to be equivalent to \@arraycr in table environments.
 \gdef\arraybackslash{\let\\=\@arraycr}
 \def\@textsubscript#1{{\m@th\ensuremath{_{\mbox{\fontsize\sf@size\z@#1}}}}}
 \def\Panel#1#2#3#4{\multicolumn{#3}{){\columncolor{#2}}#4}{#1}}
+
+% Commands for editorial elements
 \def\abbr{}
 \def\corr{}
 \def\expan{}
 \def\orig{}
 \def\reg{}
 \def\ref{}
-<!-- SJH: Added rules for editorial symbols. -->
-
-
 \def\gap{\lower 2pt \hbox{ * * * }}
 \def\sic#1{†#1†}
 \def\supplied#1{⟨#1⟩}
 \def\surplus#1{[#1]}
+
+% Commands for personal names, place names, etc.
 \def\persName{}\def\name{}
 \def\placeName{}
 \def\orgName{}
+
+% Commands for typesetting text in various fonts
 \def\textcal#1{{\fontspec{<xsl:value-of select="$calligraphicFont"/>}#1}}
 \def\textgothic#1{{\fontspec{<xsl:value-of select="$gothicFont"/>}#1}}
 \def\textlarge#1{{\large #1}}
+
+% Commands for adding various decorations to text
 \def\textoverbar#1{\ensuremath{\overline{#1}}}
 \def\textquoted#1{‘#1’}
 \def\textsmall#1{{\small #1}}
 \def\textsubscript#1{\@textsubscript{\selectfont#1}}
 \def\textxi{\ensuremath{\xi}}
 \def\titlem{\itshape}
+
+% Environments for different parts of the document
 \newenvironment{biblfree}{}{\ifvmode\par\fi }
 \newenvironment{bibl}{}{}
+\newenvironment{bibitemlist}[1]{%
+    \list{\@biblabel{\@arabic\c@enumiv}}%
+    {\settowidth\labelwidth{\@biblabel{#1}}%
+    \leftmargin\labelwidth
+    \advance\leftmargin\labelsep
+    \@openbib@code
+    \usecounter{enumiv}%
+    \let\p@enumiv\@empty
+    \renewcommand\theenumiv{\@arabic\c@enumiv}%
+    }%
+    \sloppy
+    \clubpenalty4000
+    \@clubpenalty \clubpenalty
+    \widowpenalty4000%
+    \sfcode`\.\@m}%
+    {\def\@noitemerr
+    {\@latex@warning{Empty `bibitemlist' environment}}%
+    \endlist}
+ \newenvironment{msitemlist}[1]{%
+     \list{}%
+     {\settowidth\labelwidth{\@biblabel{#1}}%
+     \leftmargin\labelwidth
+     \advance\leftmargin\labelsep
+     \@openbib@code
+     \usecounter{enumiv}%
+     \let\p@enumiv\@empty
+     \renewcommand\theenumiv{\@arabic\c@enumiv}%
+     }%
+     \sloppy
+     \clubpenalty4000
+     \@clubpenalty \clubpenalty
+     \widowpenalty4000%
+     \sfcode`\.\@m}%
+     {\def\@noitemerr
+     {\@latex@warning{Empty `bibitemlist' environment}}%
+     \endlist}    
 \newenvironment{byline}{\vskip6pt\itshape\fontsize{16pt}{18pt}\selectfont}{\par }
 \newenvironment{citbibl}{}{\ifvmode\par\fi }
 \newenvironment{docAuthor}{\ifvmode\vskip4pt\fontsize{16pt}{18pt}\selectfont\fi\itshape}{\ifvmode\par\fi }
@@ -414,20 +465,26 @@ characters. The normal characters remain active for LaTeX commands.
 \newenvironment{copyrightPage}{}{}
 \newenvironment{acknowledgmentsPage}{}{}
 <xsl:text disable-output-escaping="yes">
-\newcolumntype{L}[1]{>){\raggedright\arraybackslash}p{#1}}
-\newcolumntype{C}[1]{>){\centering\arraybackslash}p{#1}}
-\newcolumntype{R}[1]{>){\raggedleft\arraybackslash}p{#1}}
-\newcolumntype{P}[1]{){\arraybackslash}p{#1}}
-\newcolumntype{B}[1]{>){\arraybackslash}b{#1}}
-\newcolumntype{M}[1]{>){\arraybackslash}m{#1}}
+% Define new column types for tables.
+\newcolumntype{L}[1]{>){\raggedright\arraybackslash}p{#1}} % Left-aligned column 
+\newcolumntype{C}[1]{>){\centering\arraybackslash}p{#1}} % Centered column
+\newcolumntype{R}[1]{>){\raggedleft\arraybackslash}p{#1}} % Right-aligned column
+\newcolumntype{P}[1]{){\arraybackslash}p{#1}} % Paragraph-style column 
+\newcolumntype{B}[1]{>){\arraybackslash}b{#1}} % Vertically centered column, bottom alignment
+\newcolumntype{M}[1]{>){\arraybackslash}m{#1}} % Vertically centered column, middle alignment
 \definecolor{label}{gray}{0.75}
 \def\unusedattribute#1{\sout{\textcolor{label}{#1}}}
+
+% For using \xref.
 \DeclareRobustCommand*{\xref}{\hyper@normalise\xref@}
 \def\xref@#1#2{\hyper@linkurl{#2}{#1}}
+
+% Math stuff: defines a new command for typesetting subscripts using underscores
 \begingroup
 \catcode`\_=\active
 \gdef_#1{\ensuremath{\sb{\mathrm{#1}}}}
 \endgroup
+% Define custom behavior for the underscore character in math mode
 \mathcode`\_=\string"8000
 \catcode`\_=12\relax
 </xsl:text>
@@ -476,20 +533,20 @@ characters. The normal characters remain active for LaTeX commands.
    <xsl:template name="latexLayout">
      <xsl:choose>
        <xsl:when test="$latexPaperSize='a3paper'">
-	 \paperwidth297mm
-	 \paperheight420mm
+\paperwidth297mm
+\paperheight420mm
        </xsl:when>
        <xsl:when test="$latexPaperSize='a5paper'">	
-	 \paperwidth148mm
-	 \paperheight210mm
+\paperwidth148mm
+\paperheight210mm
        </xsl:when>
        <xsl:when test="$latexPaperSize='a4paper'">
-	 \paperwidth210mm
-	 \paperheight297mm
+\paperwidth210mm
+\paperheight297mm
        </xsl:when>
        <xsl:when test="$latexPaperSize='letterpaper'">
-	 \paperwidth216mm
-	 \paperheight279mm
+\paperwidth216mm
+\paperheight279mm
        </xsl:when>
 	 <xsl:otherwise>
 	 </xsl:otherwise>
@@ -507,6 +564,7 @@ characters. The normal characters remain active for LaTeX commands.
 \vbadness=4000
 \widowpenalty=10000
 <xsl:if test="not($documentclass='letter')">
+% Define the formatting for section headings 
 \renewcommand\section{\@startsection {section}{1}{\z@}%
   {-2ex \@plus -0.5ex \@minus -.2ex}%
   {3ex \@plus .2ex}%
@@ -529,6 +587,7 @@ characters. The normal characters remain active for LaTeX commands.
   {\reset@font\normalsize\textbf}}
   
 </xsl:if>
+% Format and style for the table of contents
 \def\l@section#1#2{\addpenalty{\@secpenalty} \addvspace{1.0em plus 1pt}
  \@tempdima 1.5em \begingroup
  \parindent \z@ \rightskip \@pnumwidth 
@@ -544,6 +603,8 @@ characters. The normal characters remain active for LaTeX commands.
 \newif\if@mainmatter 
 \@mainmattertrue
 \def\chaptername{Chapter}
+
+% Define format and style for frontmatter, mainmatter, backmatter
 \def\frontmatter{%
   \pagenumbering{roman}
   \def\thechapter{\@roman\c@chapter}
@@ -575,43 +636,6 @@ characters. The normal characters remain active for LaTeX commands.
   \def\theHchapter{\Alph{chapter}}
   \appendix
 }
-\newenvironment{bibitemlist}[1]{%
-   \list{\@biblabel{\@arabic\c@enumiv}}%
-       {\settowidth\labelwidth{\@biblabel{#1}}%
-        \leftmargin\labelwidth
-        \advance\leftmargin\labelsep
-        \@openbib@code
-        \usecounter{enumiv}%
-        \let\p@enumiv\@empty
-        \renewcommand\theenumiv{\@arabic\c@enumiv}%
-	}%
-  \sloppy
-  \clubpenalty4000
-  \@clubpenalty \clubpenalty
-  \widowpenalty4000%
-  \sfcode`\.\@m}%
-  {\def\@noitemerr
-    {\@latex@warning{Empty `bibitemlist' environment}}%
-    \endlist}
-<!-- SJH: Added this to cope with different requirements for manuscript items. -->
-\newenvironment{msitemlist}[1]{%
-  \list{}%
-  {\settowidth\labelwidth{\@biblabel{#1}}%
-    \leftmargin\labelwidth
-    \advance\leftmargin\labelsep
-    \@openbib@code
-    \usecounter{enumiv}%
-    \let\p@enumiv\@empty
-    \renewcommand\theenumiv{\@arabic\c@enumiv}%
-    }%
-    \sloppy
-    \clubpenalty4000
-    \@clubpenalty \clubpenalty
-    \widowpenalty4000%
-    \sfcode`\.\@m}%
-    {\def\@noitemerr
-    {\@latex@warning{Empty `bibitemlist' environment}}%
-    \endlist}
 \def\tableofcontents{\section*{\contentsname}\@starttoc{toc}}
 \parskip<xsl:value-of select="$parSkip"/>
 \parindent<xsl:value-of select="$parIndent"/>
@@ -676,6 +700,19 @@ characters. The normal characters remain active for LaTeX commands.
 }
 \makeatother
 \makeatletter
+\newcommand*{\cleartorightpage}{%
+  \clearpage
+    \if@twoside
+    \ifodd\c@page\else
+      \hbox{}\newpage
+      \if@twocolumn
+        \hbox{}\newpage
+      \fi
+    \fi
+  \fi
+}
+\makeatother
+\makeatletter
 \thispagestyle{empty}
 \markright{\@title}\markboth{\@title}{\@author}
 \renewcommand\small{\@setfontsize\small{9pt}{11pt}\abovedisplayskip 8.5\p@ plus3\p@ minus4\p@
@@ -689,6 +726,8 @@ characters. The normal characters remain active for LaTeX commands.
 }
 \makeatother
 \fvset{frame=single,numberblanklines=false,xleftmargin=5mm,xrightmargin=5mm}
+\usepackage{fancyvrb}
+\usepackage{fancyhdr}
 \fancyhf{} 
 \setlength{\headheight}{14pt}
 \fancyhead[LE]{\thepage}
