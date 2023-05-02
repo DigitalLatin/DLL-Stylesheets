@@ -48,20 +48,9 @@ of this software, even if advised of the possibility of such damage.
          <p>Copyright: 2013, TEI Consortium</p>
       </desc>
    </doc>
-  <xsl:template match="//tei:listPerson">
-   <!--<xsl:if test="tei:head"> 
-      <xsl:text>\vspace{1.5\baselineskip}</xsl:text>
-      <xsl:text>&#10;</xsl:text>
-      <xsl:text>\leftline{\large\uppercase{</xsl:text>
-      <xsl:for-each select="tei:head">
-        <xsl:apply-templates/>
-      </xsl:for-each>
-      <xsl:text>}} </xsl:text>
-      <xsl:text>&#10;</xsl:text>
-      <xsl:text>\vspace{0.5\baselineskip}</xsl:text>
-    </xsl:if>-->
+  <xsl:template match="tei:listPerson">
     <xsl:choose>
-      <xsl:when test="//tei:listPerson[@type='characters']">
+      <xsl:when test="@type='characters'">
             <xsl:text>&#10;{\large \scshape{</xsl:text>
             <xsl:value-of select="tei:head"/>
             <xsl:text>}}&#10;\begin{dramatis}&#10;</xsl:text>
@@ -81,17 +70,20 @@ of this software, even if advised of the possibility of such damage.
         <xsl:text>\newpage&#10;</xsl:text>
       </xsl:when>
       <xsl:otherwise>
-        <xsl:text>&#10;\begin{bibitemlist}{1}&#10;</xsl:text>
+        <xsl:text>&#10;{\large{</xsl:text>
+        <xsl:value-of select="tei:head"/>
+        <xsl:text>}}</xsl:text>
+        <xsl:text>&#10;\begin{itemize}&#10;</xsl:text>
         <xsl:for-each select="tei:person">
-          <xsl:text>&#10;\bibitem</xsl:text>
+          <xsl:text>&#10;\item </xsl:text>
           <xsl:call-template name="person"/>      
         </xsl:for-each>
-        <xsl:text>\end{bibitemlist}&#10;</xsl:text>
+        <xsl:text>&#10;\end{itemize}&#10;</xsl:text>
       </xsl:otherwise>
     </xsl:choose>
   </xsl:template>
   
-  <xsl:template match="//tei:person" name="person">
+  <xsl:template match="tei:person" name="person">
     <xsl:choose>
       <xsl:when test="ancestor::tei:div[@type='edition' and subtype='drama']">
         <xsl:choose>
@@ -114,7 +106,7 @@ of this software, even if advised of the possibility of such damage.
       </xsl:when>
       <!-- When the listPerson is just a list of names (e.g., in the front or back mater) -->
       <xsl:when test="ancestor::tei:front or ancestor::tei:back">
-        <xsl:text>[</xsl:text><xsl:value-of select="child::tei:persName/tei:abbr[@type='siglum']"/><xsl:text>]{</xsl:text><xsl:value-of select="@xml:id"/><xsl:text>}</xsl:text>
+        <xsl:text>\label{</xsl:text><xsl:value-of select="child::tei:persName/tei:abbr[@type='siglum']"/><xsl:text>} </xsl:text>
         <xsl:choose>
           <xsl:when test="child::tei:persName/(tei:surname or tei:forename or tei:addName)">
             <xsl:if test="child::tei:persName/tei:surname and child::tei:persName/tei:addname">
@@ -134,12 +126,10 @@ of this software, even if advised of the possibility of such damage.
             <xsl:value-of select="child::tei:persName/text()"/>
           </xsl:otherwise>
         </xsl:choose>     
-        <xsl:text>&#10;</xsl:text>
       </xsl:when>
       <xsl:otherwise>
         <xsl:text>[</xsl:text><xsl:value-of select="descendant::tei:persName/tei:abbr[@type='siglum']"/><xsl:text>]{</xsl:text><xsl:value-of select="@xml:id"/><xsl:text>}  </xsl:text><xsl:value-of select="normalize-space(descendant::tei:persName/text())"/>
         <xsl:text>. </xsl:text><xsl:apply-templates select="descendant::tei:note"/>
-        <xsl:text>&#10;</xsl:text>
       </xsl:otherwise>
     </xsl:choose>
   </xsl:template>
@@ -158,7 +148,7 @@ of this software, even if advised of the possibility of such damage.
     <xsl:choose>
       <xsl:when test="@ref">
         <xsl:text>\hyperref[</xsl:text>
-        <xsl:value-of select="@ref"/>
+        <xsl:value-of select="translate(@ref,'#','')"/>
         <xsl:text>]{</xsl:text>
         <xsl:choose>
           <xsl:when test="tei:app/tei:lem">
