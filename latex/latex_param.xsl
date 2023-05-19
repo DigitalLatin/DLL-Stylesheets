@@ -126,6 +126,7 @@ the beginning of the document</desc>
 \usepackage{fancyhdr}
 \usepackage{titlesec}
 \usepackage{titletoc}
+\usepackage{accents}
 
 % Use thalie for drama texts
 \usepackage[characterstyle=simple,playstyle=bigcenter]{thalie}
@@ -387,7 +388,7 @@ characters. The normal characters remain active for LaTeX commands.
 % Commands for editorial elements
 \def\abbr{}
 \def\corr{}
-\def\expan{}
+\def\expan#1{(#1)}
 \def\orig{}
 \def\reg{}
 \def\ref{}
@@ -395,6 +396,12 @@ characters. The normal characters remain active for LaTeX commands.
 \def\sic#1{†#1†}
 \def\supplied#1{⟨#1⟩}
 \def\surplus#1{[#1]}
+
+\newcommand{\unclear}[1]{%
+\foreach \char in {#1} {%
+\underline{\d{\char}}%
+}%
+}
 
 % Commands for personal names, place names, etc.
 \def\persName{}\def\name{}
