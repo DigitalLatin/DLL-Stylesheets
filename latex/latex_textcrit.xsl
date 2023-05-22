@@ -41,32 +41,7 @@
         <xsl:choose>
           <xsl:when test="descendant::tei:bibl">
             <xsl:for-each select="descendant::tei:bibl">
-              <xsl:if test="tei:author">
-                <xsl:for-each select="tei:author">
-                  <xsl:choose>
-                    <xsl:when test="@role='vertit'">
-                      <xsl:text>(</xsl:text><xsl:value-of select="normalize-space(.)"/><xsl:text>)</xsl:text>
-                    </xsl:when>
-                    <xsl:otherwise>
-                      <xsl:value-of select="normalize-space(.)"/>  
-                    </xsl:otherwise>
-                  </xsl:choose>
-                  <xsl:text> </xsl:text>
-                </xsl:for-each>
-              </xsl:if>
-              <xsl:if test="tei:title"><xsl:text>\textit{</xsl:text><xsl:value-of select="normalize-space(tei:title)"/><xsl:text>} </xsl:text></xsl:if>
-              <xsl:if test="tei:biblScope">
-                <xsl:for-each select="tei:biblScope">
-                  <xsl:value-of select="normalize-space(tei:biblScope)"/>
-                  <xsl:if test="position() != last()">.</xsl:if>
-                  <xsl:if test="position() = last()">. </xsl:if>
-                </xsl:for-each>
-              </xsl:if>
-              <xsl:if test="following-sibling::*[1][self::tei:quote]">
-                <xsl:text>: \textit{</xsl:text>
-                <xsl:value-of select="normalize-space(following-sibling::*[1][self::tei:quote])"/>
-                <xsl:text>}</xsl:text>
-              </xsl:if>
+              <xsl:apply-templates/>
             </xsl:for-each>
           </xsl:when>
           <xsl:otherwise>
