@@ -175,5 +175,12 @@ of this software, even if advised of the possibility of such damage.
       </xsl:otherwise>
     </xsl:choose>
   </xsl:template>
-</xsl:stylesheet>
+  
+  <!--<doc xmlns="http://www.oxygenxml.com/ns/doc/xsl">
+    <desc>Process name element.</desc>
+  </doc>  
+  <xsl:template match="tei:cit/tei:ref/tei:name">
+    <xsl:apply-templates select="tei:name"/>
+  </xsl:template>
+--></xsl:stylesheet>
 
