@@ -91,9 +91,12 @@ of this software, even if advised of the possibility of such damage.
     </xsl:choose>
   </xsl:template>
   
-  <xsl:template match="//tei:person" name="person">
+  <doc xmlns="http://www.oxygenxml.com/ns/doc/xsl">
+    <desc>Process person.</desc>
+  </doc>
+  <xsl:template match="tei:person" name="person">
     <xsl:choose>
-      <xsl:when test="ancestor::tei:div[@type='edition' and subtype='drama']">
+      <xsl:when test="ancestor::tei:div[@type='edition' and @subtype='drama']">
         <xsl:choose>
           <xsl:when test="parent::tei:listPerson[@type='characters' or 'character_group']">
             <xsl:text>[cmd={</xsl:text><xsl:value-of select="translate(@xml:id,'-_','')"/><xsl:text>}, drama={</xsl:text><xsl:value-of select="descendant::tei:persName/text()"/><xsl:text>}]{</xsl:text><xsl:value-of select="descendant::tei:persName/text()"/><xsl:text>}</xsl:text>
@@ -106,10 +109,15 @@ of this software, even if advised of the possibility of such damage.
           </xsl:otherwise>
         </xsl:choose>
       </xsl:when>
-      
+      <xsl:otherwise>
+        <xsl:apply-templates select="tei:person"/>
+      </xsl:otherwise>
     </xsl:choose>
   </xsl:template>
 
+  <doc xmlns="http://www.oxygenxml.com/ns/doc/xsl">
+    <desc>Process affiliation or email.</desc>
+  </doc>
   <xsl:template match="tei:affiliation|tei:email">
       <xsl:text>\mbox{}\\ </xsl:text>
       <xsl:apply-templates/>
