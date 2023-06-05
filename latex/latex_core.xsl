@@ -643,6 +643,15 @@
     <xsl:text> </xsl:text>
     <xsl:apply-templates/>
   </xsl:template>
+  
+  <doc xmlns="http://www.oxygenxml.com/ns/doc/xsl">
+    <desc>Process element tei:bibl within a tei:cit (for apparatus fontium)</desc>
+  </doc>
+  <xsl:template match="tei:cit/tei:bibl">
+    <xsl:text>\edtext{}{\Afootnote[nosep]{</xsl:text>
+    <xsl:apply-templates/>
+    <xsl:text>}}</xsl:text>
+  </xsl:template>
 
   <doc xmlns="http://www.oxygenxml.com/ns/doc/xsl">
     <desc>
@@ -1019,10 +1028,20 @@
 
 
   <doc xmlns="http://www.oxygenxml.com/ns/doc/xsl">
-    <desc>Process element ref[@type='cite']</desc>
+    <desc>Process element ref</desc>
   </doc>
-  <xsl:template match="tei:ref[@type = 'cite']">
-    <xsl:apply-templates/>
+  <xsl:template match="tei:ref">
+    <xsl:choose>
+      <xsl:when test="parent::tei:cit">
+        <xsl:apply-templates/>
+      </xsl:when>
+      <xsl:when test="@type = 'cite'">
+        <xsl:apply-templates/>
+      </xsl:when>
+      <xsl:otherwise>
+        <xsl:apply-templates/>
+      </xsl:otherwise>
+    </xsl:choose> 
   </xsl:template>
 
   <!-- SJH: Insert a number in superscript to indicate the beginning of a seg, using value of @n-->
