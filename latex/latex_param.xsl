@@ -150,7 +150,7 @@ the beginning of the document</desc>
 \usepackage[antilabe]{reledmac}
 
 % Set double vertical lines as the separator between notes.
-\Xparafootsep[A,B]{ $\parallel$  }
+\Xparafootsep[A,B]{ $\parallel\ \ $ }
 
 % Set stanza indents to 0 for one line per stanza line.
 \setstanzaindents{1,0,1}
