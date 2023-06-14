@@ -355,6 +355,14 @@ Volumes are published under the </xsl:text><xsl:value-of select="//tei:publicati
                 <xsl:text>&#10;\newpage</xsl:text>
             </xsl:if>
         </xsl:when>
+        <xsl:when test="parent::tei:div[@type='edition']">
+            <xsl:text>&#10;\beginnumbering&#10;</xsl:text>
+            <xsl:text>&#10;\stanza&#10;</xsl:text>
+            <xsl:text>&#10;\setstanzaindents{1,1}</xsl:text>
+            <xsl:apply-templates/>
+            <xsl:text>&#10;\&amp;&#10;</xsl:text>
+            <xsl:text>&#10;\endnumbering</xsl:text>
+        </xsl:when>
         <xsl:otherwise>
             <xsl:apply-templates/>
         </xsl:otherwise>

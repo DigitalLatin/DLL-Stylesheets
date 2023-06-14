@@ -230,13 +230,13 @@
       <xsl:when test="parent::tei:castList"/>
       <xsl:when test="parent::tei:figure"/>
       <xsl:when test="parent::tei:list"/>
-      <xsl:when test="parent::tei:lg">
+      <!--<xsl:when test="parent::tei:lg">
         <xsl:text>&#10;\vspace{2\baselineskip} % Whitespace&#10;</xsl:text>
         <xsl:text>&#10;\subsection*{</xsl:text>
         <xsl:apply-templates/>
         <xsl:text>}</xsl:text>
         <xsl:text>&#10;\vspace{1\baselineskip} % Whitespace&#10;</xsl:text>
-      </xsl:when>
+      </xsl:when>-->
       <xsl:when test="parent::tei:table"/>
       <xsl:otherwise>
         <xsl:variable name="depth">
@@ -259,18 +259,10 @@
             <xsl:choose>
               <xsl:when test="$depth = 0">newpage&#10;\thispagestyle{plain}&#10;\section</xsl:when>
               <xsl:when test="$depth = 1">
-                <xsl:choose>
-                  <xsl:when test="parent::tei:div[@type = 'textpart']">
-                    <xsl:text>vspace{2\baselineskip} % Whitespace&#10;</xsl:text>
-                    <xsl:text>\</xsl:text>
-                  </xsl:when>
-                  <xsl:when test="ancestor::tei:div[@xml:id = 'bibliography']">
-                    <xsl:text>vspace{1.25em} % Whitespace&#10;</xsl:text>
-                    <xsl:text>\</xsl:text>
-                  </xsl:when>
-                </xsl:choose>
-                <xsl:text>subsection</xsl:text>
-              </xsl:when>
+                <xsl:if test="parent::tei:div[@type = 'textpart']">
+                  <xsl:text>vspace{2\baselineskip} % Whitespace&#10;</xsl:text>
+                  <xsl:text>\</xsl:text>
+                </xsl:if>subsection</xsl:when>
               <xsl:when test="$depth = 2">subsubsection</xsl:when>
               <xsl:when test="$depth = 3">paragraph</xsl:when>
               <xsl:when test="$depth = 4">subparagraph</xsl:when>
@@ -342,8 +334,6 @@
                 <xsl:text>\label{</xsl:text>
                 <xsl:value-of select="parent::tei:div/@xml:id"/>
                 <xsl:text>}&#10;</xsl:text>
-                <!--<xsl:text>\pend&#10;</xsl:text>
-                <xsl:text>\endnumbering&#10;</xsl:text>-->
                 <xsl:text>&#10;\vspace{1\baselineskip} % Whitespace&#10;</xsl:text>
               </xsl:when>
               <xsl:when test="ancestor::tei:back">
@@ -360,18 +350,9 @@
 
           <!-- Third Order Heads -->
           <xsl:when test="$depth = '2'">
-            <xsl:choose>
-              <xsl:when test="ancestor::tei:front or ancestor::tei:back">
-                <xsl:text>{</xsl:text>
-                <xsl:apply-templates/>
-                <xsl:text>}&#10;</xsl:text>
-              </xsl:when>
-              <xsl:when test="parent::tei:div[@type = 'textpart']">
-                <xsl:text>{</xsl:text>
-                <xsl:apply-templates/>
-                <xsl:text>}&#10;</xsl:text>
-              </xsl:when>
-            </xsl:choose>
+            <xsl:text>{</xsl:text>
+            <xsl:apply-templates/>
+            <xsl:text>}&#10;</xsl:text>
           </xsl:when>
           <xsl:otherwise>
             <xsl:text>{</xsl:text>
@@ -1153,6 +1134,16 @@
   </xsl:template>
 
   <doc xmlns="http://www.oxygenxml.com/ns/doc/xsl">
+    <desc>Process tei:lg
+    </desc>
+  </doc>
+  <xsl:template match="tei:lg">
+    <xsl:text>&#10;\pstart&#10;</xsl:text>
+    <xsl:apply-templates/>
+    <xsl:text>&#10;\pend&#10;</xsl:text>
+  </xsl:template>
+  
+  <doc xmlns="http://www.oxygenxml.com/ns/doc/xsl">
     <desc>If verseNumbering is requested, counts all the verse lines since the last container (<gi
         xmlns="">div1</gi> by default) and labels every fifth verse using a LaTeX box 3 ems wide.
     </desc>
@@ -1189,7 +1180,7 @@
         <xsl:apply-templates/>
         <xsl:text>\hfill\\</xsl:text>
       </xsl:when>
-      <xsl:when test="parent::tei:div[@type = 'textpart']">
+      <xsl:when test="ancestor::tei:div[@type = 'textpart']">
         <xsl:text>&#10;\leftline{</xsl:text>
         <xsl:apply-templates/>
         <xsl:text>}</xsl:text>
