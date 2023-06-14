@@ -242,6 +242,9 @@
         <xsl:variable name="depth">
           <xsl:apply-templates mode="depth" select=".."/>
         </xsl:variable>
+        <xsl:if test="child::tei:app">
+          <xsl:text>&#10;\pstart</xsl:text>
+        </xsl:if>
         <xsl:text>&#10;\</xsl:text>
         <xsl:choose>
           <xsl:when test="$documentclass = 'book'">
@@ -365,6 +368,9 @@
             <xsl:text>{</xsl:text>
             <xsl:apply-templates/>
             <xsl:text>}&#10;</xsl:text>
+            <xsl:if test="child::tei:app">
+              <xsl:text>\pend&#10;</xsl:text>
+            </xsl:if>
           </xsl:when>
           <xsl:otherwise>
             <xsl:text>{</xsl:text>
@@ -699,6 +705,15 @@
   <xsl:template match="tei:listWit/tei:witness/tei:bibl">
     <xsl:text> </xsl:text>
     <xsl:apply-templates/>
+  </xsl:template>
+  
+  <doc xmlns="http://www.oxygenxml.com/ns/doc/xsl">
+    <desc>Process element tei:bibl within a tei:cit (for apparatus fontium)</desc>
+  </doc>
+  <xsl:template match="tei:cit/tei:bibl">
+    <xsl:text>\edtext{}{\Afootnote[nosep]{</xsl:text>
+    <xsl:apply-templates/>
+    <xsl:text>}}</xsl:text>
   </xsl:template>
 
   <doc xmlns="http://www.oxygenxml.com/ns/doc/xsl">
@@ -1111,10 +1126,20 @@
 
 
   <doc xmlns="http://www.oxygenxml.com/ns/doc/xsl">
-    <desc>Process element ref[@type='cite']</desc>
+    <desc>Process element ref</desc>
   </doc>
-  <xsl:template match="tei:ref[@type = 'cite']">
-    <xsl:apply-templates/>
+  <xsl:template match="tei:ref">
+    <xsl:choose>
+      <xsl:when test="parent::tei:cit">
+        <xsl:apply-templates/>
+      </xsl:when>
+      <xsl:when test="@type = 'cite'">
+        <xsl:apply-templates/>
+      </xsl:when>
+      <xsl:otherwise>
+        <xsl:apply-templates/>
+      </xsl:otherwise>
+    </xsl:choose> 
   </xsl:template>
 
   <!-- SJH: Insert a number in superscript to indicate the beginning of a seg, using value of @n-->
@@ -1211,19 +1236,6 @@
 
   <xsl:template match="//tei:quote/tei:lb"/>
 
-  <!-- SJH: Templates for handling editorial symbols, which are defined in latex_param.xsl. -->
-  <doc xmlns="http://www.oxygenxml.com/ns/doc/xsl">
-    <desc>Handle expansions.</desc>
-  </doc>
-  <xsl:template match="//tei:expan">
-    <xsl:value-of select="text()[1]"/>
-    <xsl:text>(</xsl:text>
-    <xsl:value-of select="tei:ex"/>
-    <xsl:text>)</xsl:text>
-    <xsl:if test="text()[2]">
-      <xsl:value-of select="text()[2]"/>
-    </xsl:if>
-  </xsl:template>
 
   <!-- SJH added templates for handling editorial symbols. -->
   <doc xmlns="http://www.oxygenxml.com/ns/doc/xsl">
@@ -1258,7 +1270,7 @@
   </xsl:template>
 
   <doc xmlns="http://www.oxygenxml.com/ns/doc/xsl">
-    <desc>Handle sic.</desc>
+    <desc>Handle sic</desc>
   </doc>
   <xsl:template match="//tei:sic">
     <xsl:text>\sic{</xsl:text>
@@ -1321,4 +1333,69 @@
     <xsl:value-of select="normalize-space(self::tei:interp/text())"/>
     <xsl:text>}}&#10;</xsl:text>
   </xsl:template>
+  
+  <doc xmlns="http://www.oxygenxml.com/ns/doc/xsl">
+    <desc>Handle mentioned</desc>
+  </doc>
+  <xsl:template match="tei:mentioned">
+    <xsl:text>\textit{</xsl:text><xsl:apply-templates/><xsl:text>}</xsl:text>
+  </xsl:template>
+  
+  <doc xmlns="http://www.oxygenxml.com/ns/doc/xsl">
+    <desc>Handle expan</desc>
+  </doc>
+  <xsl:template match="tei:expan">
+    <xsl:apply-templates/>
+  </xsl:template>
+  
+  <doc xmlns="http://www.oxygenxml.com/ns/doc/xsl">
+    <desc>Handle ex</desc>
+  </doc>
+  <xsl:template match="tei:ex">
+    <xsl:text>\expan{</xsl:text><xsl:apply-templates/><xsl:text>}</xsl:text>
+  </xsl:template>
+  
+  <doc xmlns="http://www.oxygenxml.com/ns/doc/xsl">
+    <desc>Handle abbr</desc>
+  </doc>
+  <xsl:template match="tei:abbr">
+    <xsl:choose>
+      <xsl:when test="ancestor::tei:app">
+        <xsl:text> \textit{(orig. \textup{</xsl:text><xsl:apply-templates/><xsl:text>})}</xsl:text>
+      </xsl:when>
+      <xsl:otherwise/>
+    </xsl:choose>
+  </xsl:template>
+  
+  <doc xmlns="http://www.oxygenxml.com/ns/doc/xsl">
+    <desc>Handle corr</desc>
+  </doc>
+  <xsl:template match="tei:corr">
+    <xsl:apply-templates/>
+  </xsl:template>
+  
+  <doc xmlns="http://www.oxygenxml.com/ns/doc/xsl">
+    <desc>Handle choice</desc>
+  </doc>
+  <xsl:template match="tei:choice">
+    <xsl:choose>
+      <xsl:when test="ancestor::tei:app">
+        <xsl:if test="child::tei:sic">
+          <xsl:apply-templates select="child::tei:corr"/><xsl:text> \textit{(\textup{</xsl:text><xsl:apply-templates select="child::tei:sic"/><xsl:text>} a.c.)}</xsl:text>
+        </xsl:if>
+        <xsl:if test="child::tei:expan">
+          <xsl:apply-templates select="child::tei:expan"/><xsl:apply-templates select="child::tei:abbr"/>
+        </xsl:if>
+      </xsl:when>
+      <xsl:otherwise>
+        <xsl:if test="child::tei:sic">
+          <xsl:apply-templates select="child::tei:corr"/>
+        </xsl:if>
+        <xsl:if test="child::tei:expan">
+          <xsl:apply-templates select="child::tei:expan"/>
+        </xsl:if>
+      </xsl:otherwise>
+    </xsl:choose>
+  </xsl:template>
 </xsl:stylesheet>
+

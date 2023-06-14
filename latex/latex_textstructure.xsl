@@ -276,9 +276,8 @@ Volumes are published under the </xsl:text>
         <xsl:text>.
 
 \vspace{2\baselineskip} % Whitespace
-\newpage
-\thispagestyle{empty}
 \end{copyrightPage}
+\cleardoublepage
 </xsl:text>
         <xsl:if test="//tei:titleStmt/tei:respStmt | //tei:editionStmt/tei:respStmt">
             <xsl:text>
