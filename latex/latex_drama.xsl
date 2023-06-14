@@ -84,14 +84,7 @@
         <xsl:apply-templates/>
         <xsl:text>\end{itemize} </xsl:text>
     </xsl:template>
-    <doc xmlns="http://www.oxygenxml.com/ns/doc/xsl">
-        <desc>Process elementp/tei:stage</desc>
-    </doc>
-    <xsl:template match="tei:p/tei:stage">
-        <xsl:text>\textit{</xsl:text>
-        <xsl:apply-templates/>
-        <xsl:text>}</xsl:text>
-    </xsl:template>
+    
     <doc xmlns="http://www.oxygenxml.com/ns/doc/xsl">
         <desc>Process element role</desc>
     </doc>
@@ -124,15 +117,73 @@
         <xsl:apply-templates/>
         <xsl:text>}</xsl:text>
     </xsl:template>
+
     <doc xmlns="http://www.oxygenxml.com/ns/doc/xsl">
-        <desc>Process element sp</desc>
+        <desc>Process element sp.</desc>
     </doc>
-    <xsl:template match="tei:sp"> \begin{description} \item[<xsl:apply-templates
-            select="tei:speaker"/>] <xsl:apply-templates
-            select="tei:p | tei:l | tei:lg | tei:seg | tei:ab | tei:stage"/>
-        <xsl:text>\end{description}
-</xsl:text>
+    <xsl:template match="tei:sp">
+        <xsl:choose>
+            <!-- If there's @who, use thalie's features to create the speaker label -->
+            <xsl:when test="@who">
+                <xsl:choose>
+                    <!-- Logic for antilabe: Look for @part="F" -->
+                    <xsl:when test="child::tei:l[@part='F'][1]">
+                        <xsl:text>&#10;{\vspace{1\baselineskip}}&#10;</xsl:text>
+                        <xsl:text>\stanza&#10;</xsl:text>
+                        <xsl:text>\antilabe\</xsl:text><xsl:value-of select="translate(@who,'#''-','')"/><xsl:text> </xsl:text>
+                    </xsl:when>
+                    <xsl:otherwise>
+                        <xsl:text>&#10;</xsl:text>
+                        <xsl:text>\stanza</xsl:text>
+                        <!-- If the second child is a stage element, insert it into the optional space-before location for \stanza -->
+                        <xsl:if test="child::*[2][self::tei:stage]">
+                            <xsl:text>[\textit{</xsl:text><xsl:value-of select="child::*[2][self::tei:stage]"/><xsl:text>}]&#10;</xsl:text>
+                        </xsl:if>
+                        <xsl:text>&#10;\</xsl:text><xsl:value-of select="translate(@who,'#''-','')"/><xsl:text> </xsl:text>
+                    </xsl:otherwise>
+                </xsl:choose>
+            </xsl:when>
+            <xsl:otherwise>
+                <!-- In the absence of @who, create a disposable character -->
+                <xsl:choose>
+                    <!-- Logic for antilabe: Look for @part="F" -->
+                    <xsl:when test="child::tei:l[@part='F'][1]">
+                        <xsl:text>&#10;{\vspace{1\baselineskip}}&#10;</xsl:text>
+                        <xsl:text>\stanza&#10;</xsl:text>
+                        <xsl:text>\antilabe{\disposablecharacter{</xsl:text><xsl:value-of select="tei:speaker"/><xsl:text>}~} </xsl:text>
+                    </xsl:when>
+                    <xsl:otherwise>
+                        <xsl:text>&#10;</xsl:text>
+                        <xsl:text>\stanza</xsl:text>
+                        <!-- If the second child is a stage element, insert it into the optional space-before location for \stanza -->
+                        <xsl:if test="child::tei:stage[2]">
+                            <xsl:text>[\textit{</xsl:text><xsl:value-of select="child::*[2][self::tei:stage]"/><xsl:text>}]&#10;</xsl:text>
+                        </xsl:if>
+                        <xsl:text>&#10;\disposablecharacter{</xsl:text><xsl:value-of select="tei:speaker"/><xsl:text>} </xsl:text>
+                    </xsl:otherwise>
+                </xsl:choose>
+            </xsl:otherwise>
+        </xsl:choose>
+        <xsl:apply-templates/>
+        <xsl:text>\&amp;&#10;</xsl:text>
     </xsl:template>
+
+    <doc xmlns="http://www.oxygenxml.com/ns/doc/xsl">
+        <desc>Process element tei:sp/tei:l</desc>
+    </doc>
+    <xsl:template match="tei:sp/tei:l">
+        <xsl:choose>
+            <!-- Logic for antilabe: Look for @part="I" or @part="M" -->
+            <xsl:when test="@part='I' or @part='M'">
+                <xsl:text>\skipnumbering </xsl:text><xsl:apply-templates/><xsl:text> &#10;</xsl:text>
+            </xsl:when>
+            <xsl:otherwise>
+                <!-- Insert \linenumannotation with value of @n to preserve the line numbering of the original edition's XML. -->
+                <xsl:text>\linenumannotation{</xsl:text><xsl:value-of select="@n"/><xsl:text>} </xsl:text><xsl:apply-templates/><xsl:text> &amp;&#10;</xsl:text>
+            </xsl:otherwise>
+        </xsl:choose>
+    </xsl:template>
+    
     <doc xmlns="http://www.oxygenxml.com/ns/doc/xsl">
         <desc>Process element sp/tei:p</desc>
     </doc>
@@ -140,49 +191,41 @@
         <xsl:text>&#10;&#10;</xsl:text>
         <xsl:apply-templates/>
     </xsl:template>
+    
+    <doc xmlns="http://www.oxygenxml.com/ns/doc/xsl">
+        <desc>Process element sp/tei:speaker</desc>
+    </doc>
+    <xsl:template match="tei:sp/tei:speaker">
+        <!-- Don't process this here, since it's handled in tei:sp -->
+    </xsl:template>
     <doc xmlns="http://www.oxygenxml.com/ns/doc/xsl">
         <desc>Process element stage</desc>
     </doc>
     <xsl:template match="tei:stage">
         <xsl:choose>
-            <xsl:when test="@type = 'setting'">
-                <xsl:choose>
-                    <xsl:when test="preceding-sibling::tei:head[1]">
-                        <xsl:text>{\centering\textit{</xsl:text>
-                        <xsl:apply-templates/>
-                        <xsl:text>}}</xsl:text>
-                        <xsl:text>&#10;\newline&#10;</xsl:text>
-                    </xsl:when>
-                    <xsl:otherwise>
-                        <xsl:text>\textit{</xsl:text>
-                        <xsl:apply-templates/>
-                        <xsl:text>}</xsl:text>
-                        <xsl:text>&#10;\newline&#10;</xsl:text>
-                    </xsl:otherwise>
-                </xsl:choose>
+            <xsl:when test="parent::tei:div">
+                <xsl:text>\textit{</xsl:text><xsl:value-of select="normalize-space(.)"/><xsl:text>}\\&#10;</xsl:text>
             </xsl:when>
-            <xsl:when test="(@type='entrance' or @type = 'delivery' or @type = 'business' or @type='exit')">
-                <xsl:text>\textit{</xsl:text>
-                <xsl:apply-templates/>
+            <xsl:when test="preceding-sibling::*[1][self::tei:speaker]">
+                <!-- Do nothing because it's handled above in tei:sp -->
+            </xsl:when>
+            <!-- If there's a stage element before an l in the middle of the stanza, use \stanza[] to insert the value. -->
+            <xsl:when test="preceding-sibling::*[1][self::tei:l]">
+                <xsl:text>\&amp;&#10;</xsl:text>
+                <xsl:text>\stanza[\textit{</xsl:text><xsl:apply-templates/><xsl:text>}]&#10;</xsl:text>
+            </xsl:when>
+            <!-- If stage occurs within a l or p, use Thalie package's \did{} -->
+            <xsl:when test="parent::tei:l or parent::tei:p">
+                <xsl:text>\did{</xsl:text>
+                <xsl:value-of select="normalize-space(translate(., '()', ''))"/>
                 <xsl:text>}</xsl:text>
             </xsl:when>
             <xsl:otherwise>
-                <xsl:text>&#10;\par&#10;</xsl:text>
-                <xsl:text>\textit{</xsl:text>
-                <xsl:apply-templates/>
-                <xsl:text>}\par </xsl:text>
+                <xsl:text>\textit{</xsl:text><xsl:apply-templates/><xsl:text>}&#10;</xsl:text>
             </xsl:otherwise>
         </xsl:choose>
     </xsl:template>
-    <doc xmlns="http://www.oxygenxml.com/ns/doc/xsl">
-        <desc>Process element sp/tei:stage</desc>
-    </doc>
-    <xsl:template match="tei:sp/tei:stage">
-        <xsl:text/>
-        <xsl:text>\textit{</xsl:text>
-        <xsl:apply-templates/>
-        <xsl:text>} </xsl:text>
-    </xsl:template>
+
     <doc xmlns="http://www.oxygenxml.com/ns/doc/xsl">
         <desc>Process element tech</desc>
     </doc>

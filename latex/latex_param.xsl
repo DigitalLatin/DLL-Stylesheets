@@ -115,17 +115,22 @@ the beginning of the document</desc>
       <xsl:text>,</xsl:text>
       <xsl:value-of select="$latexGeometryOptions"/>
       <xsl:text>]{geometry}
-<!--\setlength{\textwidth}{115mm}
-\setlength{\textheight}{173mm}-->
-<!--\setlength{\textwidth}{84mm}
-\setlength{\textheight}{136mm}-->
+\setlength{\textwidth}{84mm}
+\setlength{\textheight}{136mm}
 \usepackage{framed}
 \usepackage{microtype}
 \usepackage{soul}
 \usepackage{leading}
 \usepackage{setspace}
+
+% Separate font handling for captions
+\usepackage{caption}
+% Set the font size of the caption to \small
+\captionsetup[figure]{font=small}
+
 % Allow alignment of images
 \usepackage[export]{adjustbox}
+\usepackage[characterstyle=simple,playstyle=bigcenter]{thalie}
 </xsl:text>
 <xsl:text>
 \definecolor{shadecolor}{gray}{0.95}
@@ -138,6 +143,41 @@ the beginning of the document</desc>
 \usepackage{marginnote}
 
 \renewcommand{\@cite}[1]{#1}
+
+% For enhancing lists
+\usepackage{enumitem}
+
+% Reledmac options
+\usepackage[antilabe]{reledmac}
+
+% Set double vertical lines as the separator between notes.
+\Xparafootsep[A,B]{ $\parallel\ \ $ }
+
+% Set stanza indents to 0 for one line per stanza line.
+\setstanzaindents{1,0,1}
+\setcounter{stanzaindentsrepetition}{1}
+
+% Set the edition's line numbering to restart on every page.
+\lineation{page}
+
+% Cause the actual line numbers to be displayed in the opposite margin from the edition's line numbers.
+\linenumannotationothersidetrue
+\Xnotenumfont{\normalfont\bfseries}
+
+% Settings for familiar notes
+\Xbeforenotes[A,C]{2em} % Space before apparatus begins
+\Xafterrule[A,C]{0.5em} % Space after note rule 
+\Xarrangement[A,C]{paragraph}
+\Xnumberonlyfirstinline[A,C]
+\Xragged[A,C]{R}
+
+% Settings for apparatus criticus notes
+\Xbeforenotes[B]{2em} % Space before apparatus begins
+\Xafterrule[B]{0.75em} % Space after note rule 
+\Xarrangement[B]{paragraph}
+\Xragged[B]{R}
+\Xnumberonlyfirstinline[B]
+\Xafternote[B]{0.5em}
 
 </xsl:text>
 <!-- SJH: Added calls to templates to handle some LDLT requirements. -->
@@ -174,13 +214,7 @@ the beginning of the document</desc>
  select="replace(string-join(tei:generateAuthor(.),''),'\\[A-z]+','')"/>}]{hyperref}
 \hyperbaseurl{<xsl:value-of select="$baseURL"/>}-->
 <!--<xsl:if test="count(key('APP',1))&gt;0">-->
-
-% Reledmac options
-\usepackage{reledmac}
-<xsl:call-template name="ledmacOptions"/>
-<!--</xsl:if>-->
-
-   </xsl:template>
+</xsl:template>
 
    <doc xmlns="http://www.oxygenxml.com/ns/doc/xsl" class="layout" type="float">
       <desc>When processing a "pb" element, decide what to generate: "active"
@@ -201,7 +235,7 @@ as a proportion of the page width.</desc>
    </doc>
    <xsl:param name="quoteEnv">quote</xsl:param>
 
-   <doc xmlns="http://www.oxygenxml.com/ns/doc/xsl" class="layout" type="boolean">
+  <!-- <doc xmlns="http://www.oxygenxml.com/ns/doc/xsl" class="layout" type="boolean">
       <desc>Whether to number lines of poetry</desc>t
    </doc>
    <xsl:param name="verseNumbering">false</xsl:param>
@@ -215,13 +249,14 @@ as a proportion of the page width.</desc>
       <desc>When numbering poetry, when to restart the sequence; this must be the name of a TEI element</desc>
    </doc>
    <xsl:param name="resetVerseLineNumbering">div1</xsl:param>
-
+-->
    <doc xmlns="http://www.oxygenxml.com/ns/doc/xsl" class="userpackage" type="string">
       <desc>Options to pass to the geometry package to set margins etc</desc>
    </doc>
   <!--<xsl:param name="latexGeometryOptions">twoside,tmargin=25mm,bmargin=30mm,inner=31.6mm,outer=63.3mm</xsl:param>-->
   <xsl:param name="latexGeometryOptions">
     twoside,
+    letterpaper,
     paperheight=185mm,
     paperwidth=129mm,
     layoutheight=165mm,
@@ -236,7 +271,7 @@ as a proportion of the page width.</desc>
     hoffset=5mm,
     voffset=10mm
   </xsl:param>
-  
+ 
    <doc xmlns="http://www.oxygenxml.com/ns/doc/xsl" class="userpackage" type="string">
       <desc>The page style to use with the \pagestyle command (empty, plain, fancy, ...).</desc>
    </doc>
@@ -282,11 +317,12 @@ characters. The normal characters remain active for LaTeX commands.
   \def\textKorean{\fontspec{Baekmuk Gulim} }
   \setmonofont{<xsl:value-of select="$typewriterFont"/>}
   <xsl:if test="not($sansFont='')">
-    \setsansfont{<xsl:value-of select="$sansFont"/>}
+    <xsl:text>\setsansfont{</xsl:text><xsl:value-of select="$sansFont"/><xsl:text>}</xsl:text>
   </xsl:if>
-  <xsl:if test="not($romanFont='')">
+  <!--<xsl:if test="not($romanFont='')">
     \setromanfont{<xsl:value-of select="$romanFont"/>}
-  </xsl:if>
+  </xsl:if>-->
+  \setmainfont[SmallCapsFont={Bodoni 72 Smallcaps},SmallCapsFeatures={Letters=SmallCaps},]{Baskerville}
 \else
   \IfFileExists{utf8x.def}%
    {\usepackage[utf8x]{inputenc}
@@ -383,12 +419,12 @@ characters. The normal characters remain active for LaTeX commands.
 \newenvironment{copyrightPage}{}{}
 \newenvironment{acknowledgmentsPage}{}{}
 <xsl:text disable-output-escaping="yes">
-\newcolumntype{L}[1]{){\raggedright\arraybackslash}p{#1}}
-\newcolumntype{C}[1]{){\centering\arraybackslash}p{#1}}
-\newcolumntype{R}[1]{){\raggedleft\arraybackslash}p{#1}}
+\newcolumntype{L}[1]{>){\raggedright\arraybackslash}p{#1}}
+\newcolumntype{C}[1]{>){\centering\arraybackslash}p{#1}}
+\newcolumntype{R}[1]{>){\raggedleft\arraybackslash}p{#1}}
 \newcolumntype{P}[1]{){\arraybackslash}p{#1}}
-\newcolumntype{B}[1]{){\arraybackslash}b{#1}}
-\newcolumntype{M}[1]{){\arraybackslash}m{#1}}
+\newcolumntype{B}[1]{>){\arraybackslash}b{#1}}
+\newcolumntype{M}[1]{>){\arraybackslash}m{#1}}
 \definecolor{label}{gray}{0.75}
 \def\unusedattribute#1{\sout{\textcolor{label}{#1}}}
 \DeclareRobustCommand*{\xref}{\hyper@normalise\xref@}
@@ -444,27 +480,6 @@ characters. The normal characters remain active for LaTeX commands.
    </doc>
   
    <xsl:template name="latexLayout">
-     <!-- Commenting this out since the page size is set in the geometry block. -->
-     <!--<xsl:choose>
-       <xsl:when test="$latexPaperSize='a3paper'">
-	 \paperwidth297mm
-	 \paperheight420mm
-       </xsl:when>
-       <xsl:when test="$latexPaperSize='a5paper'">	
-	 \paperwidth148mm
-	 \paperheight210mm
-       </xsl:when>
-       <xsl:when test="$latexPaperSize='a4paper'">
-	 \paperwidth210mm
-	 \paperheight297mm
-       </xsl:when>
-       <xsl:when test="$latexPaperSize='letterpaper'">
-         \paperwidth210mm
-         \paperheight297mm
-       </xsl:when>
-	 <xsl:otherwise>
-	 </xsl:otherwise>
-       </xsl:choose>-->       
 \def\@pnumwidth{1.55em}
 \def\@tocrmarg {2.55em}
 \def\@dotsep{4.5}
@@ -632,34 +647,7 @@ characters. The normal characters remain active for LaTeX commands.
 
    <doc xmlns="http://www.oxygenxml.com/ns/doc/xsl" class="layout">
       <desc>
-         <p>LaTeX setup commands for ledmac package</p>
-      </desc>
-   </doc>
-<xsl:template name="ledmacOptions">
-<xsl:text>
-\lineation{page}
-\linenummargin{inner}
-\Xnotenumfont{\normalfont\bfseries}
 
-% Settings for familiar notes (e.g., apparatus fontium)
-\Xbeforenotes[A]{2em} % Space before apparatus begins
-\Xafterrule[A]{0.75em} % Space after note rule 
-\Xarrangement[A]{paragraph}
-\Xnumberonlyfirstinline[A]
-\Xragged[A]{R}
-
-% Settings for apparatus criticus notes
-\Xbeforenotes[B]{2em} % Space before apparatus begins
-\Xafterrule[B]{0.75em} % Space after note rule 
-\Xarrangement[B]{paragraph}
-\Xragged[B]{R}
-\Xnumberonlyfirstinline[B]
-\Xafternote[B]{0.5em}
-</xsl:text>
-</xsl:template>
-
-   <doc xmlns="http://www.oxygenxml.com/ns/doc/xsl" class="layout">
-      <desc>
          <p>LaTeX setup before start of document</p>
          <p>All the LaTeX setup which are executed before the start of
     the document</p>
