@@ -27,7 +27,12 @@
       <p>Copyright: 2013, TEI Consortium</p>
     </desc>
   </doc>
-
+  <doc xmlns="http://www.oxygenxml.com/ns/doc/xsl">
+    <desc>
+      <p>For processing the apparatus fontium, see the template for tei:cit in latex_core.xsl.</p>
+    </desc>
+  </doc>
+  
   <doc xmlns="http://www.oxygenxml.com/ns/doc/xsl">
     <desc>Process element cit for the apparatus fontium as an \Afootnote in reledmac.</desc>
   </doc>
@@ -464,7 +469,6 @@
         &#10;<xsl:apply-templates/>&#10;\endnumbering &#10;</xsl:when>
     </xsl:choose>
   </xsl:template>-->
-
   <!-- Don't render these elements. -->
   <xsl:template match="tei:note[parent::tei:app//(tei:l | tei:p)]"/>
   <xsl:template match="tei:witDetail[parent::tei:app//(tei:l | tei:p)]"/>

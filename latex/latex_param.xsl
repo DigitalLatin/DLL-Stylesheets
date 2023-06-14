@@ -109,6 +109,7 @@ the beginning of the document</desc>
    </doc>
    <xsl:template name="latexPackages">
       <xsl:text>
+\usepackage{etoolbox}       
 \usepackage[</xsl:text>
       <xsl:value-of select="$latexPaperSize"/>
       <xsl:text>,</xsl:text>
@@ -443,7 +444,7 @@ characters. The normal characters remain active for LaTeX commands.
       </desc>
    </doc>
    <xsl:template name="latexBabel">
-<xsl:text>\usepackage[english]{babel}</xsl:text>
+<xsl:text>\usepackage[english,greek]{babel}</xsl:text>
 </xsl:template>
 
 
@@ -477,6 +478,7 @@ characters. The normal characters remain active for LaTeX commands.
          <p>All the LaTeX setup which affects page layout</p>
       </desc>
    </doc>
+  
    <xsl:template name="latexLayout">
 \def\@pnumwidth{1.55em}
 \def\@tocrmarg {2.55em}
@@ -496,9 +498,9 @@ characters. The normal characters remain active for LaTeX commands.
   {3ex \@plus .2ex}%
   {\reset@font\LARGE\fontfamily{lmr}}}
 \renewcommand\subsection{\@startsection{subsection}{2}{\z@}%
-  {-1.75ex\@plus -0.5ex \@minus- .2ex}%
+  {5ex\@plus -0.5ex \@minus- .2ex}%
   {2.5ex \@plus .2ex}%
-  {\reset@font\Large\fontfamily{lmr}}}
+  {\reset@font\fontfamily{lmr}\Large}}
 \renewcommand\subsubsection{\@startsection{subsubsection}{3}{\z@}%
   {4ex\@plus -0.35ex \@minus -.2ex}%
   {2ex \@plus .2ex}%
@@ -577,6 +579,12 @@ characters. The normal characters remain active for LaTeX commands.
   {\def\@noitemerr
     {\@latex@warning{Empty `bibitemlist' environment}}%
     \endlist}
+<!-- SJH: Added this to deal with numbering of front matter. From https://tex.stackexchange.com/a/154465/257027 -->
+\let\origdoublepage\cleardoublepage
+\renewcommand{\cleardoublepage}{%
+     \clearpage
+     {\pagestyle{empty}\origdoublepage}%
+}
 <!-- SJH: Added this to cope with different requirements for manuscript items. -->
 \newenvironment{msitemlist}[1]{%
   \list{}%
@@ -639,6 +647,7 @@ characters. The normal characters remain active for LaTeX commands.
 
    <doc xmlns="http://www.oxygenxml.com/ns/doc/xsl" class="layout">
       <desc>
+
          <p>LaTeX setup before start of document</p>
          <p>All the LaTeX setup which are executed before the start of
     the document</p>
@@ -685,7 +694,18 @@ characters. The normal characters remain active for LaTeX commands.
 \fancyfoot[LE]{}
 \fancyfoot[CE]{}
 \fancyfoot[RE]{\TheID}
-\fancypagestyle{plain}{\fancyhead{}\renewcommand{\headrulewidth}{0pt}}</xsl:text>
+\fancypagestyle{plain}{\fancyhead{}\renewcommand{\headrulewidth}{0pt}}
+      
+% For unnumbered blank pages.
+% Thanks to https://math-linux.com/latex-26/faq/latex-faq/article/latex-how-to-insert-a-blank-or-empty-page-with-or-without-numbering-thispagestyle-newpage-usepackage-afterpage
+\usepackage{afterpage}
+  \newcommand\myemptypage{
+       \null
+       \thispagestyle{empty}
+       \addtocounter{page}{-1}
+       \newpage
+    }
+</xsl:text>
      
 <xsl:call-template name="hyperref"/>
    </xsl:template>
