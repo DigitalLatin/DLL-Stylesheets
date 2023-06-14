@@ -27,7 +27,12 @@
       <p>Copyright: 2013, TEI Consortium</p>
     </desc>
   </doc>
-
+  <doc xmlns="http://www.oxygenxml.com/ns/doc/xsl">
+    <desc>
+      <p>For processing the apparatus fontium, see the template for tei:cit in latex_core.xsl.</p>
+    </desc>
+  </doc>
+  
   <doc xmlns="http://www.oxygenxml.com/ns/doc/xsl">
     <desc>
       <p>Override common_textcrit.xsl's template for tei:app.</p>
@@ -348,6 +353,12 @@
       <!-- prose -->
       <xsl:when test="tei:p | tei:ab">&#10;\beginnumbering &#10;<xsl:apply-templates/>&#10;\endnumbering &#10;</xsl:when>
     </xsl:choose>
+  </xsl:template>-->
+  
+  <xsl:template match="tei:div[@type='edition']">
+    <xsl:text>&#10;\beginnumbering&#10;</xsl:text>
+    <xsl:apply-templates/>
+    <xsl:text>&#10;\endnumbering&#10;</xsl:text>
   </xsl:template>
 
   <!-- Don't render these elements. -->

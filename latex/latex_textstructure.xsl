@@ -152,13 +152,23 @@ of this software, even if advised of the possibility of such damage.
     </doc>
     <xsl:template name="titlePage">
         <xsl:text>
+% Insert an unnumbered page first.
+
+\thispagestyle{empty}
+\vspace*{\fill} 
+
+\begin{center}
+This PDF is formatted to accommodate printing two pages per sheet in landscape mode.
+\end{center}
+
+\vspace*{\fill}
+\newpage
 \begin{titlepage} % Suppresses headers and footers on the title page
 \centering % Center everything on the title page
         
 %------------------------------------------------
 %	Title
 %------------------------------------------------
-\vspace*{\baselineskip} % White space at the top of the page
         
 \rule{\textwidth}{1.6pt}\vspace*{-\baselineskip}\vspace*{2pt} % Thick horizontal rule
 \rule{\textwidth}{0.4pt} % Thin horizontal rule
@@ -214,12 +224,6 @@ Edited By
 %------------------------------------------------
 %	Publisher
 %------------------------------------------------
-
-\begin{figure}[h] % Position the logo here on the page.
-\includegraphics[scale=0.50]{DLL.eps} % Logo of DLL
-\centering % Center the logo.
-\end{figure}
-
 {\normalsize </xsl:text>
         <xsl:value-of select="//tei:publicationStmt/tei:date"/>
         <xsl:text>}        
@@ -230,7 +234,11 @@ Edited By
 \begin{copyrightPage}
 \thispagestyle{empty}
 \vspace*{\baselineskip} % White space at the top of the page
-\vspace{6\baselineskip} % Whitespace
+\begin{figure}[h] % Position the logo here on the page.
+\includegraphics[scale=0.50]{../images/DLL.eps} % Logo of DLL
+\centering % Center the logo.
+\end{figure}
+\vspace{2\baselineskip} % Whitespace
 \centering
 {\LARGE </xsl:text>
         <xsl:value-of select="//tei:publicationStmt/tei:publisher"/>
@@ -278,7 +286,8 @@ Volumes are published under the </xsl:text><xsl:value-of select="//tei:publicati
 \end{itemize}
 \end{acknowledgmentsPage}
 \cleardoublepage
-\newpage
+\pagenumbering{roman}
+\tableofcontents
 </xsl:text>
     </xsl:template>
     
@@ -298,6 +307,13 @@ Volumes are published under the </xsl:text><xsl:value-of select="//tei:publicati
   <xsl:template match="tei:body">
     <xsl:if test="not(ancestor::tei:floatingText) and not(preceding::tei:body) and preceding::tei:front">
       <xsl:text>&#10;\mainmatter </xsl:text>
+        <!-- SJH: Added this, following https://tex.stackexchange.com/a/154465/257027 -->
+        <xsl:text>&#10;\pagenumbering{arabic}</xsl:text>
+        <xsl:text>&#10;\patchcmd{\chapter}</xsl:text>
+        <xsl:text>&#10;{\clearpage}</xsl:text>
+        <xsl:text>&#10;{\cleardoublepage}</xsl:text>
+        <xsl:text>&#10;{}</xsl:text>
+        <xsl:text>&#10;{}</xsl:text>
     </xsl:if>
       <xsl:text>&#10;\def\endstanzaextra{\pstart\centering-\-\-\-\-\-\-\-\-\skipnumbering\pend}</xsl:text>
       <xsl:text>&#10;\thispagestyle{plain}&#10;</xsl:text>

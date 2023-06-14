@@ -109,6 +109,7 @@ the beginning of the document</desc>
    </doc>
    <xsl:template name="latexPackages">
       <xsl:text>
+\usepackage{etoolbox}       
 \usepackage[</xsl:text>
       <xsl:value-of select="$latexPaperSize"/>
       <xsl:text>,</xsl:text>
@@ -116,8 +117,8 @@ the beginning of the document</desc>
       <xsl:text>]{geometry}
 <!--\setlength{\textwidth}{115mm}
 \setlength{\textheight}{173mm}-->
-\setlength{\textwidth}{84mm}
-\setlength{\textheight}{136mm}
+<!--\setlength{\textwidth}{84mm}
+\setlength{\textheight}{136mm}-->
 \usepackage{framed}
 \usepackage{microtype}
 \usepackage{soul}
@@ -221,16 +222,19 @@ as a proportion of the page width.</desc>
   <!--<xsl:param name="latexGeometryOptions">twoside,tmargin=25mm,bmargin=30mm,inner=31.6mm,outer=63.3mm</xsl:param>-->
   <xsl:param name="latexGeometryOptions">
     twoside,
-    letterpaper,
-    layoutwidth=14cm,
-    layoutheight=20.3cm,
-    layouthoffset=4cm,
-    layoutvoffset=5cm,
-    tmargin=2cm,
-    rmargin=2.7cm,
-    bmargin=3.50cm,
-    lmargin=1.60cm,
-    bindingoffset=1cm
+    paperheight=185mm,
+    paperwidth=129mm,
+    layoutheight=165mm,
+    layoutwidth=115mm,
+    textheight=145mm,
+    textwidth=90mm,
+    headsep=5mm,
+    top=20mm,
+    outer=15mm,
+    bottom=30mm,
+    inner=10mm,
+    hoffset=5mm,
+    voffset=10mm
   </xsl:param>
   
    <doc xmlns="http://www.oxygenxml.com/ns/doc/xsl" class="userpackage" type="string">
@@ -404,7 +408,7 @@ characters. The normal characters remain active for LaTeX commands.
       </desc>
    </doc>
    <xsl:template name="latexBabel">
-<xsl:text>\usepackage[english]{babel}</xsl:text>
+<xsl:text>\usepackage[english,greek]{babel}</xsl:text>
 </xsl:template>
 
 
@@ -438,8 +442,10 @@ characters. The normal characters remain active for LaTeX commands.
          <p>All the LaTeX setup which affects page layout</p>
       </desc>
    </doc>
+  
    <xsl:template name="latexLayout">
-     <xsl:choose>
+     <!-- Commenting this out since the page size is set in the geometry block. -->
+     <!--<xsl:choose>
        <xsl:when test="$latexPaperSize='a3paper'">
 	 \paperwidth297mm
 	 \paperheight420mm
@@ -453,12 +459,12 @@ characters. The normal characters remain active for LaTeX commands.
 	 \paperheight297mm
        </xsl:when>
        <xsl:when test="$latexPaperSize='letterpaper'">
-	 \paperwidth216mm
-	 \paperheight279mm
+         \paperwidth210mm
+         \paperheight297mm
        </xsl:when>
 	 <xsl:otherwise>
 	 </xsl:otherwise>
-       </xsl:choose>       
+       </xsl:choose>-->       
 \def\@pnumwidth{1.55em}
 \def\@tocrmarg {2.55em}
 \def\@dotsep{4.5}
@@ -477,9 +483,9 @@ characters. The normal characters remain active for LaTeX commands.
   {3ex \@plus .2ex}%
   {\reset@font\LARGE\fontfamily{lmr}}}
 \renewcommand\subsection{\@startsection{subsection}{2}{\z@}%
-  {-1.75ex\@plus -0.5ex \@minus- .2ex}%
+  {5ex\@plus -0.5ex \@minus- .2ex}%
   {2.5ex \@plus .2ex}%
-  {\reset@font\Large\fontfamily{lmr}}}
+  {\reset@font\fontfamily{lmr}\Large}}
 \renewcommand\subsubsection{\@startsection{subsubsection}{3}{\z@}%
   {4ex\@plus -0.35ex \@minus -.2ex}%
   {2ex \@plus .2ex}%
@@ -558,6 +564,12 @@ characters. The normal characters remain active for LaTeX commands.
   {\def\@noitemerr
     {\@latex@warning{Empty `bibitemlist' environment}}%
     \endlist}
+<!-- SJH: Added this to deal with numbering of front matter. From https://tex.stackexchange.com/a/154465/257027 -->
+\let\origdoublepage\cleardoublepage
+\renewcommand{\cleardoublepage}{%
+     \clearpage
+     {\pagestyle{empty}\origdoublepage}%
+}
 <!-- SJH: Added this to cope with different requirements for manuscript items. -->
 \newenvironment{msitemlist}[1]{%
   \list{}%
@@ -629,8 +641,9 @@ characters. The normal characters remain active for LaTeX commands.
 \linenummargin{inner}
 \Xnotenumfont{\normalfont\bfseries}
 
-% Settings for familiar notes
-\Xbeforenumber[A]{10pt}
+% Settings for familiar notes (e.g., apparatus fontium)
+\Xbeforenotes[A]{2em} % Space before apparatus begins
+\Xafterrule[A]{0.75em} % Space after note rule 
 \Xarrangement[A]{paragraph}
 \Xnumberonlyfirstinline[A]
 \Xragged[A]{R}
@@ -693,7 +706,18 @@ characters. The normal characters remain active for LaTeX commands.
 \fancyfoot[LE]{}
 \fancyfoot[CE]{}
 \fancyfoot[RE]{\TheID}
-\fancypagestyle{plain}{\fancyhead{}\renewcommand{\headrulewidth}{0pt}}</xsl:text>
+\fancypagestyle{plain}{\fancyhead{}\renewcommand{\headrulewidth}{0pt}}
+      
+% For unnumbered blank pages.
+% Thanks to https://math-linux.com/latex-26/faq/latex-faq/article/latex-how-to-insert-a-blank-or-empty-page-with-or-without-numbering-thispagestyle-newpage-usepackage-afterpage
+\usepackage{afterpage}
+  \newcommand\myemptypage{
+       \null
+       \thispagestyle{empty}
+       \addtocounter{page}{-1}
+       \newpage
+    }
+</xsl:text>
      
 <xsl:call-template name="hyperref"/>
    </xsl:template>

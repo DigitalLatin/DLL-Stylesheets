@@ -187,9 +187,7 @@ of this software, even if advised of the possibility of such damage.
           <xsl:when test="$dest = //tei:div/@xml:id">
             <xsl:text>\hyperref[</xsl:text>
             <xsl:value-of select="$dest"/>
-            <xsl:text>]{</xsl:text>
-            <xsl:value-of select="self::tei:ref"/>
-            <xsl:text>}</xsl:text>
+            <xsl:text>]{</xsl:text><xsl:value-of select="normalize-space(self::tei:ref)"/><xsl:text>}</xsl:text>
           </xsl:when>
 
           <!-- SJH: This is the block that generates references to bibliographical items the "right" way, with \cite. -->
