@@ -93,7 +93,7 @@ of this software, even if advised of the possibility of such damage.
         <xsl:for-each select="tei:person">
           <xsl:text>&#10;\item</xsl:text><xsl:call-template name="person"/>          
         </xsl:for-each>
-        <xsl:text>\end{itemize}</xsl:text>
+        <xsl:text>\end{itemize}&#10;</xsl:text>
       </xsl:otherwise>
     </xsl:choose>
   </xsl:template>

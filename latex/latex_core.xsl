@@ -789,6 +789,13 @@
   <xsl:template match="tei:msIdentifier"/>
   
   <doc xmlns="http://www.oxygenxml.com/ns/doc/xsl">
+    <desc>Process num.</desc>
+  </doc>
+  <xsl:template match="tei:num">
+    <xsl:value-of select="."/>
+  </xsl:template>
+  
+  <doc xmlns="http://www.oxygenxml.com/ns/doc/xsl">
     <desc>Process physDesc.</desc>
   </doc>
   <xsl:template match="tei:physDesc">
