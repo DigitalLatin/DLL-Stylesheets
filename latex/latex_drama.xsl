@@ -150,7 +150,7 @@
                     <xsl:when test="child::tei:l[@part='F'][1]">
                         <xsl:text>&#10;{\vspace{1\baselineskip}}&#10;</xsl:text>
                         <xsl:text>\stanza&#10;</xsl:text>
-                        <xsl:text>\antilabe\disposablecharacter{</xsl:text><xsl:value-of select="tei:speaker"/><xsl:text>} </xsl:text>
+                        <xsl:text>\antilabe{\disposablecharacter{</xsl:text><xsl:value-of select="tei:speaker"/><xsl:text>}~} </xsl:text>
                     </xsl:when>
                     <xsl:otherwise>
                         <xsl:text>&#10;</xsl:text>

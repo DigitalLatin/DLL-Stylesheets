@@ -49,6 +49,17 @@ of this software, even if advised of the possibility of such damage.
       </desc>
    </doc>
   <xsl:template match="tei:listPerson">
+   <!--<xsl:if test="tei:head"> 
+      <xsl:text>\vspace{1.5\baselineskip}</xsl:text>
+      <xsl:text>&#10;</xsl:text>
+      <xsl:text>\leftline{\large\uppercase{</xsl:text>
+      <xsl:for-each select="tei:head">
+        <xsl:apply-templates/>
+      </xsl:for-each>
+      <xsl:text>}} </xsl:text>
+      <xsl:text>&#10;</xsl:text>
+      <xsl:text>\vspace{0.5\baselineskip}</xsl:text>
+    </xsl:if>-->
     <xsl:choose>
       <xsl:when test="@type='characters'">
             <xsl:text>&#10;{\large \scshape{</xsl:text>
@@ -69,23 +80,30 @@ of this software, even if advised of the possibility of such damage.
         <xsl:text>\end{dramatis}&#10;</xsl:text>
         <xsl:text>\newpage&#10;</xsl:text>
       </xsl:when>
-      <xsl:otherwise>
-        <xsl:text>&#10;{\large{</xsl:text>
-        <xsl:value-of select="tei:head"/>
-        <xsl:text>}}</xsl:text>
-        <xsl:text>&#10;\begin{itemize}&#10;</xsl:text>
+      <xsl:when test="ancestor::tei:div[@xml:id='bibliography']">
+        <xsl:text>&#10;\begin{bibitemlist}{1}&#10;</xsl:text>
         <xsl:for-each select="tei:person">
           <xsl:text>&#10;\item </xsl:text>
           <xsl:call-template name="person"/>      
         </xsl:for-each>
-        <xsl:text>&#10;\end{itemize}&#10;</xsl:text>
+        <xsl:text>\end{bibitemlist}&#10;</xsl:text>
+      </xsl:when>
+      <xsl:otherwise>
+        <xsl:text>\begin{itemize}&#10;</xsl:text>
+        <xsl:for-each select="tei:person">
+          <xsl:text>&#10;\item</xsl:text><xsl:call-template name="person"/>          
+        </xsl:for-each>
+        <xsl:text>\end{itemize}&#10;</xsl:text>
       </xsl:otherwise>
     </xsl:choose>
   </xsl:template>
   
+  <doc xmlns="http://www.oxygenxml.com/ns/doc/xsl">
+    <desc>Process person.</desc>
+  </doc>
   <xsl:template match="tei:person" name="person">
     <xsl:choose>
-      <xsl:when test="ancestor::tei:div[@type='edition' and subtype='drama']">
+      <xsl:when test="ancestor::tei:div[@type='edition' and @subtype='drama']">
         <xsl:choose>
           <xsl:when test="parent::tei:listPerson[@type='characters' or 'character_group']">
             <xsl:text>[cmd={</xsl:text><xsl:value-of select="translate(@xml:id,'-_','')"/><xsl:text>}, drama={</xsl:text><xsl:value-of select="descendant::tei:persName/text()"/><xsl:text>}]{</xsl:text><xsl:value-of select="descendant::tei:persName/text()"/><xsl:text>}</xsl:text>
@@ -134,6 +152,9 @@ of this software, even if advised of the possibility of such damage.
     </xsl:choose>
   </xsl:template>
 
+  <doc xmlns="http://www.oxygenxml.com/ns/doc/xsl">
+    <desc>Process affiliation or email.</desc>
+  </doc>
   <xsl:template match="tei:affiliation|tei:email">
       <xsl:text>\mbox{}\\ </xsl:text>
       <xsl:apply-templates/>
