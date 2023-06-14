@@ -256,17 +256,21 @@ as a proportion of the page width.</desc>
   <xsl:param name="latexGeometryOptions">
     twoside,
     letterpaper,
-    layoutwidth=14cm,
-    layoutheight=20.3cm,
-    layouthoffset=4cm,
-    layoutvoffset=5cm,
-    tmargin=2cm,
-    rmargin=2.7cm,
-    bmargin=3.50cm,
-    lmargin=1.60cm,
-    bindingoffset=1cm
+    paperheight=185mm,
+    paperwidth=129mm,
+    layoutheight=165mm,
+    layoutwidth=115mm,
+    textheight=145mm,
+    textwidth=90mm,
+    headsep=5mm,
+    top=20mm,
+    outer=15mm,
+    bottom=30mm,
+    inner=10mm,
+    hoffset=5mm,
+    voffset=10mm
   </xsl:param>
-  
+ 
    <doc xmlns="http://www.oxygenxml.com/ns/doc/xsl" class="userpackage" type="string">
       <desc>The page style to use with the \pagestyle command (empty, plain, fancy, ...).</desc>
    </doc>
@@ -474,26 +478,6 @@ characters. The normal characters remain active for LaTeX commands.
       </desc>
    </doc>
    <xsl:template name="latexLayout">
-     <xsl:choose>
-       <xsl:when test="$latexPaperSize='a3paper'">
-	 \paperwidth297mm
-	 \paperheight420mm
-       </xsl:when>
-       <xsl:when test="$latexPaperSize='a5paper'">	
-	 \paperwidth148mm
-	 \paperheight210mm
-       </xsl:when>
-       <xsl:when test="$latexPaperSize='a4paper'">
-	 \paperwidth210mm
-	 \paperheight297mm
-       </xsl:when>
-       <xsl:when test="$latexPaperSize='letterpaper'">
-	 \paperwidth216mm
-	 \paperheight279mm
-       </xsl:when>
-	 <xsl:otherwise>
-	 </xsl:otherwise>
-       </xsl:choose>       
 \def\@pnumwidth{1.55em}
 \def\@tocrmarg {2.55em}
 \def\@dotsep{4.5}
