@@ -62,14 +62,13 @@ of this software, even if advised of the possibility of such damage.
   <xsl:template match="//tei:g">
     <xsl:choose>
       <!-- Punctus elevatus -->
-      <xsl:when test="@ref='punctEl'">
+      <xsl:when test="@ref='#punctEl'">
         <xsl:text>⸵</xsl:text>
       </xsl:when>
       <!-- Siglum -->
-      <xsl:when test="@ref='sigillvm'">
+      <xsl:when test="@ref='#sigillvm'">
         <xsl:text>✠</xsl:text>
       </xsl:when>
     </xsl:choose>  
   </xsl:template>
-
 </xsl:stylesheet>

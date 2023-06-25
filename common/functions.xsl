@@ -1043,6 +1043,7 @@ of this software, even if advised of the possibility of such damage.
       <xsl:choose>
         <xsl:when test="tei:match(@rend,'numbered')">true</xsl:when>
         <xsl:when test="tei:match(@rend,'ordered')">true</xsl:when>
+        <xsl:when test="tei:match(@rend,'lettered')">true</xsl:when>
         <xsl:when test="@type='ordered'">true</xsl:when>
         <xsl:otherwise>false</xsl:otherwise>
       </xsl:choose>
@@ -1385,7 +1386,7 @@ of this software, even if advised of the possibility of such damage.
             <xsl:when test="starts-with($wit,'#') and
               id(substring($wit,2))">
               <xsl:for-each select="id(substring($wit,2))">
-                <xsl:apply-templates select="if (tei:abbr[@type='siglum']) then tei:abbr[@type='siglum'][1]
+                <xsl:apply-templates select="if (tei:abbr[@type='siglum']) then tei:abbr[@type='siglum'][1]/node()
                   else if (@n) then @n else @xml:id"/>
                 <xsl:variable name="detail" select="if ($context) then key('WITDETAIL',
                   concat('#', $context/@xml:id))[@wit = $wit] else false()"/>
@@ -1397,16 +1398,25 @@ of this software, even if advised of the possibility of such damage.
               <xsl:value-of select="substring($wit,2)"/>
             </xsl:when>
             <xsl:otherwise>
-              <xsl:for-each select="doc($wit)/*">
-                <xsl:value-of select="if (@n) then @n else @xml:id"/>
-              </xsl:for-each>
+              <xsl:choose>
+                <xsl:when test="doc-available($wit)">
+                  <xsl:for-each select="doc($wit)/*">
+                    <xsl:value-of select="if (@n) then @n else @xml:id"/>
+                  </xsl:for-each>
+                </xsl:when>
+                <xsl:otherwise>
+                  <xsl:message>Error: can't find <xsl:value-of select="$wit"/></xsl:message>
+                </xsl:otherwise>
+              </xsl:choose>
+              
             </xsl:otherwise>
           </xsl:choose>
         </xsl:for-each>
         <xsl:if test="not($last)"><xsl:value-of select="$separator"/></xsl:if>
       </xsl:for-each>
-      <xsl:text> </xsl:text>
-    </xsl:variable>
+      <!-- SJH: This space is causing problems in the PDF. -->
+      <!--<xsl:text> </xsl:text>-->
+      </xsl:variable>
     <xsl:value-of select="$r"/>
   </xsl:function>
   

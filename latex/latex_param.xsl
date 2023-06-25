@@ -73,7 +73,7 @@ the beginning of the document</desc>
    <doc xmlns="http://www.oxygenxml.com/ns/doc/xsl" class="layout" type="string">
       <desc>Optional parameters for documentclass</desc>
    </doc>
-   <xsl:param name="classParameters">11pt,twoside</xsl:param>
+   <xsl:param name="classParameters">11pt</xsl:param>
 
    <doc xmlns="http://www.oxygenxml.com/ns/doc/xsl" class="output" type="string">
       <desc>location of original XML file, for looking up relative pointers</desc>
@@ -109,32 +109,87 @@ the beginning of the document</desc>
    </doc>
    <xsl:template name="latexPackages">
       <xsl:text>
+
+% Page layout
 \usepackage[</xsl:text>
       <xsl:value-of select="$latexPaperSize"/>
       <xsl:text>,</xsl:text>
       <xsl:value-of select="$latexGeometryOptions"/>
       <xsl:text>]{geometry}
-\usepackage{framed}
+
+% Typesetting
 \usepackage{microtype}
-</xsl:text>
-<xsl:text>
-\definecolor{shadecolor}{gray}{0.95}
-\usepackage{longtable}
+\usepackage{soul}
+\usepackage{leading}
+\usepackage{setspace}
 \usepackage[normalem]{ulem}
 \usepackage{fancyvrb}
 \usepackage{fancyhdr}
-\usepackage{graphicx}
+\usepackage{titlesec}
+\usepackage{titletoc}
+\usepackage{accents}
+
+% Use thalie for drama texts
+\usepackage[characterstyle=simple,playstyle=bigcenter]{thalie}
+
+% Separate font handling for captions
+\usepackage{caption}
+% Set the font size of the caption to \small
+\captionsetup[figure]{font=small}
+
+% Ability to put notes in the margins
 \usepackage{marginnote}
 
+\definecolor{shadecolor}{gray}{0.95}
+\usepackage{longtable}
+
+% Images
+\usepackage[export]{adjustbox}
+\usepackage{graphicx}
+\graphicspath{ {./images/} }
+
+
 \renewcommand{\@cite}[1]{#1}
+
+% For enhancing lists
+\usepackage{enumitem}
+
+% Reledmac options
+\usepackage[antilabe]{reledmac}
+
+% Set double vertical lines as the separator between notes.
+
+\Xparafootsep[A,B,C]{ $\parallel\ \ $  }
+
+% Set stanza indents to 0 for one line per stanza line.
+\setstanzaindents{1,0,1}
+\setcounter{stanzaindentsrepetition}{1}
+
+% Set the edition's line numbering to restart on every page.
+\lineation{page}
+
+% Cause the actual line numbers to be displayed in the opposite margin from the edition's line numbers.
+\linenumannotationothersidetrue
+\Xnotenumfont{\normalfont\bfseries}
+
+% Settings for familiar notes
+\Xbeforenotes[A,C]{2em} % Space before apparatus begins
+\Xafterrule[A,C]{0.5em} % Space after note rule 
+\Xarrangement[A,C]{paragraph}
+\Xnumberonlyfirstinline[A,C]
+\Xragged[A,C]{R}
+
+% Settings for apparatus criticus notes
+\Xbeforenotes[B]{2em} % Space before apparatus begins
+\Xafterrule[B]{0.75em} % Space after note rule 
+\Xarrangement[B]{paragraph}
+\Xragged[B]{R}
+\Xnumberonlyfirstinline[B]
+\Xafternote[B]{0.5em}
 
 </xsl:text>
 <!-- SJH: Added calls to templates to handle some LDLT requirements. -->
 <xsl:call-template name="section-numbering"/>
-<xsl:call-template name="format-citations"/>
-<xsl:call-template name="remove-color-hyperlinks"/>
-<xsl:call-template name="url-font"/>
-<xsl:call-template name="noLabel"></xsl:call-template>
 <xsl:if test="not($marginFont='')">
 \renewcommand*{\marginfont}{<xsl:value-of select="$marginFont"/>}
 </xsl:if>
@@ -161,17 +216,7 @@ the beginning of the document</desc>
       <xsl:text>
   \pagestyle{</xsl:text><xsl:value-of select="$pageStyle"/><xsl:text>}
 </xsl:text>
-<!-- SJH: This block causes errors in processing. 
- \usepackage[pdftitle={<xsl:sequence select="tei:generateSimpleTitle(.)"/>},
- pdfauthor={<xsl:sequence
- select="replace(string-join(tei:generateAuthor(.),''),'\\[A-z]+','')"/>}]{hyperref}
-\hyperbaseurl{<xsl:value-of select="$baseURL"/>}-->
-<xsl:if test="count(key('APP',1))&gt;0">
-\usepackage{reledmac}
-<xsl:call-template name="ledmacOptions"/>
-</xsl:if>
-
-   </xsl:template>
+</xsl:template>
 
    <doc xmlns="http://www.oxygenxml.com/ns/doc/xsl" class="layout" type="float">
       <desc>When processing a "pb" element, decide what to generate: "active"
@@ -192,8 +237,8 @@ as a proportion of the page width.</desc>
    </doc>
    <xsl:param name="quoteEnv">quote</xsl:param>
 
-   <doc xmlns="http://www.oxygenxml.com/ns/doc/xsl" class="layout" type="boolean">
-      <desc>Whether to number lines of poetry</desc>
+  <!-- <doc xmlns="http://www.oxygenxml.com/ns/doc/xsl" class="layout" type="boolean">
+      <desc>Whether to number lines of poetry</desc>t
    </doc>
    <xsl:param name="verseNumbering">false</xsl:param>
 
@@ -206,12 +251,29 @@ as a proportion of the page width.</desc>
       <desc>When numbering poetry, when to restart the sequence; this must be the name of a TEI element</desc>
    </doc>
    <xsl:param name="resetVerseLineNumbering">div1</xsl:param>
-
+-->
    <doc xmlns="http://www.oxygenxml.com/ns/doc/xsl" class="userpackage" type="string">
       <desc>Options to pass to the geometry package to set margins etc</desc>
    </doc>
-   <xsl:param name="latexGeometryOptions">twoside,lmargin=1in,rmargin=1in,tmargin=1in,bmargin=1in,marginparwidth=0.75in</xsl:param>
-
+  <!--<xsl:param name="latexGeometryOptions">twoside,tmargin=25mm,bmargin=30mm,inner=31.6mm,outer=63.3mm</xsl:param>-->
+  <xsl:param name="latexGeometryOptions">
+    twoside,
+    letterpaper,
+    paperheight=185mm,
+    paperwidth=129mm,
+    layoutheight=165mm,
+    layoutwidth=115mm,
+    textheight=145mm,
+    textwidth=90mm,
+    headsep=5mm,
+    top=20mm,
+    outer=15mm,
+    bottom=30mm,
+    inner=10mm,
+    hoffset=5mm,
+    voffset=10mm
+  </xsl:param>
+ 
    <doc xmlns="http://www.oxygenxml.com/ns/doc/xsl" class="userpackage" type="string">
       <desc>The page style to use with the \pagestyle command (empty, plain, fancy, ...).</desc>
    </doc>
@@ -257,11 +319,12 @@ characters. The normal characters remain active for LaTeX commands.
   \def\textKorean{\fontspec{Baekmuk Gulim} }
   \setmonofont{<xsl:value-of select="$typewriterFont"/>}
   <xsl:if test="not($sansFont='')">
-    \setsansfont{<xsl:value-of select="$sansFont"/>}
+    <xsl:text>\setsansfont{</xsl:text><xsl:value-of select="$sansFont"/><xsl:text>}</xsl:text>
   </xsl:if>
-  <xsl:if test="not($romanFont='')">
+  <!--<xsl:if test="not($romanFont='')">
     \setromanfont{<xsl:value-of select="$romanFont"/>}
-  </xsl:if>
+  </xsl:if>-->
+  \setmainfont[SmallCapsFont={Bodoni 72 Smallcaps},SmallCapsFeatures={Letters=SmallCaps},]{Baskerville}
 \else
   \IfFileExists{utf8x.def}%
    {\usepackage[utf8x]{inputenc}
@@ -314,34 +377,87 @@ characters. The normal characters remain active for LaTeX commands.
     \if \@nextchar b5 \else
    \z@ \@chclass \z@ \@preamerr \z@ \fi \fi \fi \fi
    \fi \fi  \fi  \fi  \fi  \fi  \fi \fi \fi \fi \fi \fi}
+<xsl:call-template name="fallback-characters"/>
+% Redefine \\ to be equivalent to \@arraycr in table environments.
 \gdef\arraybackslash{\let\\=\@arraycr}
 \def\@textsubscript#1{{\m@th\ensuremath{_{\mbox{\fontsize\sf@size\z@#1}}}}}
 \def\Panel#1#2#3#4{\multicolumn{#3}{){\columncolor{#2}}#4}{#1}}
+
+% Commands for editorial elements
 \def\abbr{}
 \def\corr{}
-\def\expan{}
-\def\gap{}
+\def\expan#1{(#1)}
 \def\orig{}
 \def\reg{}
 \def\ref{}
-<!-- SJH: Added rules for editorial symbols. -->
+\def\gap{\lower 2pt \hbox{ * * * }}
 \def\sic#1{†#1†}
-\def\supplied#1{\anglefont ⟨#1\anglefont ⟩}
-\def\surplus#1{\{#1\}}
+\def\supplied#1{⟨#1⟩}
+\def\surplus#1{[#1]}
+
+\newcommand{\unclear}[1]{%
+\foreach \char in {#1} {%
+\underline{\d{\char}}%
+}%
+}
+
+% Commands for personal names, place names, etc.
 \def\persName{}\def\name{}
 \def\placeName{}
 \def\orgName{}
+
+% Commands for typesetting text in various fonts
 \def\textcal#1{{\fontspec{<xsl:value-of select="$calligraphicFont"/>}#1}}
 \def\textgothic#1{{\fontspec{<xsl:value-of select="$gothicFont"/>}#1}}
 \def\textlarge#1{{\large #1}}
+
+% Commands for adding various decorations to text
 \def\textoverbar#1{\ensuremath{\overline{#1}}}
 \def\textquoted#1{‘#1’}
 \def\textsmall#1{{\small #1}}
 \def\textsubscript#1{\@textsubscript{\selectfont#1}}
 \def\textxi{\ensuremath{\xi}}
 \def\titlem{\itshape}
+
+% Environments for different parts of the document
 \newenvironment{biblfree}{}{\ifvmode\par\fi }
 \newenvironment{bibl}{}{}
+\newenvironment{bibitemlist}[1]{%
+    \list{\@biblabel{\@arabic\c@enumiv}}%
+    {\settowidth\labelwidth{\@biblabel{#1}}%
+    \leftmargin\labelwidth
+    \advance\leftmargin\labelsep
+    \@openbib@code
+    \usecounter{enumiv}%
+    \let\p@enumiv\@empty
+    \renewcommand\theenumiv{\@arabic\c@enumiv}%
+    }%
+    \sloppy
+    \clubpenalty4000
+    \@clubpenalty \clubpenalty
+    \widowpenalty4000%
+    \sfcode`\.\@m}%
+    {\def\@noitemerr
+    {\@latex@warning{Empty `bibitemlist' environment}}%
+    \endlist}
+ \newenvironment{msitemlist}[1]{%
+     \list{}%
+     {\settowidth\labelwidth{\@biblabel{#1}}%
+     \leftmargin\labelwidth
+     \advance\leftmargin\labelsep
+     \@openbib@code
+     \usecounter{enumiv}%
+     \let\p@enumiv\@empty
+     \renewcommand\theenumiv{\@arabic\c@enumiv}%
+     }%
+     \sloppy
+     \clubpenalty4000
+     \@clubpenalty \clubpenalty
+     \widowpenalty4000%
+     \sfcode`\.\@m}%
+     {\def\@noitemerr
+     {\@latex@warning{Empty `bibitemlist' environment}}%
+     \endlist}    
 \newenvironment{byline}{\vskip6pt\itshape\fontsize{16pt}{18pt}\selectfont}{\par }
 \newenvironment{citbibl}{}{\ifvmode\par\fi }
 \newenvironment{docAuthor}{\ifvmode\vskip4pt\fontsize{16pt}{18pt}\selectfont\fi\itshape}{\ifvmode\par\fi }
@@ -352,21 +468,29 @@ characters. The normal characters remain active for LaTeX commands.
 \newenvironment{msItem}{\vskip 6pt}{\par}
 \newenvironment{rubric}{}{}
 \newenvironment{titlePart}{}{\par }
+\newenvironment{copyrightPage}{}{}
+\newenvironment{acknowledgmentsPage}{}{}
 <xsl:text disable-output-escaping="yes">
-\newcolumntype{L}[1]{){\raggedright\arraybackslash}p{#1}}
-\newcolumntype{C}[1]{){\centering\arraybackslash}p{#1}}
-\newcolumntype{R}[1]{){\raggedleft\arraybackslash}p{#1}}
-\newcolumntype{P}[1]{){\arraybackslash}p{#1}}
-\newcolumntype{B}[1]{){\arraybackslash}b{#1}}
-\newcolumntype{M}[1]{){\arraybackslash}m{#1}}
+% Define new column types for tables.
+\newcolumntype{L}[1]{>){\raggedright\arraybackslash}p{#1}} % Left-aligned column 
+\newcolumntype{C}[1]{>){\centering\arraybackslash}p{#1}} % Centered column
+\newcolumntype{R}[1]{>){\raggedleft\arraybackslash}p{#1}} % Right-aligned column
+\newcolumntype{P}[1]{){\arraybackslash}p{#1}} % Paragraph-style column 
+\newcolumntype{B}[1]{>){\arraybackslash}b{#1}} % Vertically centered column, bottom alignment
+\newcolumntype{M}[1]{>){\arraybackslash}m{#1}} % Vertically centered column, middle alignment
 \definecolor{label}{gray}{0.75}
 \def\unusedattribute#1{\sout{\textcolor{label}{#1}}}
+
+% For using \xref.
 \DeclareRobustCommand*{\xref}{\hyper@normalise\xref@}
 \def\xref@#1#2{\hyper@linkurl{#2}{#1}}
+
+% Math stuff: defines a new command for typesetting subscripts using underscores
 \begingroup
 \catcode`\_=\active
 \gdef_#1{\ensuremath{\sb{\mathrm{#1}}}}
 \endgroup
+% Define custom behavior for the underscore character in math mode
 \mathcode`\_=\string"8000
 \catcode`\_=12\relax
 </xsl:text>
@@ -378,7 +502,7 @@ characters. The normal characters remain active for LaTeX commands.
       </desc>
    </doc>
    <xsl:template name="latexBabel">
-<xsl:text>\usepackage[english]{babel}</xsl:text>
+<xsl:text>\usepackage[english,greek]{babel}</xsl:text>
 </xsl:template>
 
 
@@ -388,7 +512,7 @@ characters. The normal characters remain active for LaTeX commands.
     <p>LaTeX paper size</p>
   </desc>
 </doc>
-<xsl:param name="latexPaperSize">a4paper</xsl:param>
+<xsl:param name="latexPaperSize">letterpaper</xsl:param>
      
 <doc xmlns="http://www.oxygenxml.com/ns/doc/xsl" class="style" type="string"><desc>Font for examples</desc>   </doc>
 <xsl:param name="exampleFont">Courier New</xsl:param>
@@ -397,7 +521,7 @@ characters. The normal characters remain active for LaTeX commands.
 <doc xmlns="http://www.oxygenxml.com/ns/doc/xsl" class="style" type="string"><desc>Font for sans-serif</desc>   </doc>
 <xsl:param name="sansFont">Noto Sans</xsl:param>
 <doc xmlns="http://www.oxygenxml.com/ns/doc/xsl" class="style" type="string"><desc>Font for serif</desc>   </doc>
-<xsl:param name="romanFont">New Athena Unicode</xsl:param>
+<xsl:param name="romanFont">Baskerville</xsl:param>
 <doc xmlns="http://www.oxygenxml.com/ns/doc/xsl" class="style" type="string"><desc>Font for gothic</desc>   </doc>
 <xsl:param name="gothicFont">Lucida Blackletter</xsl:param>
 <doc xmlns="http://www.oxygenxml.com/ns/doc/xsl" class="style" type="string"><desc>Font for calligraphic</desc>   </doc>
@@ -412,27 +536,8 @@ characters. The normal characters remain active for LaTeX commands.
          <p>All the LaTeX setup which affects page layout</p>
       </desc>
    </doc>
+  
    <xsl:template name="latexLayout">
-     <xsl:choose>
-       <xsl:when test="$latexPaperSize='a3paper'">
-	 \paperwidth297mm
-	 \paperheight420mm
-       </xsl:when>
-       <xsl:when test="$latexPaperSize='a5paper'">	
-	 \paperwidth148mm
-	 \paperheight210mm
-       </xsl:when>
-       <xsl:when test="$latexPaperSize='a4paper'">
-	 \paperwidth210mm
-	 \paperheight297mm
-       </xsl:when>
-       <xsl:when test="$latexPaperSize='letterpaper'">
-	 \paperwidth216mm
-	 \paperheight279mm
-       </xsl:when>
-	 <xsl:otherwise>
-	 </xsl:otherwise>
-       </xsl:choose>       
 \def\@pnumwidth{1.55em}
 \def\@tocrmarg {2.55em}
 \def\@dotsep{4.5}
@@ -446,28 +551,30 @@ characters. The normal characters remain active for LaTeX commands.
 \vbadness=4000
 \widowpenalty=10000
 <xsl:if test="not($documentclass='letter')">
+% Define the formatting for section headings 
 \renewcommand\section{\@startsection {section}{1}{\z@}%
-     {-1.75ex \@plus -0.5ex \@minus -.2ex}%
-     {0.5ex \@plus .2ex}%
-     {\reset@font\Large\bfseries\sffamily}}
+  {-2ex \@plus -0.5ex \@minus -.2ex}%
+  {3ex \@plus .2ex}%
+  {\reset@font\LARGE\fontfamily{lmr}}}
 \renewcommand\subsection{\@startsection{subsection}{2}{\z@}%
-     {-1.75ex\@plus -0.5ex \@minus- .2ex}%
-     {0.5ex \@plus .2ex}%
-     {\reset@font\Large\sffamily}}
+  {5ex\@plus -0.5ex \@minus- .2ex}%
+  {2.5ex \@plus .2ex}%
+  {\reset@font\fontfamily{lmr}\Large}}
 \renewcommand\subsubsection{\@startsection{subsubsection}{3}{\z@}%
-     {-1.5ex\@plus -0.35ex \@minus -.2ex}%
-     {0.5ex \@plus .2ex}%
-     {\reset@font\large\sffamily}}
-\renewcommand\paragraph{\@startsection{paragraph}{4}{\z@}%
-     {-1ex \@plus-0.35ex \@minus -0.2ex}%
-     {0.5ex \@plus .2ex}%
-     {\reset@font\normalsize\sffamily}}
+  {4ex\@plus -0.35ex \@minus -.2ex}%
+  {2ex \@plus .2ex}%
+  {\reset@font\fontfamily{lmr}\large}}
+ \renewcommand\paragraph{\@startsection{paragraph}{4}{\z@}%
+  {3ex \@plus-0.35ex \@minus -0.2ex}%
+  {1ex \@plus .2ex}%
+  {\reset@font\normalsize\fontfamily{lmr}\textit}}
 \renewcommand\subparagraph{\@startsection{subparagraph}{5}{\parindent}%
-     {1.5ex \@plus1ex \@minus .2ex}%
-     {-1em}%
-     {\reset@font\normalsize\bfseries}}
-
+  {1.5ex \@plus1ex \@minus .2ex}%
+  {-1em}%
+  {\reset@font\normalsize\textbf}}
+  
 </xsl:if>
+% Format and style for the table of contents
 \def\l@section#1#2{\addpenalty{\@secpenalty} \addvspace{1.0em plus 1pt}
  \@tempdima 1.5em \begingroup
  \parindent \z@ \rightskip \@pnumwidth 
@@ -483,6 +590,8 @@ characters. The normal characters remain active for LaTeX commands.
 \newif\if@mainmatter 
 \@mainmattertrue
 \def\chaptername{Chapter}
+
+% Define format and style for frontmatter, mainmatter, backmatter
 \def\frontmatter{%
   \pagenumbering{roman}
   \def\thechapter{\@roman\c@chapter}
@@ -508,12 +617,13 @@ characters. The normal characters remain active for LaTeX commands.
   \cleardoublepage
   \setcounter{chapter}{0}
   \setcounter{section}{0}
-  \setcounter{secnumdepth}{2}
+  \setcounter{secnumdepth}{0}<!-- SJH: changed to 0 to prevent automatic numbering -->
   \def\@chapapp{\appendixname}%
   \def\thechapter{\@Alph\c@chapter}
   \def\theHchapter{\Alph{chapter}}
   \appendix
 }
+
 \newenvironment{bibitemlist}[1]{%
    \list{\@biblabel{\@arabic\c@enumiv}}%
        {\settowidth\labelwidth{\@biblabel{#1}}%
@@ -532,7 +642,32 @@ characters. The normal characters remain active for LaTeX commands.
   {\def\@noitemerr
     {\@latex@warning{Empty `bibitemlist' environment}}%
     \endlist}
-
+<!-- SJH: Added this to deal with numbering of front matter. From https://tex.stackexchange.com/a/154465/257027 -->
+\let\origdoublepage\cleardoublepage
+\renewcommand{\cleardoublepage}{%
+     \clearpage
+     {\pagestyle{empty}\origdoublepage}%
+}
+<!-- SJH: Added this to cope with different requirements for manuscript items. -->
+\newenvironment{msitemlist}[1]{%
+  \list{}%
+  {\settowidth\labelwidth{\@biblabel{#1}}%
+    \leftmargin\labelwidth
+    \advance\leftmargin\labelsep
+    \@openbib@code
+    \usecounter{enumiv}%
+    \let\p@enumiv\@empty
+    \renewcommand\theenumiv{\@arabic\c@enumiv}%
+    }%
+    \sloppy
+    \clubpenalty4000
+    \@clubpenalty \clubpenalty
+    \widowpenalty4000%
+    \sfcode`\.\@m}%
+    {\def\@noitemerr
+    {\@latex@warning{Empty `bibitemlist' environment}}%
+    \endlist}
+     
 \def\tableofcontents{\section*{\contentsname}\@starttoc{toc}}
 \parskip<xsl:value-of select="$parSkip"/>
 \parindent<xsl:value-of select="$parIndent"/>
@@ -576,23 +711,6 @@ characters. The normal characters remain active for LaTeX commands.
 
    <doc xmlns="http://www.oxygenxml.com/ns/doc/xsl" class="layout">
       <desc>
-         <p>LaTeX setup commands for ledmac package</p>
-      </desc>
-   </doc>
-<xsl:template name="ledmacOptions">
-<xsl:text>
-\Xnotenumfont{\normalfont\bfseries}
-\lineation{section}
-\linenummargin{inner}
-\Xarrangement[A]{paragraph}
-\Xnumberonlyfirstinline[A]
-\Xarrangement[B]{paragraph}
-\Xnumberonlyfirstinline[B]
-</xsl:text>
-</xsl:template>
-
-   <doc xmlns="http://www.oxygenxml.com/ns/doc/xsl" class="layout">
-      <desc>
          <p>LaTeX setup before start of document</p>
          <p>All the LaTeX setup which are executed before the start of
     the document</p>
@@ -605,6 +723,19 @@ characters. The normal characters remain active for LaTeX commands.
   \clearpage
     \if@twoside
     \ifodd\c@page
+      \hbox{}\newpage
+      \if@twocolumn
+        \hbox{}\newpage
+      \fi
+    \fi
+  \fi
+}
+\makeatother
+\makeatletter
+\newcommand*{\cleartorightpage}{%
+  \clearpage
+    \if@twoside
+    \ifodd\c@page\else
       \hbox{}\newpage
       \if@twocolumn
         \hbox{}\newpage
@@ -627,20 +758,34 @@ characters. The normal characters remain active for LaTeX commands.
 }
 \makeatother
 \fvset{frame=single,numberblanklines=false,xleftmargin=5mm,xrightmargin=5mm}
+\usepackage{fancyvrb}
+\usepackage{fancyhdr}
 \fancyhf{} 
 \setlength{\headheight}{14pt}
-\fancyhead[LE]{\bfseries\leftmark} 
-\fancyhead[RO]{\bfseries\rightmark} 
+\fancyhead[LE]{\thepage}
+\fancyhead[CE]{\nouppercase{\leftmark}}
+\fancyhead[RO]{\thepage}
+\fancyhead[CO]{\rightmark}
 \fancyfoot[RO]{}
-\fancyfoot[CO]{\thepage}
+\fancyfoot[CO]{}
 \fancyfoot[LO]{\TheID}
 \fancyfoot[LE]{}
-\fancyfoot[CE]{\thepage}
+\fancyfoot[CE]{}
 \fancyfoot[RE]{\TheID}
-\hypersetup{</xsl:text><xsl:value-of select="$hyperSetup"/><xsl:text>}
-\fancypagestyle{plain}{\fancyhead{}\renewcommand{\headrulewidth}{0pt}}</xsl:text>
-<xsl:call-template name="fallback-characters"/>
-   </xsl:template>
+\fancypagestyle{plain}{\fancyhead{}\renewcommand{\headrulewidth}{0pt}}
+      
+% For unnumbered blank pages.
+% Thanks to https://math-linux.com/latex-26/faq/latex-faq/article/latex-how-to-insert-a-blank-or-empty-page-with-or-without-numbering-thispagestyle-newpage-usepackage-afterpage
+\usepackage{afterpage}
+  \newcommand\myemptypage{
+       \null
+       \thispagestyle{empty}
+       \addtocounter{page}{-1}
+       \newpage
+  </xsl:text>
+     
+  <xsl:call-template name="hyperref"/>
+</xsl:template>
 
 <!-- SJH: Added this block to remove numbers from sections. --> 
   <doc xmlns="http://www.oxygenxml.com/ns/doc/xsl" class="layout">
@@ -652,63 +797,7 @@ characters. The normal characters remain active for LaTeX commands.
 \usepackage{titlesec}
 \usepackage{titletoc}
   </xsl:template>
-  
-<!-- SJH: Added. -->  
-  <doc xmlns="http://www.oxygenxml.com/ns/doc/xsl" class="layout">
-    <desc>Format citations in the notes without brackets around them.</desc>
-  </doc>
-  <xsl:template name="format-citations">
-    <xsl:text>
-% This is how to format citations in the notes without brackets around them.
-\usepackage{cite}
-\renewcommand\citeleft{}
-\renewcommand\citeright{}</xsl:text>
-  </xsl:template>
-
-<!-- SJH: Added. -->
-  <doc xmlns="http://www.oxygenxml.com/ns/doc/xsl" class="layout">
-    <desc>Format URLs in the same font as the rest of the document.</desc>
-  </doc>
-  <xsl:template name="url-font">
-  <xsl:text>
-% Set the font for URLs to the regular font for the document.
-\urlstyle{same}</xsl:text>
-  </xsl:template>
-
-<!-- SJH: Added. --> 
-  <doc xmlns="http://www.oxygenxml.com/ns/doc/xsl" class="layout">
-    <desc>Prevent labels from being printed in the bibliography.</desc>
-  </doc>
-<xsl:template name="noLabel">
-% Prevent labels from being printed in the bibliography.
-\makeatletter
-\renewcommand{\@biblabel}[1]{}
-\renewenvironment{thebibliography}[1]
-  {\section*{\refname}%
-  \@mkboth{\MakeUppercase\refname}{\MakeUppercase\refname}%
-  \list{}%
-    {\labelwidth=0pt
-     \labelsep=0pt
-      \leftmargin1.5em
-      \itemindent=-1.5em
-      \advance\leftmargin\labelsep
-      \@openbib@code
-      }%
-  \sloppy
-  \clubpenalty4000
-  \@clubpenalty \clubpenalty
-  \widowpenalty4000%
-  \sfcode`\.\@m}
-\makeatother
-</xsl:template>
-<!-- SJH: Added. -->
-  <doc xmlns="http://www.oxygenxml.com/ns/doc/xsl" class="style">
-    <desc>Remove colors and borders from hyperlinks.</desc>
-  </doc>
-<xsl:template name="remove-color-hyperlinks">
-\usepackage[linktoc=all,colorlinks=true,linkcolor=black,anchorcolor=black,citecolor=black,filecolor=black,menucolor=black,runcolor=black,urlcolor=black]{hyperref}
-</xsl:template>
-
+ 
 <!-- SJH: Fallback characters. Tip of the hat to Andrew Dunning. -->
   <doc xmlns="http://www.oxygenxml.com/ns/doc/xsl" class="layout">
     <desc>
@@ -717,26 +806,43 @@ characters. The normal characters remain active for LaTeX commands.
   </doc>
 <xsl:template name="fallback-characters">
   <xsl:text>
-% Fallback characters
+
+% Fallback characters (thanks to Andrew Dunning) 
 \usepackage{newunicodechar}
 \newfontfamily{\fallbackfontMUFI}{Junicode}
 \DeclareTextFontCommand{\textfallbackMUFI}{\fallbackfontMUFI}
 \newunicodechar{⸝}{\textfallbackMUFI{⸝}}
 \newunicodechar{⸵}{\textfallbackMUFI{}} % MUFI PUA
 \newunicodechar{⍪}{\textfallbackMUFI{}} % MUFI PUA
+\newunicodechar{⟨}{\textfallbackMUFI{⟨}}
+\newunicodechar{⟩}{\textfallbackMUFI{⟩}}
+% Asterisk character for gap.
+%\newunicodechar{∗}{\textfallbackMUFI{*}}
+% Siglum character
 \newfontfamily{\siglumcharacter}{Zapf Dingbats}
 \DeclareTextFontCommand{\textsiglumcharacter}{\siglumcharacter}
 \newunicodechar{✠}{\textsiglumcharacter{✠}}
-% Characters for angle brackets for supplied text.
-\newfontfamily{\anglefont}{Junicode}
-\newunicodechar{⟨}{{\anglefont ⟨}}
-\newunicodechar{⟩}{{\anglefont ⟩}}
 % Stigma
-\newfontfamily{\fallbackfontStigma}{KadmosU}
+\newfontfamily{\fallbackfontStigma}{New Athena Unicode}
 \DeclareTextFontCommand{\textfallbackStigma}{\fallbackfontStigma}
+\newunicodechar{Ϛ}{\textfallbackStigma{Ϛ}}
 \newunicodechar{ϛ}{\textfallbackStigma{ϛ}}
 </xsl:text>
 </xsl:template>
+  
+  <doc xmlns="http://www.oxygenxml.com/ns/doc/xsl" class="style">
+    <desc>
+      <p>Set up hyperref.</p>
+    </desc>
+  </doc>
+<xsl:template name="hyperref">
+  <xsl:text>
+\usepackage[linktoc=all,colorlinks=true,linkcolor=black,anchorcolor=black,citecolor=black,filecolor=black,menucolor=black,runcolor=black,urlcolor=black,breaklinks]{hyperref}
+\hypersetup{</xsl:text><xsl:value-of select="$hyperSetup"/><xsl:text>}
+% Set the font for URLs to the regular font for the document.
+\urlstyle{same}</xsl:text>  
+</xsl:template> 
+ 
    <doc xmlns="http://www.oxygenxml.com/ns/doc/xsl" class="layout">
       <desc>
          <p>LaTeX setup at end of document</p>
