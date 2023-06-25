@@ -26,7 +26,7 @@
   <basename property="basefile" file="${outputFile}" suffix=".pdf"/>
   <property name="texfile" value="${basefile}"/>
 
-  <target name="dist" depends="odd,notodd,go,oddcleanup"/>
+  <target name="dist" depends="odd,notodd,go,teicleanup,oddcleanup"/>
 
   <target name="odd" if="processODD">
     <odd2lite in="${inputFile}" out="${inputFile}.processedodd"/>

@@ -43,7 +43,7 @@
   <xsl:key name="CHILDMOD" match="Element" use="@module"/>
   <xsl:variable name="Original" select="/"/>
   <xsl:param name="teiWeb">
-    <xsl:text>http://www.tei-c.org/release/doc/tei-p5-doc/</xsl:text>
+    <xsl:text>https://www.tei-c.org/release/doc/tei-p5-doc/</xsl:text>
   </xsl:param>
   <xsl:template match="tei:ptr | tei:ref" mode="weave">
     <xsl:choose>
@@ -156,6 +156,9 @@
       <xsl:element namespace="{$outputNS}" name="{$cellName}">
         <xsl:attribute name="{$rendName}">
           <xsl:text>odd_value</xsl:text>
+        <xsl:if test="tei:descOrGlossOutOfDate(.)">
+            <xsl:text> outOfDateTranslation</xsl:text>
+          </xsl:if>
         </xsl:attribute>
         <xsl:sequence select="tei:makeDescription(., true(), true())"/>
         <xsl:apply-templates select="tei:valList"/>
@@ -211,6 +214,9 @@
       <xsl:element namespace="{$outputNS}" name="{$cellName}">
         <xsl:attribute name="{$rendName}">
           <xsl:text>odd_value</xsl:text>
+        <xsl:if test="tei:descOrGlossOutOfDate(.)">
+            <xsl:text> outOfDateTranslation</xsl:text>
+          </xsl:if>
         </xsl:attribute>
         <xsl:sequence select="tei:makeDescription(., false(), true())"/>
         <xsl:apply-templates select="tei:valList"/>
@@ -239,6 +245,9 @@
       <xsl:element namespace="{$outputNS}" name="{$cellName}">
         <xsl:attribute name="{$rendName}">
           <xsl:text>odd_value</xsl:text>
+        <xsl:if test="tei:descOrGlossOutOfDate(.)">
+            <xsl:text> outOfDateTranslation</xsl:text>
+          </xsl:if>
         </xsl:attribute>
         <!-- MDH 2018-01-21: setting third param ($makeMiniList) to 
           false so we can stop building ugly and superfluous lists 
@@ -474,6 +483,9 @@
             <xsl:attribute name="{$colspan}">2</xsl:attribute>
             <xsl:attribute name="{$rendName}">
               <xsl:text>wovenodd-col2</xsl:text>
+            <xsl:if test="tei:descOrGlossOutOfDate(.)">
+                <xsl:text> outOfDateTranslation</xsl:text>
+              </xsl:if>
             </xsl:attribute>
             <xsl:element namespace="{$outputNS}" name="{$hiName}">
               <xsl:attribute name="{$rendName}">
@@ -665,6 +677,9 @@
             <xsl:attribute name="{$colspan}">2</xsl:attribute>
             <xsl:attribute name="{$rendName}">
               <xsl:text>wovenodd-col2</xsl:text>
+            <xsl:if test="tei:descOrGlossOutOfDate(.)">
+                <xsl:text> outOfDateTranslation</xsl:text>
+              </xsl:if>
             </xsl:attribute>
             <xsl:element namespace="{$outputNS}" name="{$hiName}">
               <xsl:attribute name="{$rendName}">
@@ -940,8 +955,21 @@
                   <xsl:call-template name="showClassAtts"/>
                 </xsl:for-each>
               </xsl:if>
-              <xsl:apply-templates mode="tangle"
-                select="../tei:attList"/>
+              <!--
+                  We want the attributes here as the result of
+                  tangling our sibling <attList>(s). However, we do
+                  not want the <constraintSpec>s to be processed. See
+                  https://github.com/TEIC/Stylesheets/issues/488
+                  and
+                  https://github.com/TEIC/TEI/issues/2115.
+                  To do this, we pass a tunneled parameter to the tangle
+                  mode templates so that they can suppress the constraintSpecs
+                  when rendering the element content model.
+                  —Syd, Martin, Nick, and Martina, 2021-02-25
+              -->
+              <xsl:apply-templates mode="tangle" select="../tei:attList">
+                <xsl:with-param as="xs:boolean" name="includeConstraints" tunnel="yes" select="false()"/>
+              </xsl:apply-templates>
               <xsl:for-each select="..">
                 <xsl:call-template name="defineContent"/>
               </xsl:for-each>
@@ -984,6 +1012,9 @@
       <xsl:element namespace="{$outputNS}" name="{$cellName}">
         <xsl:attribute name="{$rendName}">
           <xsl:text>wovenodd-col2</xsl:text>
+        <xsl:if test="tei:descOrGlossOutOfDate(.)">
+            <xsl:text> outOfDateTranslation</xsl:text>
+          </xsl:if>
         </xsl:attribute>
         <xsl:sequence select="tei:makeDescription(., true(), true())"/>
         <xsl:for-each select="tei:constraint">
@@ -1088,6 +1119,17 @@
           </xsl:element>
         </xsl:if>
       </xsl:when>
+      <!-- 
+           Note: the '-' in the following @test and the <xsl:when>
+           clause for '+' (which is ~15 lines further down) are not
+           supported features of the ODD language, and are in fact
+           invalid values of the @atts attribute which is currently
+           being processed. See
+           https://github.com/TEIC/Stylesheets/issues/329. Per the
+           Stylesheet groups discussion of that ticket earlier today,
+           we are leaving the code here in case this is a feature we
+           decide to add to ODD someday.
+      -->
       <xsl:when test="$atts = '-' or $atts = ''"/>
       <xsl:when test="string-length($atts) > 0">
         <xsl:element namespace="{$outputNS}" name="{$tableName}">
@@ -1103,6 +1145,7 @@
             <xsl:for-each select="$HERE">
               <xsl:choose>
                 <xsl:when test="$TOKEN = '+'">
+                  <!-- See above note (~15 lines up) about this clause for '+'. -->
                   <xsl:element namespace="{$outputNS}" name="{$rowName}">
                     <xsl:element namespace="{$outputNS}" name="{$cellName}">
                       <xsl:attribute name="{$rendName}">
@@ -1340,6 +1383,11 @@
         <xsl:element namespace="{$outputNS}" name="{$rowName}">
           <xsl:element namespace="{$outputNS}" name="{$cellName}">
             <xsl:attribute name="{$colspan}">2</xsl:attribute>
+            <xsl:if test="tei:descOrGlossOutOfDate(.)">
+              <xsl:attribute name="{$rendName}">
+                <xsl:text>outOfDateTranslation</xsl:text>
+              </xsl:attribute>
+            </xsl:if>
             <xsl:element namespace="{$outputNS}" name="{$hiName}">
               <xsl:attribute name="{$rendName}">
                 <xsl:text>label</xsl:text>
@@ -1370,6 +1418,9 @@
           <xsl:element namespace="{$outputNS}" name="{$cellName}">
             <xsl:attribute name="{$rendName}">
               <xsl:text>wovenodd-col2</xsl:text>
+            <xsl:if test="tei:descOrGlossOutOfDate(.)">
+                <xsl:text> outOfDateTranslation</xsl:text>
+              </xsl:if>
             </xsl:attribute>
             <xsl:call-template name="generateModelParents">
               <xsl:with-param name="showElements">true</xsl:with-param>
@@ -1406,6 +1457,11 @@
         <xsl:element namespace="{$outputNS}" name="{$rowName}">
           <xsl:element namespace="{$outputNS}" name="{$cellName}">
             <xsl:attribute name="{$colspan}">2</xsl:attribute>
+            <xsl:if test="tei:descOrGlossOutOfDate(.)">
+              <xsl:attribute name="{$rendName}">
+                <xsl:text>outOfDateTranslation</xsl:text>
+              </xsl:attribute>
+            </xsl:if>
             <xsl:element namespace="{$outputNS}" name="{$hiName}">
               <xsl:attribute name="{$rendName}">
                 <xsl:text>label</xsl:text>
@@ -1573,6 +1629,9 @@
       <xsl:element namespace="{$outputNS}" name="{$labelName}">
         <xsl:attribute name="{$rendName}">
           <xsl:text>moduleSpecHead</xsl:text>
+        <xsl:if test="tei:descOrGlossOutOfDate(.)">
+            <xsl:text> outOfDateTranslation</xsl:text>
+          </xsl:if>
         </xsl:attribute>
         <xsl:element namespace="{$outputNS}" name="{$segName}">
           <xsl:attribute name="{$langAttributeName}">
@@ -1711,6 +1770,9 @@
         <xsl:element namespace="{$outputNS}" name="{$cellName}">
           <xsl:attribute name="{$rendName}">
             <xsl:text>wovenodd-col2</xsl:text>
+          <xsl:if test="preceding-sibling::tei:remarks[@xml:lang='en']/@versionDate gt @versionDate">
+              <xsl:text> outOfDateTranslation</xsl:text>
+            </xsl:if>
           </xsl:attribute>
           <xsl:comment>&#160;</xsl:comment>
           <xsl:apply-templates/>
@@ -1913,6 +1975,9 @@
         <xsl:element namespace="{$outputNS}" name="{$ddName}">
           <xsl:attribute name="{$rendName}">
             <xsl:text>odd_value</xsl:text>
+          <xsl:if test="tei:descOrGlossOutOfDate(.)">
+              <xsl:text> outOfDateTranslation</xsl:text>
+            </xsl:if>
           </xsl:attribute>
           <xsl:if test="tei:paramList">
             <xsl:text>(</xsl:text>
@@ -2009,12 +2074,11 @@
     </xsl:if>
   </xsl:template>
   <doc xmlns="http://www.oxygenxml.com/ns/doc/xsl">
-    <desc>[odds] display attribute list </desc>
+    <desc>[odds] display list of referenced attributes</desc>
   </doc>
-  <xsl:template name="displayAttList">
-    <xsl:param name="mode"/>
-    <xsl:call-template name="showAttClasses"/>
-    <xsl:for-each-group select="tei:attRef[not(tei:match(@rend, 'none'))]"
+  <xsl:template name="showAttRefs">
+    <xsl:param name="endspace" select="true()"/>
+    <xsl:for-each-group select=".//tei:attRef[not(tei:match(@rend, 'none'))]"
       group-by="@class">
       <xsl:call-template name="linkTogether">
         <xsl:with-param name="name" select="current-grouping-key()"/>
@@ -2039,8 +2103,22 @@
         <xsl:value-of select="@name"/>
         <xsl:if test="position() != last()">, </xsl:if>
       </xsl:for-each>
-      <xsl:text>) </xsl:text>
+      <xsl:text>)</xsl:text>
+      <xsl:if test="$endspace">
+        <xsl:text> </xsl:text>
+      </xsl:if>
     </xsl:for-each-group>
+  </xsl:template>
+  
+  <doc xmlns="http://www.oxygenxml.com/ns/doc/xsl">
+    <desc>[odds] display attribute list </desc>
+  </doc>
+  <xsl:template name="displayAttList">
+    <xsl:param name="mode"/>
+    <xsl:call-template name="showAttClasses"/>
+    <xsl:if test=".//tei:attRef">
+      <xsl:call-template name="showAttRefs"/>
+    </xsl:if>
     <xsl:if test=".//tei:attDef">
       <xsl:element namespace="{$outputNS}" name="{$tableName}">
         <xsl:attribute name="{$rendName}">
@@ -2395,113 +2473,21 @@
   
   <!-- MDH & SB working on ticket #1657 2018-09-10. -->
   <xsl:template match="tei:divGen[@type = 'deprecationcat']">
-    <xsl:element namespace="{$outputNS}" name="{$tableName}">
+    <xsl:element namespace="{$outputNS}" name="{$ulName}">
       <xsl:attribute name="{$rendName}">
         <xsl:text>deprecationcat</xsl:text>
       </xsl:attribute>
-      <xsl:element namespace="{$outputNS}" name="{$rowName}">
-        <xsl:element namespace="{$outputNS}" name="{$cellName}">
-          <xsl:element namespace="{$outputNS}" name="{$hiName}">
-            <xsl:attribute name="{$rendName}">
-              <xsl:text>label</xsl:text>
-            </xsl:attribute>
-            <xsl:attribute name="{$langAttributeName}">
-              <xsl:value-of select="$documentationLanguage"/>
-            </xsl:attribute>
-            <xsl:sequence select="tei:i18n('Identifier')"/>
-          </xsl:element>
-        </xsl:element>
-        <xsl:element namespace="{$outputNS}" name="{$cellName}">
-            <xsl:element namespace="{$outputNS}" name="{$hiName}">
-              <xsl:attribute name="{$rendName}">
-                <xsl:text>label</xsl:text>
-              </xsl:attribute>
-              <xsl:attribute name="{$langAttributeName}">
-                <xsl:value-of select="$documentationLanguage"/>
-              </xsl:attribute>
-              <xsl:sequence select="tei:i18n('ComponentType')"/>
-            </xsl:element>
-        </xsl:element>
-        <xsl:element namespace="{$outputNS}" name="{$cellName}">
-            <xsl:element namespace="{$outputNS}" name="{$hiName}">
-              <xsl:attribute name="{$rendName}">
-                <xsl:text>label</xsl:text>
-              </xsl:attribute>
-              <xsl:attribute name="{$langAttributeName}">
-                <xsl:value-of select="$documentationLanguage"/>
-              </xsl:attribute>
-              <xsl:sequence select="tei:i18n('validuntil')"/>
-            </xsl:element>
-        </xsl:element>
-        <xsl:element namespace="{$outputNS}" name="{$cellName}">
-            <xsl:element namespace="{$outputNS}" name="{$hiName}">
-              <xsl:attribute name="{$rendName}">
-                <xsl:text>label</xsl:text>
-              </xsl:attribute>
-              <xsl:attribute name="{$langAttributeName}">
-                <xsl:value-of select="$documentationLanguage"/>
-              </xsl:attribute>
-              <xsl:sequence select="tei:i18n('Description')"/>
-            </xsl:element>
-        </xsl:element>
-      </xsl:element>
       <xsl:for-each select="//tei:*[@validUntil]">
         <xsl:sort select="@validUntil"/>
-        <xsl:element namespace="{$outputNS}" name="{$rowName}">
-          <xsl:element namespace="{$outputNS}" name="{$cellName}">
-            <xsl:choose>
-              <xsl:when test="self::tei:attDef or self::tei:constraintSpec">
-                <xsl:variable name="targetIdent" select="ancestor::*[ends-with(local-name(), 'Spec')][1]/@ident"/>
-                  <xsl:call-template name="linkTogether">
-                    <xsl:with-param name="name">
-                      <xsl:value-of select="$targetIdent"/>
-                    </xsl:with-param>
-                    <xsl:with-param name="reftext">
-                      <xsl:value-of select="concat($targetIdent, ' / ', if (self::attDef) then '@' else '', @ident)"/>
-                    </xsl:with-param>
-                    <xsl:with-param name="class">
-                      <xsl:text>link_odd</xsl:text>
-                    </xsl:with-param>
-                  </xsl:call-template>
-              </xsl:when>
-              <xsl:when test="self::tei:valItem or self::tei:valDesc">
-                <xsl:variable name="targetIdent" select="ancestor::*[ends-with(local-name(), 'Spec')][1]/@ident"/>
-                  <xsl:call-template name="linkTogether">
-                    <xsl:with-param name="name">
-                      <xsl:value-of select="$targetIdent"/>
-                    </xsl:with-param>
-                    <xsl:with-param name="reftext">
-                      <xsl:value-of select="concat($targetIdent, ' / ', ancestor::tei:attDef[1]/@ident, ' / ', @ident)"/>
-                    </xsl:with-param>
-                    <xsl:with-param name="class">
-                      <xsl:text>link_odd</xsl:text>
-                    </xsl:with-param>
-                  </xsl:call-template>
-              </xsl:when>
-              <xsl:otherwise>
-                <xsl:call-template name="linkTogether">
-                    <xsl:with-param name="name">
-                      <xsl:value-of select="@ident"/>
-                    </xsl:with-param>
-                    <xsl:with-param name="reftext">
-                      <xsl:value-of select="@ident"/>
-                    </xsl:with-param>
-                    <xsl:with-param name="class">
-                      <xsl:text>link_odd</xsl:text>
-                    </xsl:with-param>
-                  </xsl:call-template></xsl:otherwise>
-            </xsl:choose>
-          </xsl:element>
-          <xsl:element namespace="{$outputNS}" name="{$cellName}">
-            <xsl:value-of select="local-name(.)"/>
-          </xsl:element>
-          <xsl:element namespace="{$outputNS}" name="{$cellName}">
+        <xsl:element namespace="{$outputNS}" name="{$itemName}">
+          <xsl:apply-templates select="descendant::tei:desc[@type='deprecationInfo'][1]"/><xsl:text>
+            </xsl:text>
+          <xsl:value-of select="tei:i18n('validuntil')"/><xsl:text>
+            </xsl:text>
+          <xsl:element namespace="{$outputNS}" name="{$segName}">
+            <xsl:attribute name="{$rendName}">deprecationdate</xsl:attribute>
             <xsl:value-of select="@validUntil"/>
-            <xsl:if test="xs:date(@validUntil) lt current-date()">!!!</xsl:if>
-          </xsl:element>
-          <xsl:element namespace="{$outputNS}" name="{$cellName}">
-            <xsl:apply-templates select="descendant::tei:desc[@type='deprecationInfo'][1]"/>
-          </xsl:element>
+            </xsl:element>.
         </xsl:element>
       </xsl:for-each>
     </xsl:element>
@@ -2590,9 +2576,35 @@
     </xsl:if>
   </xsl:template>
   <doc xmlns="http://www.oxygenxml.com/ns/doc/xsl">
-    <desc>Process element desc</desc>
+    <desc>Process element desc iff it is the child of a specification
+    element. We only process specification element descriptions (which
+    become just plain text in the RELAX NG annotations, as markup is
+    not allowed in a RELAX NG annotation) here, as a description that
+    is not the child of a specification element (which becomes a
+    &lt;desc> element in the output TEI Lite) are processed
+    elsewhere.</desc>
   </doc>
-  <xsl:template match="tei:desc">
+  <!-- This template changed 2021-06-24 by Stylesheets group in
+       response to ticket #444 in the Stylesheets repo, which
+       complained that a <desc> inside a <graphic> was doing the wrong
+       thing (to wit, copying only the content of the <desc> into the
+       TEI Lite, not the entire <desc> element, because it was being
+       processed by this template without the predicate). -->
+  <xsl:template match="tei:desc[
+                        parent::tei:attDef
+                       |parent::tei:classSpec
+                       |parent::tei:constraintSpec
+                       |parent::tei:dataSpec
+                       |parent::tei:elementSpec
+                       |parent::tei:listRef
+                       |parent::tei:macroSpec
+                       |parent::tei:model
+                       |parent::tei:modelGrp
+                       |parent::tei:modelSequence
+                       |parent::tei:moduleSpec
+                       |parent::tei:paramSpec
+                       |parent::tei:schemaSpec
+                       |parent::tei:valItem ] ">
     <xsl:apply-templates/>
   </xsl:template>
   <!-- pretty printing of RNC -->
@@ -2725,22 +2737,24 @@
       </xsl:when>
       <xsl:when test="not($clatts = '')">
         <xsl:if test="ancestor::tei:schemaSpec and key('CLASSES', 'att.global')">
-          <xsl:element namespace="{$outputNS}" name="{$segName}">
-            <xsl:attribute name="{$langAttributeName}">
-              <xsl:value-of select="$documentationLanguage"/>
-            </xsl:attribute>
-            <xsl:variable name="word">
-              <xsl:choose>
-                <xsl:when test="not($autoGlobal = 'true')">Attributes</xsl:when>
-                <xsl:when test=".//tei:attDef">In addition to global attributes
-                  and those inherited from</xsl:when>
-                <xsl:otherwise>Global attributes and those inherited
-                  from</xsl:otherwise>
-              </xsl:choose>
+          <xsl:variable name="word">
+            <xsl:choose>
+              <!-- Per issue 515, the word "Attributes" need not be output here. -->
+            <xsl:when test="not($autoGlobal = 'true')"><!--Attributes--></xsl:when>
+              <xsl:when test=".//tei:attDef">In addition to global attributes
+                and those inherited from</xsl:when>
+              <xsl:otherwise>Global attributes and those inherited
+                from</xsl:otherwise>
+            </xsl:choose>
             </xsl:variable>
-            <xsl:sequence select="tei:i18n($word)"/>
-            <xsl:value-of select="$spaceCharacter"/>
-          </xsl:element>
+        <xsl:if test="normalize-space($word) ne ''">
+            <xsl:element namespace="{$outputNS}" name="{$segName}">
+              <xsl:attribute name="{$langAttributeName}">
+                <xsl:value-of select="$documentationLanguage"/>
+              </xsl:attribute>
+              <xsl:sequence select="tei:i18n($word) || $spaceCharacter"/>
+            </xsl:element>
+          </xsl:if>
         </xsl:if>
         <xsl:copy-of select="$clatts"/>
       </xsl:when>
@@ -2749,7 +2763,8 @@
       <xsl:otherwise>
         <xsl:variable name="word">
           <xsl:choose>
-            <xsl:when test="not($autoGlobal = 'true')">Attributes</xsl:when>
+            <!-- Per issue 515, the word "Attributes" need not be output here. -->
+            <xsl:when test="not($autoGlobal = 'true')"><!--Attributes--></xsl:when>
             <xsl:when test=".//tei:attDef">In addition to global
               attributes</xsl:when>
             <xsl:otherwise>Global attributes only</xsl:otherwise>
@@ -2788,6 +2803,13 @@
                 <xsl:if test="$depth = 1">
                   <xsl:call-template name="showSpace"/>
                 </xsl:if>
+              </xsl:if>
+              <xsl:if test=".//tei:attRef">
+                <xsl:text> (</xsl:text>
+                <xsl:call-template name="showAttRefs">
+                  <xsl:with-param name="endspace" select="false()"/>
+                </xsl:call-template>
+                <xsl:text>) </xsl:text>
               </xsl:if>
               <xsl:call-template name="attClassDetails">
                 <xsl:with-param name="depth">
@@ -2828,13 +2850,13 @@
       <xsl:when test="$oddmode = 'html'">
         <xsl:choose>
           <xsl:when test="key('IDENTS', $name) and number($splitLevel) = -1">
-            <a class="link_element"
+            <a xmlns="http://www.w3.org/1999/xhtml" class="link_element"
               href="#{$name}">
               <xsl:value-of select="$name"/>
             </a>
           </xsl:when>
           <xsl:when test="key('IDENTS', $name) and $STDOUT = 'true'">
-            <a class="link_element">
+            <a xmlns="http://www.w3.org/1999/xhtml" class="link_element">
               <xsl:attribute name="href">
                 <xsl:call-template name="getSpecURL">
                   <xsl:with-param name="name">
@@ -2850,7 +2872,7 @@
             </a>
           </xsl:when>
           <xsl:when test="key('IDENTS', $name)">
-            <a class="link_element"
+            <a xmlns="http://www.w3.org/1999/xhtml" class="link_element"
               href="ref-{$linkname}{$outputSuffix}">
               <xsl:value-of select="$name"/>
             </a>
@@ -2988,9 +3010,7 @@
         </xsl:when>
         <xsl:otherwise>
           <xsl:element namespace="{$outputNS}" name="{$divName}">
-            <xsl:attribute name="{$rendName}">
-              <xsl:text>specChildren</xsl:text>
-            </xsl:attribute>
+            <xsl:attribute name="{$rendName}" select="'specChildren'"/>
             <xsl:for-each-group select="*" group-by="@module">
               <xsl:sort select="@module"/>
               <xsl:element namespace="{$outputNS}" name="{$divName}">
@@ -3000,6 +3020,13 @@
                 <xsl:choose>
                   <xsl:when test="@type='TEXT'">
                     <xsl:sequence select="tei:i18n('character data')"/>
+                  </xsl:when>
+                  <!-- Stylesheets group has concerns about if, and how, the
+                    following should be internationalized. For now, just keep
+                    it so simple it does not need translation.
+                    — 2020-03-17 -->
+                  <xsl:when test="@type eq 'XSD'">
+                    <xsl:sequence select="concat('XSD ', @name)"/>
                   </xsl:when>
                   <xsl:when test="@type='ANYXML'">
                     <xsl:for-each select="$here">
@@ -3051,9 +3078,18 @@
     </xsl:for-each>
   </xsl:template>
   <xsl:template name="followRef">
+    <!-- 
+      Note that the @prefix being specified on the <Element> elements
+      we generate are mostly empty, as the current node when we are
+      called is a <tei:content> which does not have an @prefix.
+      — Stylesheets group, 2020-03-17
+    -->
     <xsl:if test=".//rng:text or .//rng:data or .//tei:textNode">
       <Element prefix="{@prefix}" type="TEXT" module="~TEXT"/>
     </xsl:if>
+    <xsl:for-each select="distinct-values( .//tei:dataRef/@name )">
+      <Element prefix="" type="XSD" module="~XSD" name="{.}"/>
+    </xsl:for-each>
     <xsl:for-each
       select=".//rng:ref | .//tei:elementRef | .//tei:classRef | .//tei:macroRef | .//tei:dataRef">
       <xsl:if

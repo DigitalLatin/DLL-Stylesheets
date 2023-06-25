@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <xsl:stylesheet 
+    xmlns="http://www.w3.org/1999/xhtml"
     xmlns:html="http://www.w3.org/1999/xhtml"
     xmlns:tei="http://www.tei-c.org/ns/1.0"
     xmlns:xsl="http://www.w3.org/1999/XSL/Transform"
@@ -50,7 +51,8 @@ of this software, even if advised of the possibility of such damage.
       </desc>
    </doc>
 
-   <xsl:output method="html" omit-xml-declaration="yes" encoding="utf-8"/>
+  <xsl:output method="xhtml" html-version="5.0" encoding="UTF-8" indent="no" normalization-form="NFC"
+    omit-xml-declaration="yes"/>
     
     <xsl:template match="html:*">
       <xsl:element name="{local-name()}">

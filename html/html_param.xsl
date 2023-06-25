@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
-<xsl:stylesheet                 
+<xsl:stylesheet xmlns="http://www.w3.org/1999/xhtml"                 
     xmlns:html="http://www.w3.org/1999/xhtml"                
     xmlns:xs="http://www.w3.org/2001/XMLSchema"                
     xmlns:tei="http://www.tei-c.org/ns/1.0"
@@ -110,18 +110,20 @@ of this software, even if advised of the possibility of such damage.
       <desc>CSS style file to be associated with output file(s)</desc>
 
    </doc>
-  <xsl:param name="cssFile" as="xs:string">css/tei.css</xsl:param>
+  <xsl:param name="cssFile" as="xs:string">https://www.tei-c.org/release/xml/tei/stylesheet/tei.css</xsl:param>
   <doc xmlns="http://www.oxygenxml.com/ns/doc/xsl" class="CSS" type="anyURI">
       <desc>CSS style file for print; this will be given a media=print attribute.</desc>
    </doc>
-  <xsl:param name="cssPrintFile" as="xs:string">css/tei-print.css</xsl:param>
+  <xsl:param name="cssPrintFile" as="xs:string">https://www.tei-c.org/release/xml/tei/stylesheet/tei-print.css</xsl:param>
   <doc xmlns="http://www.oxygenxml.com/ns/doc/xsl" class="CSS" type="anyURI">
       <desc>Secondary CSS style file; this will be given a media=screen attribute,
 so that it does not affect printing. It should be used for screen layout.</desc>
    </doc>
-  <xsl:param name="cssSecondaryFile"  as="xs:string" select="''"/>
+    <xsl:param name="cssSecondaryFile"  as="xs:string" select="''"/>
   <doc xmlns="http://www.oxygenxml.com/ns/doc/xsl" class="CSS" type="anyURI">
-      <desc>CSS file to include in the output file directly</desc>
+      <desc>CSS file to include in the output file directly; if
+      expressed as a relative URI, is relative to the directory from
+      which this parameter is defined (Stylesheets/html/).</desc>
    </doc>
     <xsl:param name="cssInlineFiles"  as="xs:string" select="''"/>
   <doc xmlns="http://www.oxygenxml.com/ns/doc/xsl" class="figures" type="integer">
@@ -137,13 +139,7 @@ HTML width and height (in pixels) from supplied dimensions.</desc>
   <doc xmlns="http://www.oxygenxml.com/ns/doc/xsl" class="hook">
       <desc>[html] Hook where HTML can be inserted just after &lt;body&gt;</desc>
    </doc>
-  <xsl:template name="bodyHook">
-    <nav class="navbar navbar-inverse navbar-fixed-top">
-        <div class="navbar-header">
-          <a class="navbar-brand" href="http://digitallatin.org/"><img src="images/DLL-logo.png" alt="Digital Latin Library Home" /></a>
-        </div>
-    </nav>
-  </xsl:template>
+  <xsl:template name="bodyHook"/>
   <doc xmlns="http://www.oxygenxml.com/ns/doc/xsl" class="hook">
       <desc>     <p>[html] Hook where HTML can be inserted just before the
     &lt;body&gt; ends.</p>
@@ -259,9 +255,9 @@ will generate an &lt;h2&gt;</p>
       <desc>[html] Header section across top of page </desc>
    </doc>
   <xsl:template name="hdr">
-    <xsl:call-template name="pageHeader">
-      <xsl:with-param name="mode"/>
-    </xsl:call-template>
+      <xsl:call-template name="pageHeader">
+         <xsl:with-param name="mode"/>
+      </xsl:call-template>
   </xsl:template>
   <doc xmlns="http://www.oxygenxml.com/ns/doc/xsl" class="layout">
       <desc>[html] Navigation bar </desc>
@@ -314,8 +310,8 @@ will generate an &lt;h2&gt;</p>
       <desc>[html] Logo</desc>
    </doc>
   <xsl:template name="logoPicture">
-      <a class="framelogo" href="http://www.tei-c.org/Stylesheets/">
-         <img src="http://www.tei-c.org/release/common/doc/tei-xsl-common/teixsl.png" vspace="5" width="124"
+      <a class="framelogo" href="https://www.tei-c.org/Stylesheets/">
+         <img src="https://www.tei-c.org/release/common/doc/tei-xsl-common/teixsl.png" vspace="5" width="124"
               height="161"
               border="0"
               alt="created by TEI XSL Stylesheets"/>
@@ -338,7 +334,7 @@ will generate an &lt;h2&gt;</p>
       </xsl:if>
       <meta name="generator" content="Text Encoding Initiative Consortium XSLT stylesheets"/>
       <xsl:choose>
-	<xsl:when test="$outputTarget='html5' or $outputTarget='epub3'">
+	<xsl:when test="$outputTarget='epub3'">
 	  <meta charset="utf-8" />
 	</xsl:when>
 	<xsl:otherwise>
@@ -365,23 +361,23 @@ will generate an &lt;h2&gt;</p>
   <xsl:template name="navbar">
     <xsl:choose>
       <xsl:when test="$navbarFile=''">
-        <xsl:comment>no nav bar</xsl:comment>
+	<xsl:comment>no nav bar</xsl:comment>
       </xsl:when>
       <xsl:otherwise>
-        <xsl:element name="{if ($outputTarget='html5') then 'nav' else 'div'}">
-          <xsl:for-each select="document($navbarFile,document(''))">
-            <xsl:for-each select="tei:list/tei:item">
-              <span class="navbar">
-                <a href="{$URLPREFIX}{tei:xref/@url}" class="navbar">
-                  <xsl:apply-templates select="tei:xref/text()"/>
-                </a>
-              </span>
-              <xsl:if test="following-sibling::tei:item"> 
-                <xsl:value-of select="$separator"/>
-              </xsl:if>
-            </xsl:for-each>
-          </xsl:for-each>
-        </xsl:element>
+        <xsl:element name="{if ($outputTarget=('html5', 'html')) then 'nav' else 'div'}">
+	  <xsl:for-each select="document($navbarFile,document(''))">
+	    <xsl:for-each select="tei:list/tei:item">
+	      <span class="navbar">
+		<a href="{$URLPREFIX}{tei:xref/@url}" class="navbar">
+		  <xsl:apply-templates select="tei:xref/text()"/>
+		</a>
+	      </span>
+	      <xsl:if test="following-sibling::tei:item"> 
+		<xsl:value-of select="$separator"/>
+	      </xsl:if>
+	    </xsl:for-each>
+	  </xsl:for-each>
+	</xsl:element>
       </xsl:otherwise>
     </xsl:choose>
   </xsl:template>
@@ -583,7 +579,7 @@ of &lt;item&gt; elements, each containing an &lt;xref&gt; link.</p>
       <desc>Encoding of output file(s).</desc>
 
    </doc>
-  <xsl:param name="outputEncoding">utf-8</xsl:param>
+  <xsl:param name="outputEncoding">UTF-8</xsl:param>
 
   <xsl:param name="outputNamespace">http://www.w3.org/1999/xhtml</xsl:param>
 
@@ -591,6 +587,18 @@ of &lt;item&gt; elements, each containing an &lt;xref&gt; link.</p>
       <desc>Output method for output file(s).</desc>
    </doc>
   <xsl:param name="outputMethod">xhtml</xsl:param>
+  <doc xmlns="http://www.oxygenxml.com/ns/doc/xsl" class="output" type="string">
+    <desc>HTML version of output file(s).</desc>
+  </doc>
+  <xsl:param name="htmlVersion">5.0</xsl:param>
+  <doc xmlns="http://www.oxygenxml.com/ns/doc/xsl" class="output" type="string">
+    <desc>Normalization form of output file(s).</desc>
+  </doc>
+  <xsl:param name="normalizationForm">NFC</xsl:param>
+  <doc xmlns="http://www.oxygenxml.com/ns/doc/xsl" class="output" type="string">
+    <desc>Omission of XML declaration in output file(s).</desc>
+  </doc>
+  <xsl:param name="omitXMLDeclaration">yes</xsl:param>
   <doc xmlns="http://www.oxygenxml.com/ns/doc/xsl" class="output" type="string">
       <desc>Suffix of output file(s).</desc>
 

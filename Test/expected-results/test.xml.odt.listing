@@ -36,5 +36,5 @@
     testing: mimetype                 OK
     testing: settings.xml             OK
     testing: styles.xml               OK
-Archive:  test.xml.odt
-No errors detected in compressed data of test.xml.odt.
+Archive:  actual-results/test.xml.odt
+No errors detected in compressed data of actual-results/test.xml.odt.

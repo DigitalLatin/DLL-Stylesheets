@@ -1,15 +1,14 @@
 <?xml version="1.0" encoding="utf-8"?>
 <xsl:stylesheet version="2.0"
-  exclude-result-prefixes="s html a fo rng tei teix"
+  exclude-result-prefixes="#default html a fo rng tei teix"
   xmlns:a="http://relaxng.org/ns/compatibility/annotations/1.0"
   xmlns:fo="http://www.w3.org/1999/XSL/Format"
   xmlns:html="http://www.w3.org/1999/xhtml"
   xmlns:rng="http://relaxng.org/ns/structure/1.0"
-  xmlns:s="http://www.ascc.net/xml/schematron"
   xmlns:tei="http://www.tei-c.org/ns/1.0"
   xmlns:teix="http://www.tei-c.org/ns/Examples"
-  xmlns:xsl="http://www.w3.org/1999/XSL/Transform" >
-
+  xmlns:xsl="http://www.w3.org/1999/XSL/Transform"
+  xmlns="http://www.w3.org/1999/xhtml" >
   <xsl:param name="cssFile"/>
   <xsl:param name="cssSecondaryFile"/>
   <xsl:param name="summaryDoc">false</xsl:param>
@@ -24,7 +23,7 @@
 Unported License http://creativecommons.org/licenses/by-sa/3.0/ 
 
 2. http://www.opensource.org/licenses/BSD-2-Clause
-		
+                
 
 
 Redistribution and use in source and binary forms, with or without
@@ -124,7 +123,7 @@ of this software, even if advised of the possibility of such damage.
           <xsl:call-template name="outputChunkName">
             <xsl:with-param name="ident">
               <xsl:text>ref-</xsl:text>
-	      <xsl:value-of select="tei:createSpecPrefix(.)"/>
+              <xsl:value-of select="tei:createSpecPrefix(.)"/>
               <xsl:value-of select="$name"/>
             </xsl:with-param>
           </xsl:call-template>
@@ -136,18 +135,18 @@ of this software, even if advised of the possibility of such damage.
         <xsl:variable name="langs">
           <xsl:value-of select="concat(normalize-space(tei:generateDocumentationLang(.)),' ')"/>
         </xsl:variable>
-        <xsl:result-document doctype-public="{$doctypePublic}" doctype-system="{$doctypeSystem}" encoding="{$outputEncoding}" href="{$outName}" method="{$outputMethod}">
-          <xsl:element name="html" namespace="{$outputNamespace}">
+        <xsl:result-document html-version="{$htmlVersion}" normalization-form="{$normalizationForm}" encoding="{$outputEncoding}" href="{$outName}" method="{$outputMethod}" omit-xml-declaration="{$omitXMLDeclaration}">
+          <html>
             <xsl:call-template name="addLangAtt"/>
-	    <xsl:variable name="pagetitle">
-	      <xsl:text>TEI </xsl:text>
+            <xsl:variable name="pagetitle">
+              <xsl:text>TEI </xsl:text>
                 <xsl:value-of select="substring-before(local-name(),'Spec')"/>
                 <xsl:text> </xsl:text>
                 <xsl:value-of select="$name"/>
                 <xsl:text> </xsl:text>
                 <xsl:sequence select="tei:makeGloss(.,$langs)"/>
-	    </xsl:variable>
-	    <xsl:sequence select="tei:htmlHead($pagetitle,7)"/>
+            </xsl:variable>
+            <xsl:sequence select="tei:htmlHead($pagetitle,7)"/>
             <body id="TOP">
               <xsl:call-template name="bodyMicroData"/>
               <xsl:call-template name="bodyHook"/>
@@ -162,7 +161,7 @@ of this software, even if advised of the possibility of such damage.
               </xsl:call-template>
               <xsl:call-template name="bodyEndHook"/>
             </body>
-          </xsl:element>
+          </html>
         </xsl:result-document>
         <xsl:if test="$verbose='true'">
           <xsl:message>Closing file <xsl:value-of select="$outName"/>
@@ -214,59 +213,14 @@ of this software, even if advised of the possibility of such damage.
       </xsl:choose>
     </span>
   </xsl:template>
+
   <xsl:template name="emptySlash">
     <xsl:param name="name"/>
     <span class="emptySlash">
       <xsl:value-of select="$name"/>
     </span>
   </xsl:template>
-  <doc xmlns="http://www.oxygenxml.com/ns/doc/xsl">
-    <desc>Process elements teix:egXML</desc>
-  </doc>
-  <xsl:template match="teix:egXML">
-    <xsl:param name="simple">false</xsl:param>
-    <xsl:param name="highlight"/>
-    <div>
-      <xsl:attribute name="id">
-        <xsl:apply-templates mode="ident" select="."/>
-      </xsl:attribute>
-      <xsl:attribute name="class">
-	<xsl:text>pre</xsl:text>
-	<xsl:if test="not(*)">
-	  <xsl:text> cdata</xsl:text>
-	</xsl:if>
-	<xsl:choose>
-	  <xsl:when test="@valid='feasible'">
-	    <xsl:text> egXML_feasible</xsl:text>
-	  </xsl:when>
-	  <xsl:when test="@valid='false'">
-	    <xsl:text> egXML_invalid</xsl:text>
-	  </xsl:when>
-	  <xsl:otherwise>
-	    <xsl:text> egXML_valid</xsl:text>
-	  </xsl:otherwise>
-	</xsl:choose>
-      </xsl:attribute>
-      <xsl:choose>
-        <xsl:when test="$simple='true'">
-          <xsl:apply-templates mode="verbatim">
-            <xsl:with-param name="highlight">
-              <xsl:value-of select="$highlight"/>
-            </xsl:with-param>
-          </xsl:apply-templates>
-        </xsl:when>
-        <xsl:otherwise>
-          <xsl:call-template name="egXMLStartHook"/>
-          <xsl:apply-templates mode="verbatim">
-            <xsl:with-param name="highlight">
-              <xsl:value-of select="$highlight"/>
-            </xsl:with-param>
-          </xsl:apply-templates>
-          <xsl:call-template name="egXMLEndHook"/>
-        </xsl:otherwise>
-      </xsl:choose>
-    </div>
-  </xsl:template>
+
   <doc xmlns="http://www.oxygenxml.com/ns/doc/xsl">
     <desc>[html] <param name="grammar">grammar</param>
          <param name="content">content</param>
@@ -395,60 +349,60 @@ of this software, even if advised of the possibility of such damage.
             | tei:elementSpec[not(@mode or @rend)]">
             <xsl:sort select="lower-case(@ident)"/>
             <tr>
-              <td id="{@ident}"><a href="http://www.tei-c.org/release/doc/tei-p5-doc/{$documentationLanguage}/html/ref-{@ident}.html"><xsl:value-of select="@ident"/></a>:
-		     <xsl:sequence select="tei:makeDescription(., true(), true())"/></td>
+              <td id="{@ident}"><a href="https://www.tei-c.org/release/doc/tei-p5-doc/{$documentationLanguage}/html/ref-{@ident}.html"><xsl:value-of select="@ident"/></a>:
+                     <xsl:sequence select="tei:makeDescription(., true(), true())"/></td>
             </tr>
           </xsl:for-each>
         </table>
       </xsl:when>
       <xsl:when test="$splitLevel &gt; -1">
         <h2>Schema <xsl:value-of select="@ident"/>: Elements</h2>
-	<ul class="toc">
-	  <xsl:for-each select="tei:elementSpec">
-	    <xsl:sort select="lower-case(@ident)"/>
-	    <li>
-	      <xsl:call-template name="refDocLink"/>
-	      <xsl:apply-templates mode="weave" select="."/>
-	    </li>
-	  </xsl:for-each>
-	</ul>
+        <ul class="toc">
+          <xsl:for-each select="tei:elementSpec">
+            <xsl:sort select="lower-case(@ident)"/>
+            <li>
+              <xsl:call-template name="refDocLink"/>
+              <xsl:apply-templates mode="weave" select="."/>
+            </li>
+          </xsl:for-each>
+        </ul>
 
         <xsl:if test="tei:classSpec[@type='model']">
           <h2>Schema <xsl:value-of select="@ident"/>: Model classes</h2>
-	  <ul class="toc">
-	    <xsl:for-each select="tei:classSpec[@type='model']">
-	      <xsl:sort select="lower-case(@ident)"/>
-	      <li>
-		<xsl:call-template name="refDocLink"/>
-		<xsl:apply-templates mode="weave" select="."/>
-	      </li>
-	    </xsl:for-each>
-	  </ul>
+          <ul class="toc">
+            <xsl:for-each select="tei:classSpec[@type='model']">
+              <xsl:sort select="lower-case(@ident)"/>
+              <li>
+                <xsl:call-template name="refDocLink"/>
+                <xsl:apply-templates mode="weave" select="."/>
+              </li>
+            </xsl:for-each>
+          </ul>
         </xsl:if>
 
         <xsl:if test="tei:classSpec[@type='atts']">
           <h2>Schema <xsl:value-of select="@ident"/>: Attribute classes</h2>
-	  <ul class="toc">
-	    <xsl:for-each select="tei:classSpec[@type='atts']">
-	      <xsl:sort select="lower-case(@ident)"/>
-	      <li>
-		<xsl:call-template name="refDocLink"/>
-		<xsl:apply-templates mode="weave" select="."/>
-	      </li>
-	    </xsl:for-each>
-	  </ul>
+          <ul class="toc">
+            <xsl:for-each select="tei:classSpec[@type='atts']">
+              <xsl:sort select="lower-case(@ident)"/>
+              <li>
+                <xsl:call-template name="refDocLink"/>
+                <xsl:apply-templates mode="weave" select="."/>
+              </li>
+            </xsl:for-each>
+          </ul>
         </xsl:if>
         <xsl:if test="tei:macroSpec">
           <h2>Schema <xsl:value-of select="@ident"/>: Macros</h2>
-	  <ul class="toc">
-	    <xsl:for-each select="tei:macroSpec">
-	      <xsl:sort select="lower-case(@ident)"/>
-	      <li>
-		<xsl:call-template name="refDocLink"/>
-		<xsl:apply-templates mode="weave" select="."/>
-	      </li>
-	    </xsl:for-each>
-	  </ul>
+          <ul class="toc">
+            <xsl:for-each select="tei:macroSpec">
+              <xsl:sort select="lower-case(@ident)"/>
+              <li>
+                <xsl:call-template name="refDocLink"/>
+                <xsl:apply-templates mode="weave" select="."/>
+              </li>
+            </xsl:for-each>
+          </ul>
         </xsl:if>
         <xsl:if test="tei:dataSpec">
           <h2>Schema <xsl:value-of select="@ident"/>: Datatypes</h2>
@@ -507,8 +461,8 @@ of this software, even if advised of the possibility of such damage.
       <xsl:attribute name="class">
       <xsl:text>oddSpec</xsl:text>
       <xsl:if test="@status">
-	<xsl:text> status_</xsl:text>
-	<xsl:value-of select="@status"/>
+        <xsl:text> status_</xsl:text>
+        <xsl:value-of select="@status"/>
       </xsl:if>
       </xsl:attribute>
       <xsl:call-template name="makeAnchor">
@@ -518,7 +472,7 @@ of this software, even if advised of the possibility of such damage.
       </xsl:call-template>
       <xsl:value-of select="$name"/>
       <xsl:if test="@ns">
-	[<xsl:value-of select="@ns"/>]
+        [<xsl:value-of select="@ns"/>]
       </xsl:if>
     </h3>
   </xsl:template>
@@ -527,7 +481,12 @@ of this software, even if advised of the possibility of such damage.
   </xsl:template>
   <xsl:template match="tei:ident">
     <xsl:choose>
-      <xsl:when test="@type='class' and key('CLASSES',.)">
+      <xsl:when test="( @type eq 'class'    and key('CLASSES',.) )
+                      or
+                      ( @type eq 'macro'    and key('MACROS',.)  )
+                      or
+                      ( @type eq 'datatype' and key('MACROS',.)  )
+                      ">
         <xsl:call-template name="linkTogether">
           <xsl:with-param name="name">
             <xsl:value-of select="."/>
@@ -637,11 +596,11 @@ of this software, even if advised of the possibility of such damage.
       <xsl:for-each select="tei:classSpec">
         <xsl:sort select="tei:altIdent"/>
         <xsl:sort select="lower-case(@ident)"/>
-	<xsl:variable name="name" select="concat(tei:createSpecPrefix(.),tei:createSpecName(.))"/>
+        <xsl:variable name="name" select="concat(tei:createSpecPrefix(.),tei:createSpecName(.))"/>
         <xsl:element name="{$tocElement}">
           <xsl:attribute name="class">toclist0</xsl:attribute>
           <a class="toclist" href="#{$name}">
-	    <xsl:value-of select="$name"/>	    
+            <xsl:value-of select="$name"/>          
           </a>
         </xsl:element>
       </xsl:for-each>
@@ -649,11 +608,11 @@ of this software, even if advised of the possibility of such damage.
       <xsl:for-each select="tei:elementSpec">
         <xsl:sort select="tei:altIdent"/>
         <xsl:sort select="lower-case(@ident)"/>
-	<xsl:variable name="name" select="concat(tei:createSpecPrefix(.),tei:createSpecName(.))"/>
+        <xsl:variable name="name" select="concat(tei:createSpecPrefix(.),tei:createSpecName(.))"/>
         <xsl:element name="{$tocElement}">
           <xsl:attribute name="class">toclist0</xsl:attribute>
           <a class="toclist" href="#{$name}">
-	    <xsl:value-of select="$name"/>
+            <xsl:value-of select="$name"/>
           </a>
         </xsl:element>
       </xsl:for-each>
@@ -664,7 +623,7 @@ of this software, even if advised of the possibility of such damage.
         <xsl:variable name="name" select="concat(tei:createSpecPrefix(.),tei:createSpecName(.))"/>
         <xsl:element name="{$tocElement}">
           <xsl:attribute name="class">toclist0</xsl:attribute>
-          <a class="toclist" href="#{$name}">	    
+          <a class="toclist" href="#{$name}">       
             <xsl:value-of select="$name"/>
           </a>
         </xsl:element>
@@ -673,11 +632,11 @@ of this software, even if advised of the possibility of such damage.
       <xsl:for-each select="tei:macroSpec">
         <xsl:sort select="tei:altIdent"/>
         <xsl:sort select="lower-case(@ident)"/>
-	<xsl:variable name="name" select="concat(tei:createSpecPrefix(.),tei:createSpecName(.))"/>
+        <xsl:variable name="name" select="concat(tei:createSpecPrefix(.),tei:createSpecName(.))"/>
         <xsl:element name="{$tocElement}">
           <xsl:attribute name="class">toclist0</xsl:attribute>
-          <a class="toclist" href="#{$name}">	    
-	    <xsl:value-of select="$name"/>
+          <a class="toclist" href="#{$name}">       
+            <xsl:value-of select="$name"/>
           </a>
         </xsl:element>
       </xsl:for-each>
@@ -812,7 +771,7 @@ of this software, even if advised of the possibility of such damage.
               <xsl:for-each select="key('ELEMENT-ALPHA',$letter)">
                 <xsl:sort select="lower-case(@ident)"/>
                 <li>
-		  <xsl:call-template name="refDocLink"/>
+                  <xsl:call-template name="refDocLink"/>
                 </li>
               </xsl:for-each>
             </ul>
@@ -835,9 +794,9 @@ of this software, even if advised of the possibility of such damage.
             </h3>
             <xsl:for-each select="key('ELEMENT-MODULE',@module)">
               <xsl:sort
-		  select="@ident"/>
-	      <xsl:call-template name="refDocLink"/>
-	    </xsl:for-each>
+                  select="@ident"/>
+              <xsl:call-template name="refDocLink"/>
+            </xsl:for-each>
           </div>
         </xsl:if>
       </xsl:for-each>
@@ -852,23 +811,23 @@ of this software, even if advised of the possibility of such damage.
     <xsl:variable name="linkname" select="concat(tei:createSpecPrefix(.),tei:createSpecName(.))"/>
 
     <span
-	class="refDocLink">
+        class="refDocLink">
       <a>
-	<xsl:attribute name="href">
-	  <xsl:choose>
-	    <xsl:when test="number($splitLevel)=-1 or $STDOUT='true'">
-	      <xsl:text>#</xsl:text>
-	      <xsl:value-of select="$linkname"/>
-	    </xsl:when>
-	    <xsl:otherwise>
-	      <xsl:text>ref-</xsl:text>
-	      <xsl:value-of
-		  select="$linkname"/>
-	      <xsl:value-of select="$outputSuffix"/>
-	    </xsl:otherwise>
-	  </xsl:choose>
-	</xsl:attribute>
-	<xsl:value-of select="@ident"/>
+        <xsl:attribute name="href">
+          <xsl:choose>
+            <xsl:when test="number($splitLevel)=-1 or $STDOUT='true'">
+              <xsl:text>#</xsl:text>
+              <xsl:value-of select="$linkname"/>
+            </xsl:when>
+            <xsl:otherwise>
+              <xsl:text>ref-</xsl:text>
+              <xsl:value-of
+                  select="$linkname"/>
+              <xsl:value-of select="$outputSuffix"/>
+            </xsl:otherwise>
+          </xsl:choose>
+        </xsl:attribute>
+        <xsl:value-of select="@ident"/>
       </a>
       <xsl:text> </xsl:text>
     </span>
@@ -893,7 +852,7 @@ of this software, even if advised of the possibility of such damage.
               <xsl:for-each select="key('MODEL-CLASS-ALPHA',$letter)">
                 <xsl:sort select="lower-case(substring-after(@ident,'model.'))"/>
                 <li>
-		  <xsl:call-template name="refDocLink"/>
+                  <xsl:call-template name="refDocLink"/>
                 </li>
               </xsl:for-each>
             </ul>
@@ -916,8 +875,8 @@ of this software, even if advised of the possibility of such damage.
             </h3>
             <xsl:for-each select="key('MODEL-CLASS-MODULE',@module)">
               <xsl:sort
-		  select="@ident"/>
-	      <xsl:call-template name="refDocLink"/>
+                  select="@ident"/>
+              <xsl:call-template name="refDocLink"/>
             </xsl:for-each>
           </div>
         </xsl:if>
@@ -946,8 +905,8 @@ of this software, even if advised of the possibility of such damage.
               <xsl:for-each select="key('ATT-CLASS-ALPHA',$letter)">
                 <xsl:sort select="lower-case(substring-after(@ident,'att.'))"/>
                 <li>
-		  <xsl:call-template name="refDocLink"/>
-		</li>
+                  <xsl:call-template name="refDocLink"/>
+                </li>
               </xsl:for-each>
             </ul>
           </div>
@@ -968,8 +927,8 @@ of this software, even if advised of the possibility of such damage.
               </xsl:for-each>
             </h3>
             <xsl:for-each
-		select="key('ATT-CLASS-MODULE',@module)">
-	      <xsl:call-template name="refDocLink"/>
+                select="key('ATT-CLASS-MODULE',@module)">
+              <xsl:call-template name="refDocLink"/>
             </xsl:for-each>
           </div>
         </xsl:if>
@@ -1054,7 +1013,7 @@ function showByMod() {
      }
 }
 
-	</xsl:text>
+        </xsl:text>
       </xsl:comment>
     </script>
   </xsl:template>

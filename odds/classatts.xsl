@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <xsl:stylesheet xmlns:xs="http://www.w3.org/2001/XMLSchema"
   xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-  xmlns:sch="http://purl.oclc.org/dsdl/schematron" xmlns:s="http://www.ascc.net/xml/schematron"
+  xmlns:sch="http://purl.oclc.org/dsdl/schematron"
   xmlns:a="http://relaxng.org/ns/compatibility/annotations/1.0"
   xmlns:rng="http://relaxng.org/ns/structure/1.0"
   xpath-default-namespace="http://www.tei-c.org/ns/1.0" xmlns="http://www.tei-c.org/ns/1.0"
@@ -60,21 +60,44 @@
         <xsl:copy-of select="$results//attRef"/>
         <xsl:copy-of select="$results//attDef"/>
         <xsl:for-each select="$E/attList/*">
-          <xsl:choose>
-            <xsl:when
-              test="
-                @mode = 'replace' and
-                not($results/encounter[@ident = current()/@ident])">
-              <xsl:apply-templates select="." mode="classatts"/>
-            </xsl:when>
-            <xsl:when test="@mode and not(@mode = 'add')"/>
-            <xsl:otherwise>
-              <xsl:apply-templates select="." mode="classatts"/>
-            </xsl:otherwise>
-          </xsl:choose>
+          <xsl:call-template name="process-attList-children">
+            <xsl:with-param name="results" tunnel="yes" select="$results"/>
+          </xsl:call-template>
         </xsl:for-each>
       </attList>
     </xsl:copy>
+  </xsl:template>
+  
+  <doc xmlns="http://www.oxygenxml.com/ns/doc/xsl">
+    <desc>Explicitly process (nested) attList within elementSpec/attList.</desc>
+  </doc>
+  <xsl:template match="attList" mode="classatts">
+    <xsl:copy>
+      <xsl:copy-of select="@*"/>
+      <xsl:for-each select="*">
+        <xsl:call-template name="process-attList-children"/>
+      </xsl:for-each>
+    </xsl:copy>
+  </xsl:template>
+  
+  <doc xmlns="http://www.oxygenxml.com/ns/doc/xsl">
+    <desc>Helper template for the "elementSpec" template. The code has been moved here to make 
+      it accesible for the "attList" template.</desc>
+  </doc>
+  <xsl:template name="process-attList-children" as="node()*">
+    <xsl:param name="results" tunnel="yes" as="node()*"/>
+    <xsl:choose>
+      <xsl:when
+        test="
+        @mode = 'replace' and
+        not($results/encounter[@ident = current()/@ident])">
+        <xsl:apply-templates select="." mode="classatts"/>
+      </xsl:when>
+      <xsl:when test="@mode and not(@mode = 'add')"/>
+      <xsl:otherwise>
+        <xsl:apply-templates select="." mode="classatts"/>
+      </xsl:otherwise>
+    </xsl:choose>
   </xsl:template>
 
 

@@ -4,6 +4,7 @@
   xmlns:xd="http://www.oxygenxml.com/ns/doc/xsl"
   exclude-result-prefixes="xs xd"
   version="2.0"
+  xmlns="http://www.w3.org/1999/xhtml"
   xpath-default-namespace="http://www.w3.org/1999/xhtml">
   <xd:doc scope="stylesheet">
     <xd:desc>
@@ -21,7 +22,8 @@
   </xd:doc>
   
 <!--  <xsl:output method="xhtml" doctype-public="-//W3C//DTD XHTML 1.1//EN" doctype-system="http://www.w3.org/TR/xhtml11/DTD/xhtml11.dtd"/>-->
-  <xsl:output method="html" />
+  <xsl:output method="xhtml" html-version="5.0" encoding="UTF-8" indent="yes" normalization-form="NFC"
+    exclude-result-prefixes="#all" omit-xml-declaration="yes"/>
   
 <!-- List of static ids referenced in CSS files, which we're leaving unchanged for now. -->
   <xsl:variable name="staticIds" select="('banner', 'onecol', 'udm', 'container', 'accessibility', 'hdr2', 'hdr3', 'azindex', 'byMod')"/>

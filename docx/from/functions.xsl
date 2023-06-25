@@ -188,23 +188,22 @@ of this software, even if advised of the possibility of such damage.
                 <xsl:text>gloss</xsl:text>
             </xsl:when>
             <xsl:when test="starts-with($style,$ListBullet)">
-                <xsl:text>unordered</xsl:text>
+                <xsl:text>bulleted</xsl:text>
             </xsl:when>
             <xsl:when test="starts-with($style,$ListContinue)">
-                <xsl:text>unordered</xsl:text>
+                <xsl:text>bulleted</xsl:text>
             </xsl:when>
             <xsl:when test="starts-with($style,$ListNumber)">
-                <xsl:text>ordered</xsl:text>
+                <xsl:text>numbered</xsl:text>
             </xsl:when>
             <xsl:when test="$style=$List">
-                <xsl:text>ordered</xsl:text>
+                <xsl:text>numbered</xsl:text>
             </xsl:when>
             <xsl:otherwise>
                 <xsl:text/>
             </xsl:otherwise>
         </xsl:choose>
     </xsl:function>
-
 
         <doc xmlns="http://www.oxygenxml.com/ns/doc/xsl">
       <desc>insert a note that a docx conversion cannot proceed</desc></doc>
@@ -221,32 +220,46 @@ of this software, even if advised of the possibility of such damage.
         <doc xmlns="http://www.oxygenxml.com/ns/doc/xsl">
       <desc>process a Word w:instrText</desc></doc>
 
-  <xsl:function name="tei:processInstruction"  as="xs:string">
+  <xsl:function name="tei:processInstruction" as="xs:string">
     <xsl:param name="instr"/>
     <xsl:variable name="instr">
-      <xsl:value-of select="replace($instr, '^\s+|\s+$', '')"></xsl:value-of>
+      <xsl:value-of select="replace($instr, '^\s+|\s+$', '')"/>
     </xsl:variable>
     <xsl:choose>
-      <xsl:when test="matches($instr,'REF _')"> <!-- this will also catch NOTEREF _ -->
-	  <xsl:value-of select="concat('#',substring-before(substring-after($instr,'_'),'&#32;'))"/>
+      <xsl:when test="matches($instr, 'REF _')">
+        <!-- this will also catch NOTEREF _ -->
+        <xsl:value-of select="concat('#', substring-before(substring-after($instr, '_'), '&#32;'))"
+        />
       </xsl:when>
-      <xsl:when test="matches($instr,'HYPERLINK \\l ')">
-	<xsl:variable name="target">
-	  <xsl:value-of   select="translate(tokenize($instr,' ')[3],$dq,'')"/>
-	</xsl:variable>
-	<xsl:value-of select="if (matches($target,'^_')) then  concat('#',substring($target,2)) else $target"/>
+      <xsl:when test="matches($instr, 'HYPERLINK \\l ')">
+        <xsl:variable name="target">
+          <xsl:value-of select="translate(tokenize($instr, ' ')[3], $dq, '')"/>
+        </xsl:variable>
+        <xsl:value-of select="
+            if (matches($target, '^_')) then
+              concat('#', substring($target, 2))
+            else
+              $target"/>
       </xsl:when>
-      <xsl:when test="matches($instr,'HYPERLINK')">
-	<xsl:variable name="target">
-	  <xsl:value-of   select="translate(tokenize($instr,' ')[1],$dq,'')"/>
-	</xsl:variable>
-	<xsl:value-of select="if (matches($target,'^_')) then  concat('#',substring($target,2)) else $target"/>
+      <xsl:when test="matches($instr, 'HYPERLINK')">
+        <xsl:variable name="target">
+          <xsl:value-of select="translate(tokenize($instr, ' ')[2], $dq, '')"/>
+        </xsl:variable>
+        <xsl:value-of select="
+            if (matches($target, '^_')) then
+              concat('#', substring($target, 2))
+            else
+              $target"/>
       </xsl:when>
       <xsl:otherwise>
-        <xsl:value-of select="if (matches($instr,'(^|#)_')) then replace($instr, '(^|#)_', '#') else $instr"/>
+        <xsl:value-of select="
+            if (matches($instr, '(^|#)_')) then
+              replace($instr, '(^|#)_', '#')
+            else
+              $instr"/>
       </xsl:otherwise>
     </xsl:choose>
-</xsl:function>
+  </xsl:function>
   
 
  <doc xmlns="http://www.oxygenxml.com/ns/doc/xsl">
@@ -275,5 +288,47 @@ of this software, even if advised of the possibility of such damage.
       <xsl:otherwise>false</xsl:otherwise>
     </xsl:choose>
 </xsl:function>
+  
+  <doc xmlns="http://www.oxygenxml.com/ns/doc/xsl">
+    <desc>Returns true or false for value types that may be "on" or "off". 
+          If the parent element exists but does not have a @w:val, the
+          function returns true.</desc>
+  </doc>
+  <xsl:function name="tei:onOff" as="xs:boolean">
+    <xsl:param name="e"/>
+    <xsl:choose>
+      <xsl:when test="exists($e)">
+        <xsl:variable name="val" select="$e/@w:val"/>
+        <xsl:choose>
+          <xsl:when test="not(exists($val))"><xsl:sequence select="true()"/></xsl:when>
+          <xsl:when test="$val = 'true'"><xsl:sequence select="true()"/></xsl:when>
+          <xsl:when test="$val = 'on'"><xsl:sequence select="true()"/></xsl:when>
+          <xsl:when test="$val = '1'"><xsl:sequence select="true()"/></xsl:when>
+          <xsl:when test="$val = 'false'"><xsl:sequence select="false()"/></xsl:when>
+          <xsl:when test="$val = 'none'"><xsl:sequence select="false()"/></xsl:when>
+          <xsl:when test="$val = 'off'"><xsl:sequence select="false()"/></xsl:when>
+          <xsl:when test="$val = '0'"><xsl:sequence select="false()"/></xsl:when>
+          <xsl:otherwise><xsl:sequence select="false()"/></xsl:otherwise>
+        </xsl:choose>
+      </xsl:when>
+      <xsl:otherwise><xsl:sequence select="false()"/></xsl:otherwise>
+    </xsl:choose>
+  </xsl:function>
+  
+  <doc xmlns="http://www.oxygenxml.com/ns/doc/xsl">
+    <desc>Translates standard justification values into CSS text-align values.</desc>
+  </doc>
+  <xsl:function name="tei:justification" as="xs:string">
+    <xsl:param name="jc"/>
+    <xsl:choose>
+      <xsl:when test="$jc/@w:val='start'">left</xsl:when>
+      <xsl:when test="$jc/@w:val='end'">right</xsl:when>
+      <xsl:when test="$jc/@w:val='left'">left</xsl:when>
+      <xsl:when test="$jc/@w:val='right'">right</xsl:when>
+      <xsl:when test="$jc/@w:val='center'">center</xsl:when>
+      <xsl:when test="$jc/@w:val='both'">justify</xsl:when>
+      <xsl:otherwise>left</xsl:otherwise>
+    </xsl:choose>
+  </xsl:function>
 
 </xsl:stylesheet>

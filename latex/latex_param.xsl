@@ -622,52 +622,7 @@ characters. The normal characters remain active for LaTeX commands.
   \def\theHchapter{\Alph{chapter}}
   \appendix
 }
-
-\newenvironment{bibitemlist}[1]{%
-   \list{\@biblabel{\@arabic\c@enumiv}}%
-       {\settowidth\labelwidth{\@biblabel{#1}}%
-        \leftmargin\labelwidth
-        \advance\leftmargin\labelsep
-        \@openbib@code
-        \usecounter{enumiv}%
-        \let\p@enumiv\@empty
-        \renewcommand\theenumiv{\@arabic\c@enumiv}%
-	}%
-  \sloppy
-  \clubpenalty4000
-  \@clubpenalty \clubpenalty
-  \widowpenalty4000%
-  \sfcode`\.\@m}%
-  {\def\@noitemerr
-    {\@latex@warning{Empty `bibitemlist' environment}}%
-    \endlist}
-<!-- SJH: Added this to deal with numbering of front matter. From https://tex.stackexchange.com/a/154465/257027 -->
-\let\origdoublepage\cleardoublepage
-\renewcommand{\cleardoublepage}{%
-     \clearpage
-     {\pagestyle{empty}\origdoublepage}%
-}
-<!-- SJH: Added this to cope with different requirements for manuscript items. -->
-\newenvironment{msitemlist}[1]{%
-  \list{}%
-  {\settowidth\labelwidth{\@biblabel{#1}}%
-    \leftmargin\labelwidth
-    \advance\leftmargin\labelsep
-    \@openbib@code
-    \usecounter{enumiv}%
-    \let\p@enumiv\@empty
-    \renewcommand\theenumiv{\@arabic\c@enumiv}%
-    }%
-    \sloppy
-    \clubpenalty4000
-    \@clubpenalty \clubpenalty
-    \widowpenalty4000%
-    \sfcode`\.\@m}%
-    {\def\@noitemerr
-    {\@latex@warning{Empty `bibitemlist' environment}}%
-    \endlist}
      
-\def\tableofcontents{\section*{\contentsname}\@starttoc{toc}}
 \parskip<xsl:value-of select="$parSkip"/>
 \parindent<xsl:value-of select="$parIndent"/>
 \def\Panel#1#2#3#4{\multicolumn{#3}{){\columncolor{#2}}#4}{#1}}
@@ -757,6 +712,8 @@ characters. The normal characters remain active for LaTeX commands.
 }
 \makeatother
 \fvset{frame=single,numberblanklines=false,xleftmargin=5mm,xrightmargin=5mm}
+
+% Fancy headers and footers.
 \usepackage{fancyvrb}
 \usepackage{fancyhdr}
 \fancyhf{} 
@@ -781,6 +738,8 @@ characters. The normal characters remain active for LaTeX commands.
        \thispagestyle{empty}
        \addtocounter{page}{-1}
        \newpage
+       \cleardoublepage
+    }
   </xsl:text>
      
   <xsl:call-template name="hyperref"/>

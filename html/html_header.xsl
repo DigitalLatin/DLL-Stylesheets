@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
-<xsl:stylesheet xmlns:a="http://relaxng.org/ns/compatibility/annotations/1.0"
+<xsl:stylesheet xmlns="http://www.w3.org/1999/xhtml" 
+                xmlns:a="http://relaxng.org/ns/compatibility/annotations/1.0"
                 xmlns:fo="http://www.w3.org/1999/XSL/Format"
                 xmlns:html="http://www.w3.org/1999/xhtml"
 
@@ -52,19 +53,26 @@ of this software, even if advised of the possibility of such damage.
       </desc>
    </doc>
 
-  <xsl:key name="ALL-EXTRENDITION" match="@rendition[not(starts-with(.,'simple:') or starts-with(.,'#'))]" use="1"/>
+  <xsl:key name="ALL-EXTRENDITION"
+	   match="@rendition
+		  [not( ancestor::teix:* )]
+		  [not( starts-with( ., 'simple:') or starts-with( ., '#') )]"
+	   use="1" />
   <xsl:key name="EXTRENDITION"
-	   match="@rendition[not(starts-with(.,'simple:') or starts-with(.,'#'))]" use="."/>
+	   match="@rendition
+		  [not( ancestor::teix:* )]
+		  [not( starts-with( ., 'simple:') or starts-with( ., '#') )]"
+	   use="." />
   <xsl:key name="ALL-LOCALRENDITION" match="tei:rendition" use='1'/>
 
   <doc xmlns="http://www.oxygenxml.com/ns/doc/xsl">
-      <desc>Process element teiHeader</desc>
-   </doc>
+    <desc>Process element teiHeader</desc>
+  </doc>
   <xsl:template match="tei:teiHeader"/>
 
   <doc xmlns="http://www.oxygenxml.com/ns/doc/xsl">
-      <desc>make a style section from rendition elements in the header</desc>
-   </doc>
+    <desc>make a style section from rendition elements in the header</desc>
+  </doc>
   
   <xsl:template name="generateLocalCSS">
       <xsl:if test="key('ALL-LOCALRENDITION',1)">
@@ -161,7 +169,7 @@ of this software, even if advised of the possibility of such damage.
         <xsl:sequence select="tei:generateEditor(.)"/>
       </xsl:variable>
       <xsl:if test="not($realauthor = '')">
-        <p class="mainAuthor">
+        <p xmlns="http://www.w3.org/1999/xhtml" class="mainAuthor">
          <xsl:text> </xsl:text>
          <xsl:sequence select="tei:i18n('authorWord')"/>
           <xsl:text>: </xsl:text>
@@ -169,7 +177,7 @@ of this software, even if advised of the possibility of such damage.
         </p>
       </xsl:if>
       <xsl:if test="not($revauthor = '')">
-      <p class="mainRevAuthor">
+      <p class="mainRevAuthor" xmlns="http://www.w3.org/1999/xhtml">
          <xsl:text> (</xsl:text>
          <xsl:sequence select="tei:i18n('revisedWord')"/>
          <xsl:text> </xsl:text>
@@ -178,7 +186,7 @@ of this software, even if advised of the possibility of such damage.
       </p>
     </xsl:if>
     <xsl:if test="not($editor = '')">
-      <p class="mainEditor">
+      <p class="mainEditor" xmlns="http://www.w3.org/1999/xhtml">
          <xsl:sequence select="tei:i18n('editorWord')"/>
         <xsl:text>: </xsl:text>
         <xsl:copy-of select="$editor"/>
