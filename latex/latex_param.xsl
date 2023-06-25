@@ -216,12 +216,6 @@ the beginning of the document</desc>
       <xsl:text>
   \pagestyle{</xsl:text><xsl:value-of select="$pageStyle"/><xsl:text>}
 </xsl:text>
-<!-- SJH: This block causes errors in processing. 
- \usepackage[pdftitle={<xsl:sequence select="tei:generateSimpleTitle(.)"/>},
- pdfauthor={<xsl:sequence
- select="replace(string-join(tei:generateAuthor(.),''),'\\[A-z]+','')"/>}]{hyperref}
-\hyperbaseurl{<xsl:value-of select="$baseURL"/>}-->
-<!--<xsl:if test="count(key('APP',1))&gt;0">-->
 </xsl:template>
 
    <doc xmlns="http://www.oxygenxml.com/ns/doc/xsl" class="layout" type="float">
@@ -717,7 +711,6 @@ characters. The normal characters remain active for LaTeX commands.
 
    <doc xmlns="http://www.oxygenxml.com/ns/doc/xsl" class="layout">
       <desc>
-
          <p>LaTeX setup before start of document</p>
          <p>All the LaTeX setup which are executed before the start of
     the document</p>
@@ -789,11 +782,10 @@ characters. The normal characters remain active for LaTeX commands.
        \thispagestyle{empty}
        \addtocounter{page}{-1}
        \newpage
-    }
-</xsl:text>
+  </xsl:text>
      
-<xsl:call-template name="hyperref"/>
-   </xsl:template>
+  <xsl:call-template name="hyperref"/>
+</xsl:template>
 
 <!-- SJH: Added this block to remove numbers from sections. --> 
   <doc xmlns="http://www.oxygenxml.com/ns/doc/xsl" class="layout">
@@ -814,6 +806,7 @@ characters. The normal characters remain active for LaTeX commands.
   </doc>
 <xsl:template name="fallback-characters">
   <xsl:text>
+
 % Fallback characters (thanks to Andrew Dunning) 
 \usepackage{newunicodechar}
 \newfontfamily{\fallbackfontMUFI}{Junicode}
@@ -849,7 +842,7 @@ characters. The normal characters remain active for LaTeX commands.
 % Set the font for URLs to the regular font for the document.
 \urlstyle{same}</xsl:text>  
 </xsl:template> 
-  
+ 
    <doc xmlns="http://www.oxygenxml.com/ns/doc/xsl" class="layout">
       <desc>
          <p>LaTeX setup at end of document</p>

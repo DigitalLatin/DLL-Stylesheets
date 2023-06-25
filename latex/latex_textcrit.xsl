@@ -310,7 +310,6 @@
         <xsl:text>}</xsl:text>
       </xsl:if>
       <!-- Now look for a note that follows the reading. If there is one, render it. -->
-
       <!-- Test to account for situations where there is a witDetail following the rdg before the note. -->
       <xsl:if test="following-sibling::tei:note[substring(@target, 2) = current()/@xml:id]">
         <!-- If a witDetail precedes the note, process it. -->
@@ -515,6 +514,18 @@
     <xsl:text>{\normalfont </xsl:text>
     <xsl:apply-templates/>
     <xsl:text>}</xsl:text>
+  </xsl:template>
+
+<doc xmlns="http://www.oxygenxml.com/ns/doc/xsl">
+    <desc>
+      <p>Process with witDetail</p>
+    </desc>
+  </doc>
+  <xsl:template match="tei:witDetail[not(*|text())]">
+    <xsl:choose>
+      <xsl:when test="@type='correction-altered'">p.c.</xsl:when>
+      <xsl:when test="@type='correction-original'">a.c.</xsl:when>
+    </xsl:choose>
   </xsl:template>
 
   <doc xmlns="http://www.oxygenxml.com/ns/doc/xsl">
