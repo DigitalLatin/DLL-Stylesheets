@@ -117,11 +117,18 @@ of this software, even if advised of the possibility of such damage.
       <xsl:when test="id($dest)">
         <xsl:choose>
           <xsl:when test="parent::tei:label">
-            <xsl:text>\hyperlink{</xsl:text>
-            <xsl:value-of select="$dest"/>
-            <xsl:text>}{</xsl:text>
-            <xsl:choose><xsl:when test="self::tei:ref"><xsl:value-of select="."/></xsl:when><xsl:otherwise><xsl:value-of select="$body"/></xsl:otherwise></xsl:choose>
-            <xsl:text>}</xsl:text>
+            <xsl:choose>
+              <xsl:when test="ancestor::tei:div[@subtype='drama']">
+                <xsl:text>\</xsl:text><xsl:value-of select="translate($dest,'-_','')"/>
+              </xsl:when>
+              <xsl:otherwise>
+                <xsl:text>\hyperlink{</xsl:text>
+                <xsl:value-of select="$dest"/>
+                <xsl:text>}{</xsl:text>
+                <xsl:choose><xsl:when test="self::tei:ref"><xsl:value-of select="."/></xsl:when><xsl:otherwise><xsl:value-of select="$body"/></xsl:otherwise></xsl:choose>
+                <xsl:text>}</xsl:text>
+              </xsl:otherwise>
+            </xsl:choose>
           </xsl:when>
           <xsl:when test="not($body = '')">
             <xsl:text>\hyperref[</xsl:text>
@@ -187,9 +194,7 @@ of this software, even if advised of the possibility of such damage.
           <xsl:when test="$dest = //tei:div/@xml:id">
             <xsl:text>\hyperref[</xsl:text>
             <xsl:value-of select="$dest"/>
-            <xsl:text>]{</xsl:text>
-            <xsl:value-of select="self::tei:ref"/>
-            <xsl:text>}</xsl:text>
+            <xsl:text>]{</xsl:text><xsl:value-of select="normalize-space(self::tei:ref)"/><xsl:text>}</xsl:text>
           </xsl:when>
 
           <!-- SJH: This is the block that generates references to bibliographical items the "right" way, with \cite. -->

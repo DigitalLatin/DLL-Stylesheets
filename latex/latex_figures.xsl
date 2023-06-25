@@ -160,24 +160,34 @@ of this software, even if advised of the possibility of such damage.
       <xsl:value-of select="@xml:id"/>
       <xsl:text>}</xsl:text>
   </xsl:template>
+    
   <doc xmlns="http://www.oxygenxml.com/ns/doc/xsl">
       <desc>Process element table</desc>
    </doc>
   <xsl:template match="tei:table">
     <xsl:sequence select="tei:makeHyperTarget(@xml:id)"/>
-      <xsl:text>{\small \par </xsl:text>
       <xsl:choose>
-         <xsl:when test="ancestor::tei:table or $longtables='false'"> 
-	           <xsl:text>\begin{tabular}</xsl:text>
-	           <xsl:call-template name="makeTable"/> 
-	           <xsl:text>\end{tabular}}</xsl:text>
-         </xsl:when>
-         <xsl:otherwise> 
-                        <xsl:text>\par</xsl:text>
-	           <xsl:text>&#10;\begin{longtable}</xsl:text>
-	           <xsl:call-template name="makeTable"/>
-	           <xsl:text>\end{longtable} \par}&#10; </xsl:text>
-         </xsl:otherwise>
+          <xsl:when test="ancestor::tei:app">
+              <xsl:text>\begin{longtable}</xsl:text>
+              <xsl:call-template name="makeTable"/>
+              <xsl:text>\end{longtable}</xsl:text>
+          </xsl:when>
+          <xsl:otherwise>
+              <xsl:text>{\small \par </xsl:text>
+              <xsl:choose>
+                  <xsl:when test="ancestor::tei:table or $longtables='false'"> 
+                      <xsl:text>\begin{tabular}</xsl:text>
+                      <xsl:call-template name="makeTable"/> 
+                      <xsl:text>\end{tabular}}</xsl:text>
+                  </xsl:when>
+                  <xsl:otherwise> 
+                      <xsl:text>\par</xsl:text>
+                      <xsl:text>&#10;\begin{longtable}</xsl:text>
+                      <xsl:call-template name="makeTable"/>
+                      <xsl:text>\end{longtable} \par}&#10; </xsl:text>
+                  </xsl:otherwise>
+              </xsl:choose>
+          </xsl:otherwise>
       </xsl:choose>
   </xsl:template>
   <doc xmlns="http://www.oxygenxml.com/ns/doc/xsl">
@@ -212,7 +222,7 @@ of this software, even if advised of the possibility of such damage.
             <xsl:text>\begin{figure}[H]&#10;</xsl:text>
 	</xsl:when>
 	<xsl:when test="tei:match(@rend,'display') or not(@place='inline') or tei:head or tei:p">
-	  <xsl:text>\begin{figure}[htbp]&#10;</xsl:text>
+	  <xsl:text>&#10;\begin{figure}[htbp]&#10;</xsl:text>
 	</xsl:when>
       </xsl:choose>
       <xsl:choose>
@@ -241,10 +251,10 @@ of this software, even if advised of the possibility of such damage.
       </xsl:if>
       <xsl:choose>
 	<xsl:when test="@place='inline' and tei:head">
-            <xsl:text>\end{figure}&#10;</xsl:text>
+            <xsl:text>&#10;\end{figure}&#10;</xsl:text>
 	</xsl:when>
          <xsl:when test="tei:match(@rend,'display') or not(@place='inline')">
-	   <xsl:text>\end{figure}&#10;</xsl:text>
+	   <xsl:text>&#10;\end{figure}&#10;</xsl:text>
          </xsl:when>
       </xsl:choose>
   </xsl:template>
@@ -262,11 +272,7 @@ of this software, even if advised of the possibility of such damage.
 	</xsl:when>
       </xsl:choose>
       <xsl:variable name="pic">
-	<xsl:text>\includegraphics[</xsl:text>
-	<xsl:call-template name="graphicsAttributes">
-          <xsl:with-param name="mode">latex</xsl:with-param>
-	</xsl:call-template>
-	<xsl:text>]{</xsl:text>
+	<xsl:text>\includegraphics[width=\textwidth]{</xsl:text>
 	<xsl:choose>
           <xsl:when test="$realFigures='true'">
 	    <xsl:sequence select="tei:resolveURI(.,@url)"/>
