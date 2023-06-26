@@ -126,10 +126,10 @@
     </doc>
     <xsl:template match="tei:teiHeader"/>
 
-    <xsl:template match="tei:front">
+  <!--  <xsl:template match="tei:front">
         <xsl:text>\frontmatter </xsl:text>
         <xsl:apply-templates/>
-    </xsl:template>
+    </xsl:template>-->
 
     <!-- SJH: Added -->
     <doc xmlns="http://www.oxygenxml.com/ns/doc/xsl">
@@ -277,44 +277,37 @@ Volumes are published under the</xsl:text>
 \end{copyrightPage}
 \cleardoublepage
 </xsl:text>
-        <xsl:if test="//tei:titleStmt/tei:respStmt | //tei:editionStmt/tei:respStmt">
-            <xsl:text>
-                &#10;\begin{acknowledgmentsPage}
-                {\LARGE Acknowledgments}
-                \begin{itemize}</xsl:text>
-            <xsl:for-each select="//tei:titleStmt/tei:respStmt | //tei:editionStmt/tei:respStmt">
-                <xsl:text>\item </xsl:text>
-                <xsl:value-of select="tei:resp"/>
-                <xsl:text>: </xsl:text>
-                <xsl:choose>
-                    <xsl:when test="count(tei:name) = 1">
-                        <xsl:value-of select="tei:name"/>
-                        <xsl:text>.</xsl:text>
-                    </xsl:when>
-                    <xsl:otherwise>
-                        <xsl:for-each select="tei:name">
-                            <xsl:value-of select="."/>
-                            <xsl:choose>
-                                <xsl:when test="position() != last() ">
-                                    <xsl:text>, </xsl:text>
-                                </xsl:when>
-                                <xsl:otherwise>.</xsl:otherwise>
-                            </xsl:choose>
-                        </xsl:for-each>
-                    </xsl:otherwise>
-                </xsl:choose>
-                <xsl:text>&#10;</xsl:text>
-            </xsl:for-each>
-            <xsl:text>
-                \end{itemize}&#10;
-                \end{acknowledgmentsPage}&#10;
-            </xsl:text>
-        </xsl:if>
-<xsl:text>
-\cleardoublepage
-\pagenumbering{roman}
-\tableofcontents
-</xsl:text>
+    <xsl:if test="//tei:titleStmt/tei:respStmt | //tei:editionStmt/tei:respStmt">
+    <xsl:text>&#10;\blankpage
+    &#10;\begin{acknowledgmentsPage}
+    &#10;{\LARGE Acknowledgments}
+    &#10;\begin{itemize}&#10;</xsl:text>
+        <xsl:for-each select="//tei:titleStmt/tei:respStmt | //tei:editionStmt/tei:respStmt">
+            <xsl:text>\item </xsl:text>
+            <xsl:value-of select="normalize-space(tei:resp)"/><xsl:text>: </xsl:text>
+            <xsl:choose>
+                <xsl:when test="count(tei:name) = 1">
+                    <xsl:value-of select="normalize-space(tei:name)"/><xsl:text>.</xsl:text>
+                </xsl:when>
+                <xsl:otherwise>
+                    <xsl:for-each select="tei:name">
+                        <xsl:value-of select="."/>
+                        <xsl:choose>
+                            <xsl:when test="position() != last() ">
+                                <xsl:text>, </xsl:text>
+                            </xsl:when>
+                            <xsl:otherwise>.</xsl:otherwise>
+                        </xsl:choose>
+                    </xsl:for-each>
+                </xsl:otherwise>
+            </xsl:choose>
+            <xsl:text>&#10;</xsl:text>
+        </xsl:for-each>
+        <xsl:text>
+\end{itemize}&#10;
+\end{acknowledgmentsPage}&#10;
+        </xsl:text>
+    </xsl:if>
     </xsl:template>
 
     <doc xmlns="http://www.oxygenxml.com/ns/doc/xsl">
@@ -400,16 +393,20 @@ Volumes are published under the</xsl:text>
     </xsl:template>
 
     <doc xmlns="http://www.oxygenxml.com/ns/doc/xsl">
-        <desc/>
+        <desc>Process front</desc>
     </doc>
     <xsl:template match="tei:front">
-        <xsl:if test="not(preceding::tei:front)">
-            <xsl:text>\frontmatter </xsl:text>
-            <!-- SJH: This keeps the header from showing up on the first page of the preface. -->
+        <xsl:text>&#10;\frontmatter 
+\cleardoublepage
+\blankpage
+\tableofcontents
+\cleardoublepage&#10;
+        </xsl:text>
+        <!-- SJH: This keeps the header from showing up on the first page of the preface. -->
             <xsl:text>&#10;\thispagestyle{plain}&#10;</xsl:text>
-        </xsl:if>
         <xsl:apply-templates/>
     </xsl:template>
+    
     <doc xmlns="http://www.oxygenxml.com/ns/doc/xsl">
         <desc/>
     </doc>
