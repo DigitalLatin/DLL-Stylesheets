@@ -814,11 +814,6 @@
   </xsl:template>
   
   <doc xmlns="http://www.oxygenxml.com/ns/doc/xsl">
-    <desc>Process abbr with type "siglum" so that it does appear in apparatus, but not in the bibliography.</desc>
-  </doc>
-  <xsl:template match="tei:abbr[@type = 'siglum']" mode="biblio"/>
-
-  <doc xmlns="http://www.oxygenxml.com/ns/doc/xsl">
     <desc>Process a note element which has a @place attribute pointing to margin</desc>
   </doc>
   <xsl:template name="marginalNote">

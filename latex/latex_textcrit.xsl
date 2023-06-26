@@ -33,13 +33,13 @@
     </desc>
   </doc>
   
-  <doc xmlns="http://www.oxygenxml.com/ns/doc/xsl">
+<!--  This might not be necessary, since it doesn't really do much anyway? 
+    <doc xmlns="http://www.oxygenxml.com/ns/doc/xsl">
     <desc>Process element cit for the apparatus fontium as an \Afootnote in reledmac.</desc>
   </doc>
   <xsl:template match="tei:cit">
-    
       <xsl:apply-templates/>
-  </xsl:template>
+  </xsl:template>-->
 
   <doc xmlns="http://www.oxygenxml.com/ns/doc/xsl">
     <desc>Process element note with @type = 'parallel' for the apparatus testium/fontium
@@ -88,7 +88,7 @@
   <doc xmlns="http://www.oxygenxml.com/ns/doc/xsl">
     <desc>
       <p>Override common_textcrit.xsl's template for apparatus criticus (using tei:app)
-        using \Cfootnote in reledmac.</p>
+        to use \Cfootnote in reledmac.</p>
       <p>This is needed especially to avoid rendering tei:app with @type="transposition", since PDF
         output can't render dynamic swapping of readings.</p>
     </desc>
@@ -264,17 +264,6 @@
   </xsl:template>
 
   <xsldoc:doc xmlns:xsldoc="http://www.oxygenxml.com/ns/doc/xsl">
-    <xsldoc:desc>Insert a symbol and a hyperlink to a note in the commentary.</xsldoc:desc>
-  </xsldoc:doc>
-  <!--<xsl:template match="tei:lem/tei:ptr">
-    <xsl:value-of select=".."/>
-    <xsl:text>}</xsl:text>
-    <xsl:text>{\lemma{{\hyperref[</xsl:text>
-    <xsl:value-of select="translate(@target, '#', '')"/>
-    <xsl:text>]{◊}} </xsl:text>
-  </xsl:template>-->
-
-  <xsldoc:doc xmlns:xsldoc="http://www.oxygenxml.com/ns/doc/xsl">
     <xsldoc:desc>
       <p>Process each rdg, along with its witnesses, sources, notes, etc.</p>
     </xsldoc:desc>
@@ -409,20 +398,6 @@
     </xsl:choose>
   </xsl:template>
 
-  <!--<xsldoc:doc xmlns:xsldoc="http://www.oxygenxml.com/ns/doc/xsl">
-    <xsldoc:desc>
-      <p>Processing tei:l and tei:p with line numbering.</p>
-    </xsldoc:desc>
-  </xsldoc:doc>
-  <xsl:template match="tei:div[@type = 'edition']//tei:div//tei:div">
-    <xsl:choose>
-      <!-\- poetry -\->
-      <xsl:when test="tei:lg/tei:l"><xsl:apply-templates/>&#10;\&amp; &#10;</xsl:when>
-      <!-\- prose -\->
-      <xsl:when test="tei:p | tei:ab">&#10;\beginnumbering
-        &#10;<xsl:apply-templates/>&#10;\endnumbering &#10;</xsl:when>
-    </xsl:choose>
-  </xsl:template>-->
   <!-- Don't render these elements. -->
   <xsl:template match="tei:note[parent::tei:app//(tei:l | tei:p)]"/>
   <xsl:template match="tei:witDetail[parent::tei:app//(tei:l | tei:p)]"/>
@@ -430,18 +405,23 @@
   <xsl:template match="tei:rdg[parent::tei:app//(tei:l | tei:p)]"/>
   <xsl:template match="tei:rdgGrp[parent::tei:app//(tei:l | tei:p)]"/>
 
+  <doc xmlns="http://www.oxygenxml.com/ns/doc/xsl">
+    <desc>Process abbr with type "siglum" so that it does appear in apparatus, but not in the bibliography.</desc>
+  </doc>
+  <xsl:template match="tei:abbr[@type = 'siglum']" mode="biblio"/>
+  
   <xsldoc:doc xmlns:xsldoc="http://www.oxygenxml.com/ns/doc/xsl">
     <xsldoc:desc>
-      <p>One part of dealing with generating a siglum from an item in the bibliography.</p>
+      <p>One part of generating a siglum from an item in the bibliography.</p>
     </xsldoc:desc>
   </xsldoc:doc>
   <xsl:template match="tei:abbr[@type = 'siglum']">
     <xsl:apply-templates/>
   </xsl:template>
-
+  
   <xsldoc:doc xmlns:xsldoc="http://www.oxygenxml.com/ns/doc/xsl">
     <xsldoc:desc>
-      <p>Another part of dealing with generating a siglum from an item in the bibliography.</p>
+      <p>Another part of generating a siglum from an item in the bibliography.</p>
     </xsldoc:desc>
   </xsldoc:doc>
   <xsl:template match="tei:bibl/tei:abbr[@type = 'siglum'] | tei:witness/tei:abbr[@type = 'siglum']"
@@ -501,8 +481,6 @@
     </xsl:if>
   </xsl:template>
 
-
-  
   <doc xmlns="http://www.oxygenxml.com/ns/doc/xsl">
     <desc>
       <p>Handle text within a note in the apparatus that must be rendered in a roman font (e.g.,
@@ -518,7 +496,7 @@
 
 <doc xmlns="http://www.oxygenxml.com/ns/doc/xsl">
     <desc>
-      <p>Process with witDetail</p>
+      <p>Process witDetail</p>
     </desc>
   </doc>
   <xsl:template match="tei:witDetail[not(*|text())]">
