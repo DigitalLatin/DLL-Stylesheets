@@ -70,6 +70,4 @@
         <xsl:text>\quad{}</xsl:text>
     </xsl:template>
 
-
-
 </xsl:stylesheet>
