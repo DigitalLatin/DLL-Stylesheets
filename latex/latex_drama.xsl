@@ -93,6 +93,7 @@
         <xsl:apply-templates/>
         <xsl:text>}</xsl:text>
     </xsl:template>
+    
     <doc xmlns="http://www.oxygenxml.com/ns/doc/xsl">
         <desc>Process element roleDesc</desc>
     </doc>
@@ -101,6 +102,7 @@
         <xsl:apply-templates/>
         <xsl:text>\end{quote}</xsl:text>
     </xsl:template>
+    
     <doc xmlns="http://www.oxygenxml.com/ns/doc/xsl">
         <desc>Process element set</desc>
     </doc>
@@ -109,6 +111,7 @@
         <xsl:apply-templates/>
         <xsl:text>}</xsl:text>
     </xsl:template>
+    
     <doc xmlns="http://www.oxygenxml.com/ns/doc/xsl">
         <desc>Process element sound</desc>
     </doc>
@@ -234,6 +237,7 @@
         <xsl:apply-templates/>
         <xsl:text>}</xsl:text>
     </xsl:template>
+    
     <doc xmlns="http://www.oxygenxml.com/ns/doc/xsl">
         <desc>Process element view</desc>
     </doc>
