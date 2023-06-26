@@ -1133,7 +1133,7 @@
       <xsl:when test="parent::tei:cit">
         <xsl:apply-templates/>
       </xsl:when>
-      <xsl:when test="@type = 'cite'">
+      <xsl:when test="tei:ref[@type = 'cite']">
         <xsl:apply-templates/>
       </xsl:when>
       <xsl:otherwise>
