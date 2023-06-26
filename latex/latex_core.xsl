@@ -662,7 +662,7 @@
   <doc xmlns="http://www.oxygenxml.com/ns/doc/xsl">
     <desc>Process element listBibl/tei:bibl</desc>
   </doc>
-  <xsl:template match="tei:listBibl/tei:bibl">
+  <!--<xsl:template match="tei:listBibl/tei:bibl">
     <xsl:text> \bibitem {</xsl:text>
     <xsl:choose>
       <xsl:when test="@xml:id">
@@ -672,6 +672,26 @@
       </xsl:otherwise>
     </xsl:choose>
     <xsl:text>}</xsl:text>
+    <xsl:choose>
+      <xsl:when test="parent::tei:listBibl/@xml:lang = 'zh-TW' or @xml:lang = 'zh-TW'">
+        <xsl:text>{\textChinese </xsl:text>
+        <xsl:apply-templates/>
+        <xsl:text>}</xsl:text>
+      </xsl:when>
+      <xsl:when test="parent::tei:listBibl/@xml:lang = 'ja' or @xml:lang = 'ja'">
+        <xsl:text>{\textJapanese </xsl:text>
+        <xsl:apply-templates/>
+        <xsl:text>}</xsl:text>
+      </xsl:when>
+      <xsl:otherwise>
+        <xsl:apply-templates/>
+      </xsl:otherwise>
+    </xsl:choose>
+    <xsl:text>&#10;</xsl:text>
+  </xsl:template>-->
+  
+  <xsl:template match="tei:listBibl/tei:bibl">
+    <xsl:text>\bibitem</xsl:text>
     <xsl:choose>
       <xsl:when test="parent::tei:listBibl/@xml:lang = 'zh-TW' or @xml:lang = 'zh-TW'">
         <xsl:text>{\textChinese </xsl:text>
@@ -1112,23 +1132,6 @@
         <xsl:call-template name="makeQuote"/>
       </xsl:otherwise>
     </xsl:choose>
-  </xsl:template>
-
-  <doc xmlns="http://www.oxygenxml.com/ns/doc/xsl">
-    <desc>Process element ref</desc>
-  </doc>
-  <xsl:template match="tei:ref">
-    <xsl:choose>
-      <xsl:when test="parent::tei:cit">
-        <xsl:apply-templates/>
-      </xsl:when>
-      <xsl:when test="tei:ref[@type = 'cite']">
-        <xsl:apply-templates/>
-      </xsl:when>
-      <xsl:otherwise>
-        <xsl:apply-templates/>
-      </xsl:otherwise>
-    </xsl:choose> 
   </xsl:template>
 
   <doc xmlns="http://www.oxygenxml.com/ns/doc/xsl">
