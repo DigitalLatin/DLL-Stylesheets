@@ -138,7 +138,7 @@
     <xsl:template name="titlePage">
         <xsl:text>
 % Insert an unnumbered page first.
-
+\setcounter{page}{0}
 \thispagestyle{empty}
 \vspace*{\fill} 
 
@@ -147,7 +147,7 @@ This PDF is formatted to accommodate printing two pages per sheet in landscape m
 \end{center}
 
 \vspace*{\fill}
-\newpage
+\thispagestyle{empty}
 \begin{titlepage} % Suppresses headers and footers on the title page
 \centering % Center everything on the title page
         
@@ -261,11 +261,9 @@ Edited By
 
 \vspace{1\baselineskip} % Whitespace
 
-Volumes are published under the </xsl:text>
-        <xsl:value-of select="//tei:publicationStmt/tei:availability/tei:licence"/>
-        <xsl:text>: \url{</xsl:text>
-        <xsl:value-of select="//tei:publicationStmt/tei:availability/tei:licence/@target"/>
-        <xsl:text>}.
+Volumes are published under the</xsl:text> 
+            <xsl:value-of select="normalize-space(//tei:publicationStmt/tei:availability/tei:licence)"/><xsl:text>: \url{</xsl:text>
+        <xsl:value-of select="//tei:publicationStmt/tei:availability/tei:licence/@target"/><xsl:text>}.
 
 \vspace{2\baselineskip} % Whitespace
 
@@ -435,13 +433,19 @@ Volumes are published under the </xsl:text>
                     mode="innertext"/> \end{small} \end{quote} \hrule \par </xsl:otherwise>
         </xsl:choose>
     </xsl:template>
+    
     <doc xmlns="http://www.oxygenxml.com/ns/doc/xsl">
-        <desc/>
+        <desc>Process titlePage</desc>
     </doc>
+    <xsl:template match="tei:titlePage">&#10;\begin{titlepage}&#10;
+        <xsl:apply-templates/> 
+        &#10;\end{titlepage}
+        &#10;\cleardoublepage 
+    </xsl:template>
 
-    <xsl:template match="tei:titlePage"> \begin{titlepage} <xsl:apply-templates/> \end{titlepage}
-        \cleardoublepage </xsl:template>
-
+    <doc xmlns="http://www.oxygenxml.com/ns/doc/xsl">
+        <desc>Process trailer</desc>
+    </doc>
     <xsl:template match="tei:trailer">
         <xsl:text>&#10;&#10;\begin{raggedleft}</xsl:text>
         <xsl:apply-templates/>
@@ -471,21 +475,6 @@ Volumes are published under the </xsl:text>
     <xsl:template match="tei:back/tei:div">
         <xsl:apply-templates/>
     </xsl:template>
-
-    <!--<xsl:template match="tei:back/tei:div/tei:head">
-        <xsl:text>
-        &#10;&#10;\newpage
-&#10;\thispagestyle{plain}
-&#10;\subsection[{</xsl:text>
-        <xsl:value-of select="."/>
-        <xsl:text>}]{\centering\uppercase{\so{</xsl:text>
-        <xsl:value-of select="."/>
-        <xsl:text>}}}\label{</xsl:text>
-        <xsl:value-of select="parent::tei:div/@xml:id"/>
-        <xsl:text>}&#10;</xsl:text>
-        <xsl:text>\pagestyle{fancy}
-&#10;\setcounter{page}{1}</xsl:text>
-    </xsl:template>-->
 
     <xsl:template match="/tei:text" priority="999">
         <xsl:call-template name="wrapRootText"/>
