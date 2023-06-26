@@ -118,7 +118,6 @@ the beginning of the document</desc>
       <xsl:text>]{geometry}
 
 % Typesetting
-\usepackage{microtype}
 \usepackage{soul}
 \usepackage{leading}
 \usepackage{setspace}
@@ -129,11 +128,12 @@ the beginning of the document</desc>
 \usepackage{titletoc}
 \usepackage{accents}
 
-% Use thalie for drama texts
+% Use thalie for drama texts (consider logic to insert this when needed)
 \usepackage[characterstyle=simple,playstyle=bigcenter]{thalie}
 
 % Separate font handling for captions
 \usepackage{caption}
+
 % Set the font size of the caption to \small
 \captionsetup[figure]{font=small}
 
@@ -158,7 +158,6 @@ the beginning of the document</desc>
 \usepackage[antilabe]{reledmac}
 
 % Set double vertical lines as the separator between notes.
-
 \Xparafootsep[A,B,C]{ $\parallel\ \ $  }
 
 % Set stanza indents to 0 for one line per stanza line.
@@ -255,7 +254,6 @@ as a proportion of the page width.</desc>
    <doc xmlns="http://www.oxygenxml.com/ns/doc/xsl" class="userpackage" type="string">
       <desc>Options to pass to the geometry package to set margins etc</desc>
    </doc>
-  <!--<xsl:param name="latexGeometryOptions">twoside,tmargin=25mm,bmargin=30mm,inner=31.6mm,outer=63.3mm</xsl:param>-->
   <xsl:param name="latexGeometryOptions">
     twoside,
     letterpaper,
