@@ -122,10 +122,12 @@ of this software, even if advised of the possibility of such damage.
          </xsl:otherwise>
       </xsl:choose>
   </xsl:template>
+    
   <doc xmlns="http://www.oxygenxml.com/ns/doc/xsl">
       <desc>Process element figDesc</desc>
    </doc>
   <xsl:template match="tei:figDesc"/>
+    
   <doc xmlns="http://www.oxygenxml.com/ns/doc/xsl">
       <desc>Process element figure</desc>
    </doc>
@@ -134,12 +136,14 @@ of this software, even if advised of the possibility of such damage.
       <xsl:apply-templates/>
       <xsl:call-template name="makeFigureEnd"/>
   </xsl:template>
+    
   <doc xmlns="http://www.oxygenxml.com/ns/doc/xsl">
       <desc>Process element graphic</desc>
    </doc>
   <xsl:template match="tei:graphic|tei:media">
       <xsl:call-template name="makePic"/>
   </xsl:template>
+    
   <doc xmlns="http://www.oxygenxml.com/ns/doc/xsl">
       <desc>Process element row</desc>
    </doc>
@@ -152,8 +156,9 @@ of this software, even if advised of the possibility of such damage.
          <xsl:text>&#10;</xsl:text>
       </xsl:if>
   </xsl:template>
+    
   <doc xmlns="http://www.oxygenxml.com/ns/doc/xsl">
-      <desc>Process element table</desc>
+      <desc>Process element table in mode "xref"</desc>
    </doc>
   <xsl:template match="tei:table" mode="xref">
       <xsl:text>the table on p. \pageref{</xsl:text>
@@ -190,6 +195,7 @@ of this software, even if advised of the possibility of such damage.
           </xsl:otherwise>
       </xsl:choose>
   </xsl:template>
+    
   <doc xmlns="http://www.oxygenxml.com/ns/doc/xsl">
       <desc>Process element table[tei:match(@rend,'display')]</desc>
    </doc>
@@ -213,6 +219,7 @@ of this software, even if advised of the possibility of such damage.
      \end{center}
      \end{table}</xsl:text>
      </xsl:template>
+    
   <doc xmlns="http://www.oxygenxml.com/ns/doc/xsl">
       <desc>[latex] Make figure (start)</desc>
    </doc>
@@ -232,6 +239,7 @@ of this software, even if advised of the possibility of such damage.
 	<xsl:otherwise>\noindent</xsl:otherwise>
       </xsl:choose>
   </xsl:template>
+    
   <doc xmlns="http://www.oxygenxml.com/ns/doc/xsl">
       <desc>[latex] Make figure (end)</desc>
    </doc>
@@ -258,6 +266,7 @@ of this software, even if advised of the possibility of such damage.
          </xsl:when>
       </xsl:choose>
   </xsl:template>
+    
   <doc xmlns="http://www.oxygenxml.com/ns/doc/xsl">
       <desc>[latex] Make picture</desc>
    </doc>
@@ -313,9 +322,9 @@ of this software, even if advised of the possibility of such damage.
 	<xsl:otherwise>
 	  <xsl:value-of select="$pic"/>
 	</xsl:otherwise>
-
       </xsl:choose>
   </xsl:template>
+    
   <doc xmlns="http://www.oxygenxml.com/ns/doc/xsl">
       <desc>[latex] </desc>
    </doc>
@@ -361,7 +370,10 @@ of this software, even if advised of the possibility of such damage.
          <xsl:text>\\ \hline </xsl:text>
       </xsl:if>
   </xsl:template>
-
+    
+    <doc xmlns="http://www.oxygenxml.com/ns/doc/xsl">
+        <desc>Template "tableHline</desc>
+    </doc>
    <xsl:template name="tableHline">
       <xsl:choose>
          <xsl:when test="ancestor::tei:table or $longtables='false' or tei:match(@rend,'display')"> \hline </xsl:when>
@@ -423,6 +435,7 @@ of this software, even if advised of the possibility of such damage.
 	</xsl:if>
       </xsl:for-each>
   </xsl:template>
+    
   <doc xmlns="http://www.oxygenxml.com/ns/doc/xsl">
       <desc>[latex] </desc>
    </doc>
