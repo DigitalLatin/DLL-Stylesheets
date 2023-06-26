@@ -728,16 +728,15 @@ characters. The normal characters remain active for LaTeX commands.
 \fancyfoot[RE]{\TheID}
 \fancypagestyle{plain}{\fancyhead{}\renewcommand{\headrulewidth}{0pt}}
       
-% For unnumbered blank pages.
-% Thanks to https://math-linux.com/latex-26/faq/latex-faq/article/latex-how-to-insert-a-blank-or-empty-page-with-or-without-numbering-thispagestyle-newpage-usepackage-afterpage
-\usepackage{afterpage}
-  \newcommand\myemptypage{
-       \null
-       \thispagestyle{empty}
-       \addtocounter{page}{-1}
-       \newpage
-       \cleardoublepage
-    }
+\newcommand{\blankpage}{
+  \clearpage
+  \fancypagestyle{empty}{
+    \fancyhf{} % Clear header and footer
+    \renewcommand{\headrulewidth}{0pt} % Remove header rule
+    \renewcommand{\footrulewidth}{0pt} % Remove footer rule
+  }
+  \thispagestyle{empty}
+}
   </xsl:text>
      
   <xsl:call-template name="hyperref"/>
