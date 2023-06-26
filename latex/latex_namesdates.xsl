@@ -49,17 +49,6 @@ of this software, even if advised of the possibility of such damage.
       </desc>
    </doc>
   <xsl:template match="tei:listPerson">
-   <!--<xsl:if test="tei:head"> 
-      <xsl:text>\vspace{1.5\baselineskip}</xsl:text>
-      <xsl:text>&#10;</xsl:text>
-      <xsl:text>\leftline{\large\uppercase{</xsl:text>
-      <xsl:for-each select="tei:head">
-        <xsl:apply-templates/>
-      </xsl:for-each>
-      <xsl:text>}} </xsl:text>
-      <xsl:text>&#10;</xsl:text>
-      <xsl:text>\vspace{0.5\baselineskip}</xsl:text>
-    </xsl:if>-->
     <xsl:choose>
       <xsl:when test="@type='characters'">
             <xsl:text>&#10;{\large \scshape{</xsl:text>
@@ -160,11 +149,9 @@ of this software, even if advised of the possibility of such damage.
       <xsl:apply-templates/>
   </xsl:template>
   
-  <!-- SJH: Adding instructions for dealing with a persName or placeName element. -->
   <doc xmlns="http://www.oxygenxml.com/ns/doc/xsl">
     <desc>Process persName or placeName element.</desc>
   </doc>
-  
   <xsl:template match="//tei:geogName|tei:persName|tei:placeName">
     <xsl:choose>
       <xsl:when test="@ref">
