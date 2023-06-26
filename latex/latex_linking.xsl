@@ -54,15 +54,16 @@ of this software, even if advised of the possibility of such damage.
   <xsl:template match="tei:anchor">
     <xsl:sequence select="tei:makeHyperTarget(@xml:id)"/>
   </xsl:template>
+  
   <doc xmlns="http://www.oxygenxml.com/ns/doc/xsl">
       <desc>[latex] <param name="where">where</param>
       </desc>
    </doc>
-
   <xsl:template name="generateEndLink">
       <xsl:param name="where"/>
       <xsl:value-of select="$where"/>
   </xsl:template>
+
   <doc xmlns="http://www.oxygenxml.com/ns/doc/xsl">
       <desc>[latex] <param name="ptr">ptr</param>
          <param name="dest">dest</param>
@@ -94,6 +95,7 @@ of this software, even if advised of the possibility of such damage.
       </xsl:otherwise>
     </xsl:choose>
   </xsl:template>
+
   <doc xmlns="http://www.oxygenxml.com/ns/doc/xsl">
       <desc>[latex]
         Template for making internal links.
@@ -202,14 +204,6 @@ of this software, even if advised of the possibility of such damage.
             <xsl:text>\cite{</xsl:text>
             <xsl:value-of select="$dest"/>
             <xsl:text>}</xsl:text>
-            <!--		 SJH: The old way, with hyperref: 
-              <xsl:text>\hyperref[</xsl:text>
-		 <xsl:value-of select="$dest"/>
-		 <xsl:text>]{</xsl:text>
-		 <xsl:value-of select="$body"/>
-		 <xsl:apply-templates/>
-		 <xsl:text>}</xsl:text>
--->
           </xsl:otherwise>
         </xsl:choose>
       </xsl:when>
