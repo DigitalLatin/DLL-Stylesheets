@@ -455,7 +455,16 @@ Volumes are published under the </xsl:text>
         <xsl:apply-templates mode="biblio"
             select="//tei:ref[@type = 'cite'] | //tei:ptr[@type = 'cite']"/>
     </xsl:template>
-
+    
+    <!-- SJH: Handling back matter (commentary, etc.) -->
+    <doc xmlns="http://www.oxygenxml.com/ns/doc/xsl">
+        <desc>Back matter.</desc>
+    </doc>
+    <xsl:template match="tei:div[@type = 'commentary']">
+        <xsl:text>\setcounter{footnote}{0}</xsl:text>
+        <xsl:text>\newpage</xsl:text>
+    </xsl:template>
+    
     <doc xmlns="http://www.oxygenxml.com/ns/doc/xsl">
         <desc>Make a title for the back matter.</desc>
     </doc>

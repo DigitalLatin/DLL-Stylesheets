@@ -43,12 +43,12 @@
     <xsl:apply-templates select="text()[1]"/>
   </xsl:template>
 
+  <doc xmlns="http://www.oxygenxml.com/ns/doc/xsl">
+    <desc>Process element cit</desc>
+  </doc>
   <xsl:template match="tei:cit">
     <xsl:choose>
-      <xsl:when
-        test="
-          tei:match(@rend, 'display') or tei:q/tei:p or
-          tei:quote/tei:l or tei:quote/tei:p">
+      <xsl:when test="tei:match(@rend, 'display') or tei:q/tei:p or tei:quote/tei:l or tei:quote/tei:p">
         <xsl:text>&#10;\begin{</xsl:text>
         <xsl:value-of select="$quoteEnv"/>
         <xsl:text>}&#10;</xsl:text>
@@ -65,9 +65,9 @@
         <xsl:value-of select="$quoteEnv"/>
         <xsl:text>}&#10;</xsl:text>
       </xsl:when>
-      <!-- Apparatus Fontium -->
+      <!-- SJH: Apparatus Fontium -->
       <xsl:when test="ancestor::tei:div[@type = 'edition']">
-        <!-- Test for the type of quotation and handle accordingly. -->
+        <!-- SJH: Test for the type of quotation and handle accordingly. -->
         <xsl:choose>
           <xsl:when test="child::tei:quote[@rend = 'blockquote']">
             <xsl:text>\begin{</xsl:text>
@@ -196,23 +196,8 @@
 </xsl:text>
       </xsl:otherwise>
     </xsl:choose>
-    <!--
-    <xsl:choose>
-      <xsl:when test="@n">
-	<xsl:text>&#10;\begin{Verbatim}[fontsize=\scriptsize,numbers=left,label={</xsl:text>
-	<xsl:value-of select="@n"/>
-      <xsl:text>}]&#10;</xsl:text>
-      <xsl:apply-templates mode="eg"/> 
-      <xsl:text>&#10;\end{Verbatim}&#10;</xsl:text>
-      </xsl:when>
-      <xsl:otherwise>
-	<xsl:text>&#10;\begin{Verbatim}[fontsize=\scriptsize,frame=single]&#10;</xsl:text>
-	<xsl:apply-templates mode="eg"/>
-	<xsl:text>&#10;\end{Verbatim}&#10;</xsl:text>
-      </xsl:otherwise>
-    </xsl:choose>
--->
   </xsl:template>
+  
   <doc xmlns="http://www.oxygenxml.com/ns/doc/xsl">
     <desc>Process element emph</desc>
   </doc>
@@ -220,6 +205,120 @@
     <xsl:text>\textit{</xsl:text>
     <xsl:apply-templates/>
     <xsl:text>}</xsl:text>
+  </xsl:template>
+  
+  <doc xmlns="http://www.oxygenxml.com/ns/doc/xsl">
+    <desc>Handle foreign.</desc>
+  </doc>
+  <xsl:template match="tei:foreign">
+    <xsl:choose>
+      <!-- If the text is in Greek, don't italicize it. -->
+      <xsl:when test="@xml:lang='grc'">
+        <xsl:apply-templates/>
+      </xsl:when>
+      <!-- Otherwise, do italicize it. -->
+      <xsl:otherwise>
+        <xsl:text>\textit{</xsl:text>
+        <xsl:apply-templates/>
+        <xsl:text>}</xsl:text>
+      </xsl:otherwise>
+    </xsl:choose>
+  </xsl:template>
+  
+  <doc xmlns="http://www.oxygenxml.com/ns/doc/xsl">
+    <desc>Process gloss</desc>
+  </doc>
+  <xsl:template match="tei:gloss">
+    <xsl:text> \textit{</xsl:text>
+    <xsl:apply-templates/>
+    <xsl:text>}</xsl:text>
+  </xsl:template>
+  
+  <doc xmlns="http://www.oxygenxml.com/ns/doc/xsl">
+    <desc>Process element hi</desc>
+  </doc>
+  <xsl:template match="tei:hi">
+    <xsl:call-template name="rendering"/>
+  </xsl:template>
+  
+  <doc xmlns="http://www.oxygenxml.com/ns/doc/xsl">
+    <desc>Rendering rules, turning @rend into LaTeX commands</desc>
+  </doc>
+  <xsl:template name="rendering">
+    <xsl:variable name="decls">
+      <xsl:if test="tei:render-italic(.)">\itshape</xsl:if>
+      <xsl:if test="tei:render-bold(.)">\bfseries</xsl:if>
+      <xsl:if test="tei:render-typewriter(.)">\ttfamily</xsl:if>
+      <xsl:if test="tei:render-smallcaps(.)">\scshape</xsl:if>
+      <xsl:for-each select="tokenize(normalize-space(@rend), ' ')">
+        <xsl:if test=". = 'large'">\large</xsl:if>
+        <xsl:if test=". = 'larger'">\larger</xsl:if>
+        <xsl:if test=". = 'small'">\small</xsl:if>
+        <xsl:if test=". = 'smaller'">\smaller</xsl:if>
+        <xsl:if test="starts-with(., 'color')">
+          <xsl:text>\color</xsl:text>
+          <xsl:choose>
+            <xsl:when test="starts-with(., 'color(')">
+              <xsl:text>{</xsl:text>
+              <xsl:value-of select="substring-before(substring-after(., 'color('), ')')"/>
+              <xsl:text>}</xsl:text>
+            </xsl:when>
+            <xsl:when test="starts-with(., 'color')">
+              <xsl:text>{</xsl:text>
+              <xsl:value-of select="substring-after(., 'color')"/>
+              <xsl:text>}</xsl:text>
+            </xsl:when>
+          </xsl:choose>
+        </xsl:if>
+      </xsl:for-each>
+    </xsl:variable>
+    <xsl:variable name="cmd">
+      <xsl:if test="tei:render-strike(.)">\sout </xsl:if>
+      <xsl:for-each select="tokenize(normalize-space(@rend), ' ')">
+        <xsl:choose>
+          <xsl:when test=". = 'calligraphic'">\textcal </xsl:when>
+          <xsl:when test=". = 'allcaps'">\uppercase </xsl:when>
+          <xsl:when test=". = 'center'">\centerline </xsl:when>
+          <xsl:when test=". = 'gothic'">\textgothic </xsl:when>
+          <xsl:when test=". = 'noindex'">\textrm </xsl:when>
+          <xsl:when test=". = 'overbar'">\textoverbar </xsl:when>
+          <xsl:when test=". = 'plain'">\textrm </xsl:when>
+          <xsl:when test=". = 'quoted'">\textquoted </xsl:when>
+          <xsl:when test=". = 'sub'">\textsubscript </xsl:when>
+          <xsl:when test=". = 'subscript'">\textsubscript </xsl:when>
+          <xsl:when test=". = 'underline'">\uline </xsl:when>
+          <xsl:when test=". = 'sup'">\textsuperscript </xsl:when>
+          <xsl:when test=". = 'super'">\textsuperscript </xsl:when>
+          <xsl:when test=". = 'superscript'">\textsuperscript </xsl:when>
+          <xsl:when test=". = 'wavyunderline'">\uwave </xsl:when>
+          <xsl:when test=". = 'doubleunderline'">\uuline </xsl:when>
+        </xsl:choose>
+      </xsl:for-each>
+    </xsl:variable>
+    <xsl:for-each select="tokenize(normalize-space($cmd), ' ')">
+      <xsl:value-of select="concat(., '{')"/>
+    </xsl:for-each>
+    <xsl:choose>
+      <xsl:when test="$decls = ''">
+        <xsl:apply-templates/>
+      </xsl:when>
+      <xsl:otherwise>
+        <xsl:if test="$cmd = ''">
+          <xsl:text>{</xsl:text>
+        </xsl:if>
+        <xsl:value-of select="$decls"/>
+        <xsl:if test="matches($decls, '[a-z]$')">
+          <xsl:text> </xsl:text>
+        </xsl:if>
+        <xsl:apply-templates/>
+        <xsl:if test="$cmd = ''">
+          <xsl:text>}</xsl:text>
+        </xsl:if>
+      </xsl:otherwise>
+    </xsl:choose>
+    <xsl:for-each select="tokenize(normalize-space($cmd), ' ')">
+      <xsl:text>}</xsl:text>
+    </xsl:for-each>
   </xsl:template>
 
   <doc xmlns="http://www.oxygenxml.com/ns/doc/xsl">
@@ -273,17 +372,6 @@
             </xsl:choose>
           </xsl:otherwise>
         </xsl:choose>
-        <!--<xsl:choose>
-          <xsl:when
-            test="
-              parent::tei:body or ancestor::tei:floatingText or
-              parent::tei:div/tei:match(@rend, 'nonumber')
-              or (ancestor::tei:back and $numberBackHeadings = '')
-              or (not($numberHeadings = 'true') and ancestor::tei:body)
-              or (ancestor::tei:front and $numberFrontHeadings = '')"
-            >*</xsl:when>
-          <xsl:otherwise>[{<xsl:value-of select="tei:escapeChars(., .)"/>}]</xsl:otherwise>
-        </xsl:choose>-->
 
         <xsl:choose>
           <!-- First Order Heads -->
@@ -305,7 +393,7 @@
               <xsl:value-of select="self::tei:head"/>
               <xsl:text>}</xsl:text>
             </xsl:if>
-            <!-- This is for the title of the commentary, with a reset of the fancyheader. -->
+            <!-- This is for the title of a commentary, with a reset of the fancyheader. -->
             <xsl:if test="ancestor::tei:back">
               <xsl:text>&#10;&#10;\pagestyle{fancy}&#10;</xsl:text>
               <xsl:text>&#10;\fancyhead[LE]{\thepage}</xsl:text>
@@ -316,10 +404,6 @@
               <xsl:text>&#10;\fancyhead[CO]{\rightmark}&#10;</xsl:text>
             </xsl:if>
           </xsl:when>
-          <!--<xsl:otherwise><xsl:text>*{</xsl:text><xsl:apply-templates/><xsl:text>}\label{</xsl:text>
-              <xsl:value-of select="parent::tei:div/@xml:id"/>
-              <xsl:text>}&#10;</xsl:text>
-            </xsl:otherwise>-->
 
           <!-- Second Order Heads -->
           <xsl:when test="$depth = '1'">
@@ -331,7 +415,9 @@
               </xsl:when>
               <!-- This is for the title of individual sections of the edition, so that the titles can be included in the apparatus. -->
               <xsl:when test="ancestor::tei:body and parent::tei:div[@type = 'textpart']">
-                <!-- If the value of head is greater than 20 characters, let's create a short optional label for the running header at the top of the page. --> 
+                <!-- If the value of head is greater than 20 characters, 
+                  create a short optional label for the running header at 
+                  the top of the page. --> 
                 <xsl:if test="string-length(self::tei:head) > 20">
                   <xsl:text>[</xsl:text>
                   <xsl:variable name="words" select="tokenize(normalize-space(.), '\s+')"/>
@@ -416,103 +502,10 @@
   </xsl:template>
 
   <doc xmlns="http://www.oxygenxml.com/ns/doc/xsl">
-    <desc>Process &lt;gloss&gt;</desc>
-  </doc>
-
-  <xsl:template match="tei:gloss">
-    <xsl:text> \textit{</xsl:text>
-    <xsl:apply-templates/>
-    <xsl:text>}</xsl:text>
-  </xsl:template>
-  <doc xmlns="http://www.oxygenxml.com/ns/doc/xsl">
-    <desc>Process element hi</desc>
-  </doc>
-  <xsl:template match="tei:hi">
-    <xsl:call-template name="rendering"/>
-  </xsl:template>
-  <doc xmlns="http://www.oxygenxml.com/ns/doc/xsl">
-    <desc>Rendering rules, turning @rend into LaTeX commands</desc>
-  </doc>
-  <xsl:template name="rendering">
-    <xsl:variable name="decls">
-      <xsl:if test="tei:render-italic(.)">\itshape</xsl:if>
-      <xsl:if test="tei:render-bold(.)">\bfseries</xsl:if>
-      <xsl:if test="tei:render-typewriter(.)">\ttfamily</xsl:if>
-      <xsl:if test="tei:render-smallcaps(.)">\scshape</xsl:if>
-      <xsl:for-each select="tokenize(normalize-space(@rend), ' ')">
-        <xsl:if test=". = 'large'">\large</xsl:if>
-        <xsl:if test=". = 'larger'">\larger</xsl:if>
-        <xsl:if test=". = 'small'">\small</xsl:if>
-        <xsl:if test=". = 'smaller'">\smaller</xsl:if>
-        <xsl:if test="starts-with(., 'color')">
-          <xsl:text>\color</xsl:text>
-          <xsl:choose>
-            <xsl:when test="starts-with(., 'color(')">
-              <xsl:text>{</xsl:text>
-              <xsl:value-of select="substring-before(substring-after(., 'color('), ')')"/>
-              <xsl:text>}</xsl:text>
-            </xsl:when>
-            <xsl:when test="starts-with(., 'color')">
-              <xsl:text>{</xsl:text>
-              <xsl:value-of select="substring-after(., 'color')"/>
-              <xsl:text>}</xsl:text>
-            </xsl:when>
-          </xsl:choose>
-        </xsl:if>
-      </xsl:for-each>
-    </xsl:variable>
-    <xsl:variable name="cmd">
-      <xsl:if test="tei:render-strike(.)">\sout </xsl:if>
-      <xsl:for-each select="tokenize(normalize-space(@rend), ' ')">
-        <xsl:choose>
-          <xsl:when test=". = 'calligraphic'">\textcal </xsl:when>
-          <xsl:when test=". = 'allcaps'">\uppercase </xsl:when>
-          <xsl:when test=". = 'center'">\centerline </xsl:when>
-          <xsl:when test=". = 'gothic'">\textgothic </xsl:when>
-          <xsl:when test=". = 'noindex'">\textrm </xsl:when>
-          <xsl:when test=". = 'overbar'">\textoverbar </xsl:when>
-          <xsl:when test=". = 'plain'">\textrm </xsl:when>
-          <xsl:when test=". = 'quoted'">\textquoted </xsl:when>
-          <xsl:when test=". = 'sub'">\textsubscript </xsl:when>
-          <xsl:when test=". = 'subscript'">\textsubscript </xsl:when>
-          <xsl:when test=". = 'underline'">\uline </xsl:when>
-          <xsl:when test=". = 'sup'">\textsuperscript </xsl:when>
-          <xsl:when test=". = 'super'">\textsuperscript </xsl:when>
-          <xsl:when test=". = 'superscript'">\textsuperscript </xsl:when>
-          <xsl:when test=". = 'wavyunderline'">\uwave </xsl:when>
-          <xsl:when test=". = 'doubleunderline'">\uuline </xsl:when>
-        </xsl:choose>
-      </xsl:for-each>
-    </xsl:variable>
-    <xsl:for-each select="tokenize(normalize-space($cmd), ' ')">
-      <xsl:value-of select="concat(., '{')"/>
-    </xsl:for-each>
-    <xsl:choose>
-      <xsl:when test="$decls = ''">
-        <xsl:apply-templates/>
-      </xsl:when>
-      <xsl:otherwise>
-        <xsl:if test="$cmd = ''">
-          <xsl:text>{</xsl:text>
-        </xsl:if>
-        <xsl:value-of select="$decls"/>
-        <xsl:if test="matches($decls, '[a-z]$')">
-          <xsl:text> </xsl:text>
-        </xsl:if>
-        <xsl:apply-templates/>
-        <xsl:if test="$cmd = ''">
-          <xsl:text>}</xsl:text>
-        </xsl:if>
-      </xsl:otherwise>
-    </xsl:choose>
-    <xsl:for-each select="tokenize(normalize-space($cmd), ' ')">
-      <xsl:text>}</xsl:text>
-    </xsl:for-each>
-  </xsl:template>
-  <doc xmlns="http://www.oxygenxml.com/ns/doc/xsl">
     <desc>Process element hr</desc>
   </doc>
   <xsl:template match="tei:hr"> \hline </xsl:template>
+  
   <doc xmlns="http://www.oxygenxml.com/ns/doc/xsl">
     <desc>Process element ident</desc>
   </doc>
@@ -520,6 +513,26 @@
     <xsl:text>\textsf{</xsl:text>
     <xsl:apply-templates/>
     <xsl:text>}</xsl:text>
+  </xsl:template>
+  
+  <doc xmlns="http://www.oxygenxml.com/ns/doc/xsl">
+    <desc>Handle interpGrp</desc>
+  </doc>
+  <xsl:template match="tei:interpGrp">
+    <xsl:text>&#10;\begin{itemize}[label={}]&#10;</xsl:text>
+    <xsl:apply-templates/>
+    <xsl:text>&#10;\end{itemize}&#10;</xsl:text>
+  </xsl:template>
+  
+  <doc xmlns="http://www.oxygenxml.com/ns/doc/xsl">
+    <desc>Handle interp</desc>
+  </doc>
+  <xsl:template match="tei:interp">
+    <xsl:text>\item[] {\hyperref[</xsl:text>
+    <xsl:value-of select="translate(@corresp,'#','')"/>
+    <xsl:text>]{</xsl:text>
+    <xsl:value-of select="normalize-space(self::tei:interp/text())"/>
+    <xsl:text>}}&#10;</xsl:text>
   </xsl:template>
 
   <doc xmlns="http://www.oxygenxml.com/ns/doc/xsl">
@@ -554,6 +567,7 @@
   <xsl:template match="tei:label" mode="gloss">
     <xsl:apply-templates/>
   </xsl:template>
+  
   <doc xmlns="http://www.oxygenxml.com/ns/doc/xsl">
     <desc>line break</desc>
   </doc>
@@ -648,9 +662,6 @@
   <doc xmlns="http://www.oxygenxml.com/ns/doc/xsl">
     <desc>Process element listBibl/tei:bibl</desc>
   </doc>
-  <doc xmlns="http://www.oxygenxml.com/ns/doc/xsl">
-    <desc>Process element listBibl/tei:bibl</desc>
-  </doc>
   <xsl:template match="tei:listBibl/tei:bibl">
     <xsl:text> \bibitem {</xsl:text>
     <xsl:choose>
@@ -661,26 +672,6 @@
       </xsl:otherwise>
     </xsl:choose>
     <xsl:text>}</xsl:text>
-    <xsl:choose>
-      <xsl:when test="parent::tei:listBibl/@xml:lang = 'zh-TW' or @xml:lang = 'zh-TW'">
-        <xsl:text>{\textChinese </xsl:text>
-        <xsl:apply-templates/>
-        <xsl:text>}</xsl:text>
-      </xsl:when>
-      <xsl:when test="parent::tei:listBibl/@xml:lang = 'ja' or @xml:lang = 'ja'">
-        <xsl:text>{\textJapanese </xsl:text>
-        <xsl:apply-templates/>
-        <xsl:text>}</xsl:text>
-      </xsl:when>
-      <xsl:otherwise>
-        <xsl:apply-templates/>
-      </xsl:otherwise>
-    </xsl:choose>
-    <xsl:text>&#10;</xsl:text>
-  </xsl:template>
-
-  <xsl:template match="tei:listBibl/tei:bibl">
-    <xsl:text>\bibitem</xsl:text>
     <xsl:choose>
       <xsl:when test="parent::tei:listBibl/@xml:lang = 'zh-TW' or @xml:lang = 'zh-TW'">
         <xsl:text>{\textChinese </xsl:text>
@@ -928,7 +919,7 @@
   </xsl:template>
 
   <doc xmlns="http://www.oxygenxml.com/ns/doc/xsl">
-    <desc>Process element &lt;p&gt;</desc>
+    <desc>Process element p</desc>
   </doc>
   <xsl:template match="tei:p">
     <xsl:choose>
@@ -964,9 +955,42 @@
       <xsl:text>\par&#10;</xsl:text>
     </xsl:if>
   </xsl:template>
+  
+  <doc xmlns="http://www.oxygenxml.com/ns/doc/xsl">
+    <desc>Process element p with tei:match(@rend,'display')</desc>
+  </doc>
+  <xsl:template match="tei:p[tei:match(@rend, 'display')]">
+    <xsl:text>&#10;\begin{</xsl:text>
+    <xsl:value-of select="$quoteEnv"/>
+    <xsl:text>}&#10;</xsl:text>
+    <xsl:apply-templates/>
+    <xsl:text>\end{</xsl:text>
+    <xsl:value-of select="$quoteEnv"/>
+    <xsl:text>}&#10;</xsl:text>
+  </xsl:template>
+  
+  <!-- SJH: added to render bylines for commentary -->
+  <doc xmlns="http://www.oxygenxml.com/ns/doc/xsl">
+    <desc>Process element p with tei:match(@rend,'byline')</desc>
+  </doc>
+  <xsl:template match="tei:p[@rend = 'byline']">
+    <xsl:text>&#10;&#10;</xsl:text>
+    <xsl:text>\begin{center}&#10;</xsl:text>
+    <xsl:apply-templates/>
+    <xsl:text>&#10;\end{center}</xsl:text>
+  </xsl:template>
 
   <doc xmlns="http://www.oxygenxml.com/ns/doc/xsl">
-    <desc>How to number a paragraph</desc>
+    <desc>Process element p with tei:match(@rend,'center')</desc>
+  </doc>
+  <xsl:template match="tei:p[tei:match(@rend, 'center')]">
+    <xsl:text>&#10;\begin{center}&#10;</xsl:text>
+    <xsl:apply-templates/>
+    <xsl:text>\end{center}&#10;</xsl:text>
+  </xsl:template>
+  
+  <doc xmlns="http://www.oxygenxml.com/ns/doc/xsl">
+    <desc>Number paragraphs</desc>
   </doc>
   <xsl:template name="numberParagraph">
     <xsl:text>\textit{\footnotesize[</xsl:text>
@@ -977,10 +1001,9 @@
   <doc xmlns="http://www.oxygenxml.com/ns/doc/xsl">
     <desc>
       <p>Process element pb</p>
-      <p>Indication of a page break. We make it an anchor if it has an ID.</p>
+      <p>Indication of a page break. Make it an anchor if it has an ID.</p>
     </desc>
   </doc>
-
   <xsl:template match="tei:pb">
     <!-- string " Page " is now managed through the i18n file -->
     <xsl:choose>
@@ -1026,6 +1049,7 @@
     </xsl:choose>
     <xsl:sequence select="tei:makeHyperTarget(@xml:id)"/>
   </xsl:template>
+  
   <doc xmlns="http://www.oxygenxml.com/ns/doc/xsl">
     <desc>Process element q</desc>
   </doc>
@@ -1095,36 +1119,6 @@
     </xsl:choose>
   </xsl:template>
 
-
-  <doc xmlns="http://www.oxygenxml.com/ns/doc/xsl">
-    <desc>Process element p with tei:match(@rend,'display')</desc>
-  </doc>
-  <xsl:template match="tei:p[tei:match(@rend, 'display')]">
-    <xsl:text>&#10;\begin{</xsl:text>
-    <xsl:value-of select="$quoteEnv"/>
-    <xsl:text>}&#10;</xsl:text>
-    <xsl:apply-templates/>
-    <xsl:text>\end{</xsl:text>
-    <xsl:value-of select="$quoteEnv"/>
-    <xsl:text>}&#10;</xsl:text>
-  </xsl:template>
-
-  <!-- SJH: added to render bylines for commentary -->
-  <doc xmlns="http://www.oxygenxml.com/ns/doc/xsl">
-    <desc>Process element p with tei:match(@rend,'byline')</desc>
-  </doc>
-  <xsl:template match="tei:p[@rend = 'byline']">
-    <xsl:text>&#10;&#10;</xsl:text>
-    <xsl:text>\begin{center}&#10;</xsl:text>
-    <xsl:apply-templates/>
-    <xsl:text>&#10;\end{center}</xsl:text>
-  </xsl:template>
-
-  <doc xmlns="http://www.oxygenxml.com/ns/doc/xsl">
-    <desc>Process element q with tei:match(@rend,'display')</desc>
-  </doc>
-
-
   <doc xmlns="http://www.oxygenxml.com/ns/doc/xsl">
     <desc>Process element ref</desc>
   </doc>
@@ -1142,9 +1136,9 @@
     </xsl:choose> 
   </xsl:template>
 
-  <!-- SJH: Insert a number in superscript to indicate the beginning of a seg, using value of @n-->
   <doc xmlns="http://www.oxygenxml.com/ns/doc/xsl">
-    <desc>Process element seg with @n)</desc>
+    <desc>Insert a number in superscript to indicate 
+      the beginning of a seg, using value of @n</desc>
   </doc>
   <xsl:template match="tei:seg">
     <xsl:text>\textsuperscript{</xsl:text>
@@ -1200,201 +1194,10 @@
     <xsl:value-of select="$unit"/>
     <xsl:text>}</xsl:text>
   </xsl:template>
+
+  <doc xmlns="http://www.oxygenxml.com/ns/doc/xsl">
+    <desc>Omit any linebreak (lb) elements.</desc>
+  </doc>
+  <xsl:template match="//tei:lb"/>
   
-
-  <xsl:template match="tei:dell[tei:match(@rend, 'strikethrough')]">
-    <xsl:text>\sout{</xsl:text>
-    <xsl:apply-templates/>
-    <xsl:text>}</xsl:text>
-  </xsl:template>
-
-  <doc xmlns="http://www.oxygenxml.com/ns/doc/xsl">
-    <desc>Process element p with tei:match(@rend,'center')</desc>
-  </doc>
-  <xsl:template match="tei:p[tei:match(@rend, 'center')]">
-    <xsl:text>&#10;\begin{center}&#10;</xsl:text>
-    <xsl:apply-templates/>
-    <xsl:text>\end{center}&#10;</xsl:text>
-  </xsl:template>
-
-  <!-- SJH: Handling back matter (commentary, etc.) -->
-  <doc xmlns="http://www.oxygenxml.com/ns/doc/xsl">
-    <desc>Back matter.</desc>
-  </doc>
-  <xsl:template match="tei:div[@type = 'commentary']">
-    <xsl:text>\setcounter{footnote}{0}</xsl:text>
-    <xsl:text>\newpage</xsl:text>
-  </xsl:template>
-
-  <!-- SJH: Omit linebreaks with @break='no', which occurs in Dunning's edition. -->
-  <doc xmlns="http://www.oxygenxml.com/ns/doc/xsl">
-    <desc>Omit any linebreak element with @break="no".</desc>
-  </doc>
-  <xsl:template match="//tei:lb[@break = 'no']" name="lbno"/>
-  <!-- Since there are many linebreaks in Dunning's edition, let's just omit all of them. -->
-  <xsl:template match="//tei:lb" name="lb"/>
-
-  <xsl:template match="//tei:quote/tei:lb"/>
-
-
-  <!-- SJH added templates for handling editorial symbols. -->
-  <doc xmlns="http://www.oxygenxml.com/ns/doc/xsl">
-    <desc>
-      <p>Process gap</p>
-    </desc>
-  </doc>
-  <xsl:template match="tei:gap">
-    <xsl:text>\gap{</xsl:text>
-    <xsl:apply-templates/>
-    <xsl:text>}</xsl:text>
-  </xsl:template>
-
-  <doc xmlns="http://www.oxygenxml.com/ns/doc/xsl">
-    <desc>
-      <p>Process lacunaStart</p>
-    </desc>
-  </doc>
-  <!-- Note: Logic needed here to distinguish between single (deest) and multiple (desunt) witnesses. -->
-  <xsl:template match="tei:lacunaStart">
-    <xsl:text>\textit{deest}</xsl:text>
-  </xsl:template>
-
-  <doc xmlns="http://www.oxygenxml.com/ns/doc/xsl">
-    <desc>
-      <p>Process lacunaEnd</p>
-    </desc>
-  </doc>
-  <!-- Note: Logic needed here to distinguish between single (redit) and multiple (redeunt) witnesses. -->
-  <xsl:template match="tei:lacunaEnd">
-    <xsl:text>\textit{redit}</xsl:text>
-  </xsl:template>
-
-  <doc xmlns="http://www.oxygenxml.com/ns/doc/xsl">
-    <desc>Handle sic</desc>
-  </doc>
-  <xsl:template match="//tei:sic">
-    <xsl:text>\sic{</xsl:text>
-    <xsl:apply-templates/>
-    <xsl:text>}</xsl:text>
-  </xsl:template>
-
-  <doc xmlns="http://www.oxygenxml.com/ns/doc/xsl">
-    <desc>Handle supplied.</desc>
-  </doc>
-  <xsl:template match="//tei:supplied">
-    <xsl:text>\supplied{</xsl:text>
-    <xsl:apply-templates/>
-    <xsl:text>}</xsl:text>
-  </xsl:template>
-
-  <doc xmlns="http://www.oxygenxml.com/ns/doc/xsl">
-    <desc>Handle surplus.</desc>
-  </doc>
-  <xsl:template match="//tei:surplus">
-    <xsl:text>\surplus{</xsl:text>
-    <xsl:apply-templates/>
-    <xsl:text>}</xsl:text>
-  </xsl:template>
-
-  <doc xmlns="http://www.oxygenxml.com/ns/doc/xsl">
-    <desc>Handle foreign.</desc>
-  </doc>
-  <xsl:template match="tei:foreign">
-    <xsl:choose>
-      <!-- If the text is in Greek, don't italicize it. -->
-      <xsl:when test="@xml:lang='grc'">
-        <xsl:apply-templates/>
-      </xsl:when>
-      <!-- Otherwise, do italicize it. -->
-      <xsl:otherwise>
-        <xsl:text>\textit{</xsl:text>
-        <xsl:apply-templates/>
-        <xsl:text>}</xsl:text>
-      </xsl:otherwise>
-    </xsl:choose>
-  </xsl:template>
-  
-  <doc xmlns="http://www.oxygenxml.com/ns/doc/xsl">
-    <desc>Handle interpGrp</desc>
-  </doc>
-  <xsl:template match="tei:interpGrp">
-    <xsl:text>&#10;\begin{itemize}[label={}]&#10;</xsl:text>
-      <xsl:apply-templates/>
-    <xsl:text>&#10;\end{itemize}&#10;</xsl:text>
-  </xsl:template>
-  
-  <doc xmlns="http://www.oxygenxml.com/ns/doc/xsl">
-    <desc>Handle interp</desc>
-  </doc>
-  <xsl:template match="tei:interp">
-    <xsl:text>\item[] {\hyperref[</xsl:text>
-    <xsl:value-of select="translate(@corresp,'#','')"/>
-    <xsl:text>]{</xsl:text>
-    <xsl:value-of select="normalize-space(self::tei:interp/text())"/>
-    <xsl:text>}}&#10;</xsl:text>
-  </xsl:template>
-  
-  <doc xmlns="http://www.oxygenxml.com/ns/doc/xsl">
-    <desc>Handle mentioned</desc>
-  </doc>
-  <xsl:template match="tei:mentioned">
-    <xsl:text>\textit{</xsl:text><xsl:apply-templates/><xsl:text>}</xsl:text>
-  </xsl:template>
-  
-  <doc xmlns="http://www.oxygenxml.com/ns/doc/xsl">
-    <desc>Handle expan</desc>
-  </doc>
-  <xsl:template match="tei:expan">
-    <xsl:apply-templates/>
-  </xsl:template>
-  
-  <doc xmlns="http://www.oxygenxml.com/ns/doc/xsl">
-    <desc>Handle ex</desc>
-  </doc>
-  <xsl:template match="tei:ex">
-    <xsl:text>\expan{</xsl:text><xsl:apply-templates/><xsl:text>}</xsl:text>
-  </xsl:template>
-  
-  <doc xmlns="http://www.oxygenxml.com/ns/doc/xsl">
-    <desc>Handle abbr</desc>
-  </doc>
-  <xsl:template match="tei:abbr">
-    <xsl:choose>
-      <xsl:when test="ancestor::tei:app">
-        <xsl:text> \textit{(orig. \textup{</xsl:text><xsl:apply-templates/><xsl:text>})}</xsl:text>
-      </xsl:when>
-      <xsl:otherwise/>
-    </xsl:choose>
-  </xsl:template>
-  
-  <doc xmlns="http://www.oxygenxml.com/ns/doc/xsl">
-    <desc>Handle corr</desc>
-  </doc>
-  <xsl:template match="tei:corr">
-    <xsl:apply-templates/>
-  </xsl:template>
-  
-  <doc xmlns="http://www.oxygenxml.com/ns/doc/xsl">
-    <desc>Handle choice</desc>
-  </doc>
-  <xsl:template match="tei:choice">
-    <xsl:choose>
-      <xsl:when test="ancestor::tei:app">
-        <xsl:if test="child::tei:sic">
-          <xsl:apply-templates select="child::tei:corr"/><xsl:text> \textit{(\textup{</xsl:text><xsl:apply-templates select="child::tei:sic"/><xsl:text>} a.c.)}</xsl:text>
-        </xsl:if>
-        <xsl:if test="child::tei:expan">
-          <xsl:apply-templates select="child::tei:expan"/><xsl:apply-templates select="child::tei:abbr"/>
-        </xsl:if>
-      </xsl:when>
-      <xsl:otherwise>
-        <xsl:if test="child::tei:sic">
-          <xsl:apply-templates select="child::tei:corr"/>
-        </xsl:if>
-        <xsl:if test="child::tei:expan">
-          <xsl:apply-templates select="child::tei:expan"/>
-        </xsl:if>
-      </xsl:otherwise>
-    </xsl:choose>
-  </xsl:template>
 </xsl:stylesheet>

@@ -54,8 +54,85 @@ of this software, even if advised of the possibility of such damage.
    </doc>
 
   <xsl:template match="tei:facsimile"/>
+  
+  <doc xmlns="http://www.oxygenxml.com/ns/doc/xsl">
+    <desc>Handle abbr</desc>
+  </doc>
+  <xsl:template match="tei:abbr">
+    <xsl:choose>
+      <xsl:when test="ancestor::tei:app">
+        <xsl:text> \textit{(orig. \textup{</xsl:text><xsl:apply-templates/><xsl:text>})}</xsl:text>
+      </xsl:when>
+      <xsl:otherwise/>
+    </xsl:choose>
+  </xsl:template>
 
-<!-- SJH: Added. -->
+  <doc xmlns="http://www.oxygenxml.com/ns/doc/xsl">
+    <desc>Handle choice</desc>
+  </doc>
+  <xsl:template match="tei:choice">
+    <xsl:choose>
+      <xsl:when test="ancestor::tei:app">
+        <xsl:if test="child::tei:sic">
+          <xsl:apply-templates select="child::tei:corr"/><xsl:text> \textit{(\textup{</xsl:text><xsl:apply-templates select="child::tei:sic"/><xsl:text>} a.c.)}</xsl:text>
+        </xsl:if>
+        <xsl:if test="child::tei:expan">
+          <xsl:apply-templates select="child::tei:expan"/><xsl:apply-templates select="child::tei:abbr"/>
+        </xsl:if>
+      </xsl:when>
+      <xsl:otherwise>
+        <xsl:if test="child::tei:sic">
+          <xsl:apply-templates select="child::tei:corr"/>
+        </xsl:if>
+        <xsl:if test="child::tei:expan">
+          <xsl:apply-templates select="child::tei:expan"/>
+        </xsl:if>
+      </xsl:otherwise>
+    </xsl:choose>
+  </xsl:template>
+
+  <doc xmlns="http://www.oxygenxml.com/ns/doc/xsl">
+    <desc>Handle corr</desc>
+  </doc>
+  <xsl:template match="tei:corr">
+    <xsl:apply-templates/>
+  </xsl:template>
+  
+  <doc xmlns="http://www.oxygenxml.com/ns/doc/xsl">
+    <desc>Process element del</desc>
+  </doc>
+  <xsl:template match="tei:dell[tei:match(@rend, 'strikethrough')]">
+    <xsl:text>\sout{</xsl:text>
+    <xsl:apply-templates/>
+    <xsl:text>}</xsl:text>
+  </xsl:template>
+  
+  <doc xmlns="http://www.oxygenxml.com/ns/doc/xsl">
+    <desc>Handle ex</desc>
+  </doc>
+  <xsl:template match="tei:ex">
+    <xsl:text>\expan{</xsl:text><xsl:apply-templates/><xsl:text>}</xsl:text>
+  </xsl:template>
+  
+  <doc xmlns="http://www.oxygenxml.com/ns/doc/xsl">
+    <desc>Handle expan</desc>
+  </doc>
+  <xsl:template match="tei:expan">
+    <xsl:apply-templates/>
+  </xsl:template>
+   
+  <!-- SJH: added templates for handling editorial symbols. -->
+  <doc xmlns="http://www.oxygenxml.com/ns/doc/xsl">
+    <desc>
+      <p>Process gap</p>
+    </desc>
+  </doc>
+  <xsl:template match="tei:gap">
+    <xsl:text>\gap{</xsl:text>
+    <xsl:apply-templates/>
+    <xsl:text>}</xsl:text>
+  </xsl:template>
+  
   <doc xmlns="http://www.oxygenxml.com/ns/doc/xsl">
     <desc>Process tei:g to produce specific glyphs.</desc>
   </doc>
@@ -71,4 +148,59 @@ of this software, even if advised of the possibility of such damage.
       </xsl:when>
     </xsl:choose>  
   </xsl:template>
+  
+  <doc xmlns="http://www.oxygenxml.com/ns/doc/xsl">
+    <desc>
+      <p>Process lacunaStart</p>
+    </desc>
+  </doc>
+  <!-- Note: Logic needed here to distinguish between single (deest) and multiple (desunt) witnesses. -->
+  <xsl:template match="tei:lacunaStart">
+    <xsl:text>\textit{deest}</xsl:text>
+  </xsl:template>
+  
+  <doc xmlns="http://www.oxygenxml.com/ns/doc/xsl">
+    <desc>
+      <p>Process lacunaEnd</p>
+    </desc>
+  </doc>
+  <!-- Note: Logic needed here to distinguish between single (redit) and multiple (redeunt) witnesses. -->
+  <xsl:template match="tei:lacunaEnd">
+    <xsl:text>\textit{redit}</xsl:text>
+  </xsl:template>
+  
+  <doc xmlns="http://www.oxygenxml.com/ns/doc/xsl">
+    <desc>Handle mentioned</desc>
+  </doc>
+  <xsl:template match="tei:mentioned">
+    <xsl:text>\textit{</xsl:text><xsl:apply-templates/><xsl:text>}</xsl:text>
+  </xsl:template>
+  
+  <doc xmlns="http://www.oxygenxml.com/ns/doc/xsl">
+    <desc>Handle sic</desc>
+  </doc>
+  <xsl:template match="//tei:sic">
+    <xsl:text>\sic{</xsl:text>
+    <xsl:apply-templates/>
+    <xsl:text>}</xsl:text>
+  </xsl:template>
+  
+  <doc xmlns="http://www.oxygenxml.com/ns/doc/xsl">
+    <desc>Handle supplied.</desc>
+  </doc>
+  <xsl:template match="//tei:supplied">
+    <xsl:text>\supplied{</xsl:text>
+    <xsl:apply-templates/>
+    <xsl:text>}</xsl:text>
+  </xsl:template>
+  
+  <doc xmlns="http://www.oxygenxml.com/ns/doc/xsl">
+    <desc>Handle surplus.</desc>
+  </doc>
+  <xsl:template match="//tei:surplus">
+    <xsl:text>\surplus{</xsl:text>
+    <xsl:apply-templates/>
+    <xsl:text>}</xsl:text>
+  </xsl:template>
+
 </xsl:stylesheet>
