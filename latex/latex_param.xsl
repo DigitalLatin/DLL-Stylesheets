@@ -554,9 +554,9 @@ characters. The normal characters remain active for LaTeX commands.
   {3ex \@plus .2ex}%
   {\reset@font\LARGE\fontfamily{lmr}}}
 \renewcommand\subsection{\@startsection{subsection}{2}{\z@}%
-  {5ex\@plus -0.5ex \@minus- .2ex}%
+  {-1.75ex\@plus -0.5ex \@minus- .2ex}%
   {2.5ex \@plus .2ex}%
-  {\reset@font\fontfamily{lmr}\Large}}
+  {\reset@font\Large\fontfamily{lmr}}}
 \renewcommand\subsubsection{\@startsection{subsubsection}{3}{\z@}%
   {4ex\@plus -0.35ex \@minus -.2ex}%
   {2ex \@plus .2ex}%
@@ -620,7 +620,7 @@ characters. The normal characters remain active for LaTeX commands.
   \def\theHchapter{\Alph{chapter}}
   \appendix
 }
-     
+\def\tableofcontents{\section*{\contentsname}\@starttoc{toc}}
 \parskip<xsl:value-of select="$parSkip"/>
 \parindent<xsl:value-of select="$parIndent"/>
 \def\Panel#1#2#3#4{\multicolumn{#3}{){\columncolor{#2}}#4}{#1}}
