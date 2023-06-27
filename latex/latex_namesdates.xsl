@@ -155,9 +155,9 @@ of this software, even if advised of the possibility of such damage.
   <xsl:template match="//tei:geogName|tei:persName|tei:placeName">
     <xsl:choose>
       <xsl:when test="@ref">
-        <xsl:text>\href{</xsl:text>
-        <xsl:value-of select="@ref"/>
-        <xsl:text>}{</xsl:text>
+        <xsl:text>\hyperref[</xsl:text>
+        <xsl:value-of select="translate(@ref,'#','')"/>
+        <xsl:text>]{</xsl:text>
         <xsl:choose>
           <xsl:when test="tei:app/tei:lem">
             <xsl:choose>
