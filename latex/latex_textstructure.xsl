@@ -261,7 +261,7 @@ Edited By
 
 \vspace{1\baselineskip} % Whitespace
 
-Volumes are published under the</xsl:text> 
+Volumes are published under the </xsl:text> 
             <xsl:value-of select="normalize-space(//tei:publicationStmt/tei:availability/tei:licence)"/><xsl:text>: \url{</xsl:text>
         <xsl:value-of select="//tei:publicationStmt/tei:availability/tei:licence/@target"/><xsl:text>}.
 
