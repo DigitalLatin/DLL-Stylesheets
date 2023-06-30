@@ -65,69 +65,6 @@
         <xsl:value-of select="$quoteEnv"/>
         <xsl:text>}&#10;</xsl:text>
       </xsl:when>
-      <!-- SJH: Apparatus Fontium -->
-      <xsl:when test="ancestor::tei:div[@type = 'edition']">
-        <!-- SJH: Test for the type of quotation and handle accordingly. -->
-        <xsl:choose>
-          <xsl:when test="child::tei:quote[@rend = 'blockquote']">
-            <xsl:text>\begin{</xsl:text>
-            <xsl:value-of select="$quoteEnv"/>
-            <xsl:text>}&#10;</xsl:text>
-          </xsl:when>
-          <xsl:otherwise>
-            <xsl:text>``</xsl:text>
-          </xsl:otherwise>
-        </xsl:choose>
-        <xsl:apply-templates select="child::tei:quote"/>
-        <!-- SJH: Insert an empty \edtext{} following by a \lemma 
-          that will shorten the quotation for insertion into the apparatus fontium. 
-          I'm doing it this way to avoid conflicts with apparatus criticus entries within a quotation, 
-          as sometimes happens.-->
-        <xsl:text>\edtext{}</xsl:text>
-        <!-- Use the \lemma tag from Reledmac to customize what is printed in the apparatus fontium -->
-        <xsl:text>{\lemma{</xsl:text>
-        <!-- Shorten the quotation to the first and last words, separated by an ellipsis. -->
-        <!--<xsl:value-of select="tokenize(normalize-space(child::tei:quote), ' ')[1]"/>-->
-        <!--<xsl:text> … </xsl:text>-->
-        <!-- Come back to this. This will pick up a lemma & a variant if an <app> is the last part of the quotation. -->
-        <!--<xsl:value-of select="tokenize(normalize-space(child::tei:quote), ' ')[last()]"/>-->
-        <xsl:value-of select="$quoteEnv"/>
-        <xsl:text>}</xsl:text>
-        <!-- Start the apparatus fontium data with \Afootnote -->
-        <xsl:text>\Afootnote{</xsl:text>
-        <!-- Process the bibl entry or entries. Unfortunately, this requires a very specific format. It would be better to process bibl with a mode here, maybe.-->
-        <xsl:if test="child::tei:listBibl">
-          <xsl:for-each select="child::tei:listBibl/tei:bibl">
-            <xsl:if test="tei:author">
-              <xsl:value-of select="tei:author"/>
-              <xsl:text> </xsl:text>
-            </xsl:if>
-            <xsl:if test="tei:title">
-              <xsl:text>\textit{</xsl:text>
-              <xsl:value-of select="tei:title"/>
-              <xsl:text>} </xsl:text>
-            </xsl:if>
-            <xsl:if test="tei:biblScope">
-              <xsl:value-of select="tei:biblScope"/>
-            </xsl:if>
-          </xsl:for-each>
-        </xsl:if>
-        <!-- SJH: For some reason, this doesn't capture ALL of the data in <note>. I need to figure out why. -->
-        <xsl:if test="child::tei:note">
-          <xsl:apply-templates select="child::tei:note"/>
-        </xsl:if>
-        <xsl:text>}</xsl:text>
-        <xsl:choose>
-          <xsl:when test="child::tei:quote[@rend = 'blockquote']">
-            <xsl:text>\end{</xsl:text>
-            <xsl:value-of select="$quoteEnv"/>
-            <xsl:text>}&#10;</xsl:text>
-          </xsl:when>
-          <xsl:otherwise>
-            <xsl:text>}''</xsl:text>
-          </xsl:otherwise>
-        </xsl:choose>
-      </xsl:when>
       <xsl:otherwise>
         <xsl:value-of select="$preQuote"/>
         <xsl:if test="@n">

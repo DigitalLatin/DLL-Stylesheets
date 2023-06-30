@@ -33,8 +33,8 @@
     </desc>
   </doc>
   
-<!--  This might not be necessary, since it doesn't really do much anyway? 
-    <doc xmlns="http://www.oxygenxml.com/ns/doc/xsl">
+<!--  This might not be necessary, since it doesn't really do much anyway? -->
+<!--    <doc xmlns="http://www.oxygenxml.com/ns/doc/xsl">
     <desc>Process element cit for the apparatus fontium as an \Afootnote in reledmac.</desc>
   </doc>
   <xsl:template match="tei:cit">

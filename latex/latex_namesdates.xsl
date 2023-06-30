@@ -150,6 +150,13 @@ of this software, even if advised of the possibility of such damage.
   </xsl:template>
   
   <doc xmlns="http://www.oxygenxml.com/ns/doc/xsl">
+    <desc>Process name.</desc>
+  </doc>
+  <xsl:template match="tei:name">
+    <xsl:apply-templates/>
+  </xsl:template>
+  
+  <doc xmlns="http://www.oxygenxml.com/ns/doc/xsl">
     <desc>Process persName or placeName element.</desc>
   </doc>
   <xsl:template match="//tei:geogName|tei:persName|tei:placeName">
