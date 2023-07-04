@@ -230,4 +230,20 @@ of this software, even if advised of the possibility of such damage.
     <xsl:number level="any"/>
   </xsl:template>
  
+  <doc xmlns="http://www.oxygenxml.com/ns/doc/xsl">
+    <desc>Process ref when not a descendant or child of cit.</desc>
+  </doc>
+  <xsl:template match="tei:ref[not(ancestor::tei:cit)]">
+    <!-- Process children and descendants of tei:ref -->
+    <xsl:apply-templates select="node()" />
+  </xsl:template>
+  
+  <doc xmlns="http://www.oxygenxml.com/ns/doc/xsl">
+    <desc>Ignore tei:ref descendant or child of tei:cit</desc>
+  </doc>
+  <xsl:template match="tei:ref[ancestor::tei:cit]">
+    <xsl:apply-templates />
+  </xsl:template>
+  
+ 
 </xsl:stylesheet>

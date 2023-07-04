@@ -663,7 +663,7 @@
     <xsl:apply-templates/>
     <xsl:text>}}</xsl:text>
   </xsl:template>
-
+  
   <doc xmlns="http://www.oxygenxml.com/ns/doc/xsl">
     <desc>
       <p>Process listWit. The big issue here is turning each witness into a \bibitem, so that cross
