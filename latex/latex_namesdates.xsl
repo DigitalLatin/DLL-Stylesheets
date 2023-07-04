@@ -78,11 +78,13 @@ of this software, even if advised of the possibility of such damage.
         <xsl:text>\end{bibitemlist}&#10;</xsl:text>
       </xsl:when>
       <xsl:otherwise>
-        <xsl:text>\begin{itemize}&#10;</xsl:text>
+        <xsl:text>&#10;{\large \scshape{</xsl:text>
+        <xsl:value-of select="tei:head"/>
+        <xsl:text>}}&#10;\begin{itemize}&#10;</xsl:text>
         <xsl:for-each select="tei:person">
           <xsl:text>&#10;\item</xsl:text><xsl:call-template name="person"/>          
         </xsl:for-each>
-        <xsl:text>\end{itemize}&#10;</xsl:text>
+        <xsl:text>&#10;\end{itemize}&#10;</xsl:text>
       </xsl:otherwise>
     </xsl:choose>
   </xsl:template>
@@ -113,7 +115,7 @@ of this software, even if advised of the possibility of such damage.
       </xsl:when>
       <!-- When the listPerson is just a list of names (e.g., in the front or back mater) -->
       <xsl:when test="ancestor::tei:front or ancestor::tei:back">
-        <xsl:text>\label{</xsl:text><xsl:value-of select="child::tei:persName/tei:abbr[@type='siglum']"/><xsl:text>} </xsl:text>
+        <xsl:text> \label{</xsl:text><xsl:value-of select="child::tei:persName/tei:abbr[@type='siglum']"/><xsl:text>} </xsl:text>
         <xsl:choose>
           <xsl:when test="child::tei:persName/(tei:surname or tei:forename or tei:addName)">
             <xsl:if test="child::tei:persName/tei:surname and child::tei:persName/tei:addname">
@@ -130,7 +132,7 @@ of this software, even if advised of the possibility of such damage.
             </xsl:if>
           </xsl:when>
           <xsl:otherwise>
-            <xsl:value-of select="child::tei:persName/text()"/>
+            <xsl:value-of select="normalize-space(child::tei:persName/text())"/>
           </xsl:otherwise>
         </xsl:choose>     
       </xsl:when>
@@ -148,12 +150,19 @@ of this software, even if advised of the possibility of such damage.
       <xsl:text>\mbox{}\\ </xsl:text>
       <xsl:apply-templates/>
   </xsl:template>
-  
+   
   <doc xmlns="http://www.oxygenxml.com/ns/doc/xsl">
-    <desc>Process name.</desc>
+    <desc>Process affiliation or name.</desc>
   </doc>
-  <xsl:template match="tei:name">
-    <xsl:apply-templates/>
+  <xsl:template match="//tei:name">
+    <xsl:choose>
+      <xsl:when test="parent::tei:ref">
+        <xsl:apply-templates/><xsl:text> </xsl:text><!-- Insert a space, since format/indent is currently forcing </ref> to be processed without a space following it. -->
+      </xsl:when>
+      <xsl:otherwise>
+        <xsl:apply-templates/>
+      </xsl:otherwise>
+    </xsl:choose>
   </xsl:template>
   
   <doc xmlns="http://www.oxygenxml.com/ns/doc/xsl">
