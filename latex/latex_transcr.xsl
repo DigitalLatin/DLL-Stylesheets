@@ -146,6 +146,10 @@ of this software, even if advised of the possibility of such damage.
       <xsl:when test="@ref='#sigillvm'">
         <xsl:text>✠</xsl:text>
       </xsl:when>
+      <!-- Con -->
+      <xsl:when test="@ref='#con'">
+        <xsl:text>ꝯ</xsl:text>
+      </xsl:when>
     </xsl:choose>  
   </xsl:template>
   
