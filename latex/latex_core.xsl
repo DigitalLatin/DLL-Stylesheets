@@ -278,10 +278,15 @@
         <xsl:variable name="depth">
           <xsl:apply-templates mode="depth" select=".."/>
         </xsl:variable>
-        <xsl:if test="child::tei:app">
-          <xsl:text>&#10;\pstart</xsl:text>
-        </xsl:if>
-        <xsl:text>&#10;\</xsl:text>
+        <xsl:choose>
+          <xsl:when test="child::tei:app">
+            <xsl:text>&#10;\pstart&#10;</xsl:text>
+            <xsl:text>\edtext{\</xsl:text>
+          </xsl:when>
+          <xsl:otherwise>
+            <xsl:text>&#10;\</xsl:text>
+          </xsl:otherwise>
+        </xsl:choose>
         <xsl:choose>
           <xsl:when test="$documentclass = 'book'">
             <xsl:choose>
@@ -297,11 +302,7 @@
           <xsl:otherwise>
             <xsl:choose>
               <xsl:when test="$depth = 0">newpage&#10;\thispagestyle{plain}&#10;\section</xsl:when>
-              <xsl:when test="$depth = 1">
-                <xsl:if test="parent::tei:div[@type = 'textpart']">
-                  <xsl:text>newpage&#10;\vspace{2\baselineskip} % Whitespace&#10;</xsl:text>
-                  <xsl:text>\</xsl:text>
-                </xsl:if>subsection</xsl:when>
+              <xsl:when test="$depth = 1">subsection</xsl:when>
               <xsl:when test="$depth = 2">subsubsection</xsl:when>
               <xsl:when test="$depth = 3">paragraph</xsl:when>
               <xsl:when test="$depth = 4">subparagraph</xsl:when>
@@ -313,33 +314,44 @@
         <xsl:choose>
           <!-- First Order Heads -->
           <xsl:when test="$depth = '0'">
-            <xsl:text>[{</xsl:text>
-            <xsl:apply-templates/>
-            <xsl:text>}]{\centering\uppercase{\so{</xsl:text>
-            <xsl:apply-templates/>
-            <xsl:text>}}}\label{</xsl:text>
-            <xsl:value-of select="parent::tei:div/@xml:id"/>
-            <xsl:text>}</xsl:text>
-            <xsl:text>&#10;\vspace{2\baselineskip} % Whitespace</xsl:text>
-            <xsl:if test="ancestor::tei:front/tei:div">
-              <xsl:text>&#10;&#10;\pagestyle{fancy}&#10;</xsl:text>
-            </xsl:if>
-            <xsl:if test="ancestor::tei:body">
-              <xsl:text>&#10;&#10;\pagestyle{fancy}&#10;
+            <xsl:choose>
+              <xsl:when test="ancestor::tei:body">
+                <xsl:text>[{</xsl:text>
+                <xsl:apply-templates/>
+                <xsl:text>}]{\centering\uppercase{\so{</xsl:text>
+                <xsl:apply-templates/>
+                <xsl:text>}}}\label{</xsl:text>
+                <xsl:value-of select="parent::tei:div/@xml:id"/>
+                <xsl:text>}</xsl:text>
+                <xsl:text>&#10;\vspace{2\baselineskip} % Whitespace</xsl:text>
+              </xsl:when>
+              <xsl:otherwise>
+                <xsl:text>{</xsl:text>
+                <xsl:apply-templates/>
+                <xsl:text>}</xsl:text>
+              </xsl:otherwise>
+            </xsl:choose>
+            <xsl:choose>
+              <xsl:when test="ancestor::tei:body">
+                <xsl:text>&#10;&#10;\pagestyle{fancy}&#10;
                   &#10;\fancyhead[C]{</xsl:text>
-              <xsl:value-of select="self::tei:head"/>
-              <xsl:text>}</xsl:text>
-            </xsl:if>
-            <!-- This is for the title of a commentary, with a reset of the fancyheader. -->
-            <xsl:if test="ancestor::tei:back">
-              <xsl:text>&#10;&#10;\pagestyle{fancy}&#10;</xsl:text>
-              <xsl:text>&#10;\fancyhead[LE]{\thepage}</xsl:text>
-              <xsl:text>&#10;\fancyhead[CE]{</xsl:text>
-              <xsl:value-of select="ancestor::tei:div/tei:head"/>
-              <xsl:text>}</xsl:text>
-              <xsl:text>&#10;\fancyhead[RO]{\thepage}</xsl:text>
-              <xsl:text>&#10;\fancyhead[CO]{\rightmark}&#10;</xsl:text>
-            </xsl:if>
+                <xsl:value-of select="self::tei:head"/>
+                <xsl:text>}</xsl:text>  
+              </xsl:when>
+              <!-- This is for the title of a commentary, with a reset of the fancyheader. -->
+              <xsl:when test="ancestor::tei:back">
+                <xsl:text>&#10;&#10;\pagestyle{fancy}&#10;</xsl:text>
+                <xsl:text>&#10;\fancyhead[LE]{\thepage}</xsl:text>
+                <xsl:text>&#10;\fancyhead[CE]{</xsl:text>
+                <xsl:value-of select="ancestor::tei:div/tei:head"/>
+                <xsl:text>}</xsl:text>
+                <xsl:text>&#10;\fancyhead[RO]{\thepage}</xsl:text>
+                <xsl:text>&#10;\fancyhead[CO]{\rightmark}&#10;</xsl:text>  
+              </xsl:when>
+              <xsl:otherwise>
+                <xsl:text>&#10;&#10;\pagestyle{fancy}&#10;</xsl:text>
+              </xsl:otherwise>
+            </xsl:choose>
           </xsl:when>
 
           <!-- Second Order Heads -->
@@ -352,27 +364,33 @@
               </xsl:when>
               <!-- This is for the title of individual sections of the edition, so that the titles can be included in the apparatus. -->
               <xsl:when test="ancestor::tei:body and parent::tei:div[@type = 'textpart']">
-                <!-- If the value of head is greater than 20 characters, 
+                <xsl:choose>
+                  <xsl:when test="child::tei:app">
+                    <xsl:apply-templates/>
+                  </xsl:when>
+                  <xsl:otherwise>
+                    <xsl:if test="string-length(self::tei:head) > 20">
+                      <xsl:text>[</xsl:text>
+                      <xsl:variable name="words" select="tokenize(normalize-space(.), '\s+')"/>
+                      <xsl:for-each select="$words[position() &lt;= 3]">
+                        <xsl:value-of select="."/>
+                        <xsl:if test="position() != last()">
+                          <xsl:text> </xsl:text>
+                        </xsl:if>
+                      </xsl:for-each>
+                      <xsl:text> … ]</xsl:text>
+                    </xsl:if>
+                    <xsl:text>{</xsl:text>
+                    <xsl:apply-templates/>
+                    <xsl:text>}</xsl:text>
+                    <xsl:text>\label{</xsl:text>
+                    <xsl:value-of select="parent::tei:div/@xml:id"/>
+                    <xsl:text>}&#10;</xsl:text>
+                    <xsl:text>&#10;\vspace{1\baselineskip} % Whitespace&#10;</xsl:text>
+                  </xsl:otherwise>
+                </xsl:choose><!-- If the value of head is greater than 20 characters, 
                   create a short optional label for the running header at 
                   the top of the page. --> 
-                <xsl:if test="string-length(self::tei:head) > 20">
-                  <xsl:text>[</xsl:text>
-                  <xsl:variable name="words" select="tokenize(normalize-space(.), '\s+')"/>
-                  <xsl:for-each select="$words[position() &lt;= 3]">
-                    <xsl:value-of select="."/>
-                    <xsl:if test="position() != last()">
-                      <xsl:text> </xsl:text>
-                    </xsl:if>
-                  </xsl:for-each>
-                  <xsl:text> … ]</xsl:text>
-                </xsl:if>
-                <xsl:text>{</xsl:text>
-                <xsl:apply-templates/>
-                <xsl:text>}</xsl:text>
-                <xsl:text>\label{</xsl:text>
-                <xsl:value-of select="parent::tei:div/@xml:id"/>
-                <xsl:text>}&#10;</xsl:text>
-                <xsl:text>&#10;\vspace{1\baselineskip} % Whitespace&#10;</xsl:text>
               </xsl:when>
               <xsl:when test="ancestor::tei:back">
                 <xsl:text>[{</xsl:text>
@@ -388,12 +406,15 @@
 
           <!-- Third Order Heads -->
           <xsl:when test="$depth = '2'">
-            <xsl:text>{</xsl:text>
-            <xsl:apply-templates/>
-            <xsl:text>}&#10;</xsl:text>
-            <xsl:if test="child::tei:app">
-              <xsl:text>\pend&#10;</xsl:text>
-            </xsl:if>
+            <xsl:choose>
+              <xsl:when test="child::tei:app">
+                <xsl:apply-templates/>
+              </xsl:when>
+              <xsl:otherwise><xsl:text>{</xsl:text>
+                <xsl:apply-templates/>
+                <xsl:text>}&#10;</xsl:text>
+              </xsl:otherwise>
+            </xsl:choose>
           </xsl:when>
           <xsl:otherwise>
             <xsl:text>{</xsl:text>
@@ -1040,8 +1061,14 @@
         <xsl:text>&#10;\endgroup&#10;</xsl:text>
       </xsl:when>
       <xsl:when test="parent::tei:cit">
+        <xsl:if test="preceding-sibling::tei:ref">
+          <xsl:text> </xsl:text>
+        </xsl:if>
         <xsl:sequence select="tei:makeHyperTarget(@xml:id)"/>
         <xsl:apply-templates/>
+        <xsl:if test="following-sibling::tei:ref">
+          <xsl:text> </xsl:text>
+        </xsl:if>
       </xsl:when>
       <xsl:when test="@rend = 'inline'">
         <xsl:text>``</xsl:text>
@@ -1135,4 +1162,21 @@
   </doc>
   <xsl:template match="//tei:lb"/>
   
+  <doc xmlns="http://www.oxygenxml.com/ns/doc/xsl">
+    <desc>Insert space around tei:title.</desc>
+  </doc>
+  <xsl:template match="tei:title">
+      
+        <xsl:if test="not(preceding-sibling::node()[1][self::text()[normalize-space()]])">
+          <xsl:text> </xsl:text>
+        </xsl:if>
+      
+      <!-- Apply templates to process the content of title -->
+      <xsl:text>\textit{</xsl:text><xsl:apply-templates/><xsl:text>}</xsl:text>
+      
+      
+        <xsl:if test="not(following-sibling::node()[1][self::text()[normalize-space()]])">
+          <xsl:text> </xsl:text>
+        </xsl:if>
+  </xsl:template>
 </xsl:stylesheet>
