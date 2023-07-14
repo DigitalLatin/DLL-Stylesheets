@@ -137,8 +137,6 @@
     </doc>
     <xsl:template name="titlePage">
         <xsl:text>
-% Insert an unnumbered page first.
-\setcounter{page}{0}
 \thispagestyle{empty}
 \vspace*{\fill} 
 
@@ -147,6 +145,7 @@ This PDF is formatted to accommodate printing two pages per sheet in landscape m
 \end{center}
 
 \vspace*{\fill}
+\frontmatter 
 \thispagestyle{empty}
 \begin{titlepage} % Suppresses headers and footers on the title page
 \centering % Center everything on the title page
@@ -158,13 +157,13 @@ This PDF is formatted to accommodate printing two pages per sheet in landscape m
 \rule{\textwidth}{1.6pt}\vspace*{-\baselineskip}\vspace*{2pt} % Thick horizontal rule
 \rule{\textwidth}{0.4pt} % Thin horizontal rule
         
-\vspace{1\baselineskip} % Whitespace above the title
+\vfill
 \begin{spacing}{1.5}        
 {\LARGE\uppercase{</xsl:text>
         <xsl:value-of select="//tei:titleStmt/tei:title"/>
         <xsl:text>}} % Title
 \end{spacing}
-\vspace{1.25\baselineskip} % Whitespace below the title 
+\vfill 
 
 %------------------------------------------------
 %	Editor(s)
@@ -172,35 +171,29 @@ This PDF is formatted to accommodate printing two pages per sheet in landscape m
 
 Edited By
 
-\vspace{0.5\baselineskip} % Whitespace before the editors
+\vfill
 
 {\Large </xsl:text>
         <xsl:value-of select="//tei:titleStmt/tei:editor"/>
         <xsl:text>} % Editor list
         
-\vspace{0.5\baselineskip} % Whitespace below the editor list
+\vfill
 \rule{\textwidth}{0.4pt}\vspace*{-\baselineskip}\vspace{3.2pt} % Thin horizontal rule
 \rule{\textwidth}{1.6pt} % Thick horizontal rule
 
 %------------------------------------------------
 %	Series
 %------------------------------------------------
-\vspace{3\baselineskip} % Whitespace below the title and editor block
+\vfill
 
 {\Large </xsl:text>
         <xsl:value-of select="//tei:titleStmt/tei:sponsor"/>
         <xsl:text>}\\
-\medskip % Whitespace
+\vfill
 {\large </xsl:text>
         <xsl:value-of select="//tei:seriesStmt/tei:title"/>
-        <xsl:text>}\\
-\vspace{1\baselineskip} % Whitespace
-
-{\normalsize </xsl:text>
-        <xsl:value-of select="//tei:seriesStmt/tei:respStmt/tei:name"/>
-        <xsl:text>, General Editor}\\
-                        
-\vspace{1\baselineskip} % Whitespace
+        <xsl:text>}\\                      
+\vfill
 {\large Volume </xsl:text>
         <xsl:value-of select="//tei:seriesStmt/tei:biblScope"/>
         <xsl:text>}\\
@@ -225,12 +218,12 @@ Edited By
 %----------------------------------------------------------------------------------------
 \begin{copyrightPage}
 \thispagestyle{empty}
-\vspace*{\baselineskip} % White space at the top of the page
+\vfill
 \begin{figure}[h] % Position the logo here on the page.
 \includegraphics[scale=0.50]{../images/DLL.eps} % Logo of DLL
 \centering % Center the logo.
 \end{figure}
-\vspace{2\baselineskip} % Whitespace
+\vfill
 \centering
 {\LARGE </xsl:text>
         <xsl:value-of select="//tei:publicationStmt/tei:publisher"/>
@@ -247,7 +240,7 @@ Edited By
         <xsl:text>, </xsl:text>
         <xsl:value-of select="//tei:publicationStmt/tei:address/tei:country"/>
         <xsl:text>
-\vspace{\baselineskip} % Whitespace
+\vfill
 
 \flushleft
 \small
@@ -259,13 +252,13 @@ Edited By
         <xsl:value-of select="//tei:publicationStmt/tei:authority"/>
         <xsl:text>. Individual volumes are reviewed and sponsored by the Society for Classical Studies, the Medieval Academy of America, or the Renaissance Society of America, depending on the era of the text(s).
 
-\vspace{1\baselineskip} % Whitespace
+\vfill
 
 Volumes are published under the </xsl:text> 
             <xsl:value-of select="normalize-space(//tei:publicationStmt/tei:availability/tei:licence)"/><xsl:text>: \url{</xsl:text>
         <xsl:value-of select="//tei:publicationStmt/tei:availability/tei:licence/@target"/><xsl:text>}.
 
-\vspace{2\baselineskip} % Whitespace
+\vfill
 
 \textcopyright \thinspace </xsl:text>
         <xsl:value-of select="//tei:titleStmt/tei:editor"/>
@@ -273,7 +266,7 @@ Volumes are published under the </xsl:text>
         <xsl:value-of select="//tei:publicationStmt/tei:date"/>
         <xsl:text>.
 
-\vspace{2\baselineskip} % Whitespace
+\vfill
 \end{copyrightPage}
 \cleardoublepage
 </xsl:text>
@@ -326,7 +319,10 @@ Volumes are published under the </xsl:text>
     <xsl:template match="tei:body">
         <xsl:if
             test="not(ancestor::tei:floatingText) and not(preceding::tei:body) and preceding::tei:front">
-            <xsl:text>&#10;\mainmatter </xsl:text>
+            <xsl:text>&#10;\mainmatter
+\cleardoublepage
+\pagenumbering{arabic}
+</xsl:text>
         </xsl:if>
         <xsl:text>&#10;\def\endstanzaextra{\pstart\centering-\-\-\-\-\-\-\-\-\skipnumbering\pend}</xsl:text>
         <xsl:text>&#10;\thispagestyle{plain}&#10;</xsl:text>
@@ -396,11 +392,18 @@ Volumes are published under the </xsl:text>
         <desc>Process front</desc>
     </doc>
     <xsl:template match="tei:front">
-        <xsl:text>&#10;\frontmatter 
+        <xsl:text>&#10;\blankpage
+
+\frontmatter
+\pagenumbering{roman}
+
 \cleardoublepage
-\blankpage
 \tableofcontents
-\cleardoublepage&#10;
+\blankpage
+\cleardoublepage        
+\thispagestyle{plain}
+
+\setcounter{page}{5}
         </xsl:text>
         <!-- SJH: This keeps the header from showing up on the first page of the preface. -->
             <xsl:text>&#10;\thispagestyle{plain}&#10;</xsl:text>
