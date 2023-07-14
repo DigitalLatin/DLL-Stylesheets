@@ -553,11 +553,11 @@ characters. The normal characters remain active for LaTeX commands.
   {-2ex \@plus -0.5ex \@minus -.2ex}%
   {3ex \@plus .2ex}%
   {\reset@font\LARGE\fontfamily{lmr}}}
-\renewcommand\subsection{\@startsection{subsection}{2}{\z@}%
+  \renewcommand\subsection{\@startsection{subsection}{2}{\z@}%
   {-1.75ex\@plus -0.5ex \@minus- .2ex}%
   {2.5ex \@plus .2ex}%
   {\reset@font\Large\fontfamily{lmr}}}
-\renewcommand\subsubsection{\@startsection{subsubsection}{3}{\z@}%
+  \renewcommand\subsubsection{\@startsection{subsubsection}{3}{\z@}%
   {4ex\@plus -0.35ex \@minus -.2ex}%
   {2ex \@plus .2ex}%
   {\reset@font\fontfamily{lmr}\large}}
@@ -572,6 +572,7 @@ characters. The normal characters remain active for LaTeX commands.
   
 </xsl:if>
 % Format and style for the table of contents
+\def\tableofcontents{\section*{\contentsname}\@starttoc{toc}}
 \def\l@section#1#2{\addpenalty{\@secpenalty} \addvspace{1.0em plus 1pt}
  \@tempdima 1.5em \begingroup
  \parindent \z@ \rightskip \@pnumwidth 
@@ -727,7 +728,8 @@ characters. The normal characters remain active for LaTeX commands.
 \fancyfoot[CE]{}
 \fancyfoot[RE]{\TheID}
 \fancypagestyle{plain}{\fancyhead{}\renewcommand{\headrulewidth}{0pt}}
-      
+
+% For blank pages
 \newcommand{\blankpage}{
   \clearpage
   \fancypagestyle{empty}{
