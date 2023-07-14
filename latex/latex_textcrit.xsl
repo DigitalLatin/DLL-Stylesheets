@@ -142,8 +142,15 @@
   <xsl:template name="appLemma">
     <xsl:param name="lemma"/>
     <xsl:for-each select="tei:lem">
-      <xsl:text>\edtext</xsl:text>
-      <xsl:text>{</xsl:text>
+      <!-- If the app is a child of head, \edtext must be supplied by the templates for head -->
+      <xsl:choose>
+        <xsl:when test="ancestor::tei:head">
+          <xsl:text>{</xsl:text>
+        </xsl:when>
+        <xsl:otherwise>
+        <xsl:text>\edtext{</xsl:text>
+        </xsl:otherwise>
+      </xsl:choose>
       <!-- The lemma -->
       <xsl:apply-templates/>
       <xsl:text>}</xsl:text>
@@ -174,6 +181,11 @@
           <xsl:text> </xsl:text>
           <xsl:apply-templates select="self::tei:lem"/>
           <xsl:text>}</xsl:text>
+        </xsl:when>
+        <xsl:when test="ancestor::tei:head">
+          <xsl:text>\label{</xsl:text>
+          <xsl:value-of select="ancestor::tei:div/@xml:id"/>
+          <xsl:text>}}{</xsl:text>
         </xsl:when>
         <xsl:otherwise>
           <!-- Otherwise, just open the bracket for the Cfootnote string. We're using \Cfootnote, since \Afootnote should be reserved for an apparatus fontium. -->
@@ -374,12 +386,21 @@
   <!-- The goal: \edtext{lemma}{ \Cfootnote {\textit{witnesses} \textit{sources} \textit{note} | reading \textit{witness} \textit{source} \textit{note} | reading \textit{witness} \textit{source} \textit{note}}} -->
   <xsl:template name="makeAppEntry">
     <xsl:param name="lemma"/>
+    <xsl:if test="not(preceding-sibling::node()[1][self::text()[normalize-space()]])">
+      <xsl:text> </xsl:text>
+    </xsl:if>
     <xsl:call-template name="appLemma"/>
     <xsl:if test="tei:rdg">
       <xsl:call-template name="appReadings"/>
     </xsl:if>
     <!-- Close the apparatus note. -->
     <xsl:text>}}</xsl:text>
+    <xsl:if test="ancestor::tei:head">
+      <xsl:text>&#10;\pend&#10;</xsl:text>
+    </xsl:if>
+    <xsl:if test="not(following-sibling::node()[1][self::text()[normalize-space()]])">
+      <xsl:text> </xsl:text>
+    </xsl:if>
   </xsl:template>
   
   <doc xmlns="http://www.oxygenxml.com/ns/doc/xsl">
