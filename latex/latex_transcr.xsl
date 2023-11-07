@@ -160,7 +160,15 @@ of this software, even if advised of the possibility of such damage.
   </doc>
   <!-- Note: Logic needed here to distinguish between single (deest) and multiple (desunt) witnesses. -->
   <xsl:template match="tei:lacunaStart">
-    <xsl:text>\textit{deest}</xsl:text>
+    <xsl:choose>
+      <!-- Print desunt if there are multiple values in @wit -->
+      <xsl:when test="count(tokenize(../@wit, ' ')) > 1">
+        <xsl:text>\textit{desunt}</xsl:text>
+      </xsl:when>
+      <xsl:otherwise>
+        <xsl:text>\textit{deest}</xsl:text>
+      </xsl:otherwise>
+    </xsl:choose>
   </xsl:template>
   
   <doc xmlns="http://www.oxygenxml.com/ns/doc/xsl">
@@ -170,7 +178,15 @@ of this software, even if advised of the possibility of such damage.
   </doc>
   <!-- Note: Logic needed here to distinguish between single (redit) and multiple (redeunt) witnesses. -->
   <xsl:template match="tei:lacunaEnd">
-    <xsl:text>\textit{redit}</xsl:text>
+    <xsl:choose>
+      <!-- Print redeunt if there are multiple values in @wit -->
+      <xsl:when test="count(tokenize(../@wit, ' ')) > 1">
+        <xsl:text>\textit{redeunt}</xsl:text>
+      </xsl:when>
+      <xsl:otherwise>
+        <xsl:text>\textit{redit}</xsl:text>
+      </xsl:otherwise>
+    </xsl:choose>
   </xsl:template>
   
   <doc xmlns="http://www.oxygenxml.com/ns/doc/xsl">
