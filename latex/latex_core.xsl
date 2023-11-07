@@ -278,15 +278,7 @@
         <xsl:variable name="depth">
           <xsl:apply-templates mode="depth" select=".."/>
         </xsl:variable>
-        <xsl:choose>
-          <xsl:when test="child::tei:app">
-            <xsl:text>&#10;\pstart&#10;</xsl:text>
-            <xsl:text>\edtext{\</xsl:text>
-          </xsl:when>
-          <xsl:otherwise>
-            <xsl:text>&#10;\</xsl:text>
-          </xsl:otherwise>
-        </xsl:choose>
+        <xsl:text>&#10;\</xsl:text>
         <xsl:choose>
           <xsl:when test="$documentclass = 'book'">
             <xsl:choose>
@@ -365,10 +357,36 @@
               <!-- This is for the title of individual sections of the edition, so that the titles can be included in the apparatus. -->
               <xsl:when test="ancestor::tei:body and parent::tei:div[@type = 'textpart']">
                 <xsl:choose>
-                  <xsl:when test="child::tei:app">
-                    <xsl:apply-templates/>
+                  <!-- If there is a child app element, process it -->
+                  <xsl:when test="tei:app">
+                    <!-- Output the subsection with the value of the descendant lem element -->
+                    <xsl:if test="string-length(tei:app/tei:lem) > 20">
+                      <xsl:text>[</xsl:text>
+                      <xsl:variable name="words" select="tokenize(normalize-space(.), '\s+')"/>
+                      <xsl:for-each select="$words[position() &lt;= 3]">
+                        <xsl:value-of select="."/>
+                        <xsl:if test="position() != last()">
+                          <xsl:text> </xsl:text>
+                        </xsl:if>
+                      </xsl:for-each>
+                      <xsl:text> … ]</xsl:text>
+                    </xsl:if>
+                    <xsl:text>{</xsl:text>
+                    <xsl:value-of select="normalize-space(tei:app/tei:lem)"/>
+                    <xsl:text>}</xsl:text>
+                    <xsl:text>\label{</xsl:text>
+                    <xsl:value-of select="parent::tei:div/@xml:id"/>
+                    <xsl:text>}</xsl:text>
+                    <xsl:text>&#10;\pstart&#10;</xsl:text>
+                    <!-- Apply templates only for app and its children -->
+                    <xsl:apply-templates select="tei:app"/>
+                    <xsl:text>&#10;\pend&#10;</xsl:text>
                   </xsl:when>
+                  <!-- Otherwise, just apply the templates -->
                   <xsl:otherwise>
+                    <!-- If the value of head is greater than 20 characters, 
+                  create a short optional label for the running header at 
+                  the top of the page. -->
                     <xsl:if test="string-length(self::tei:head) > 20">
                       <xsl:text>[</xsl:text>
                       <xsl:variable name="words" select="tokenize(normalize-space(.), '\s+')"/>
@@ -385,12 +403,9 @@
                     <xsl:text>}</xsl:text>
                     <xsl:text>\label{</xsl:text>
                     <xsl:value-of select="parent::tei:div/@xml:id"/>
-                    <xsl:text>}&#10;</xsl:text>
-                    <xsl:text>&#10;\vspace{1\baselineskip} % Whitespace&#10;</xsl:text>
+                    <xsl:text>}</xsl:text>
                   </xsl:otherwise>
-                </xsl:choose><!-- If the value of head is greater than 20 characters, 
-                  create a short optional label for the running header at 
-                  the top of the page. --> 
+                </xsl:choose>
               </xsl:when>
               <xsl:when test="ancestor::tei:back">
                 <xsl:text>[{</xsl:text>
@@ -649,7 +664,7 @@
   </xsl:template>-->
   
   <xsl:template match="tei:listBibl/tei:bibl">
-    <xsl:text>\bibitem</xsl:text>
+    <xsl:text>\bibitem </xsl:text>
     <xsl:choose>
       <xsl:when test="parent::tei:listBibl/@xml:lang = 'zh-TW' or @xml:lang = 'zh-TW'">
         <xsl:text>{\textChinese </xsl:text>
