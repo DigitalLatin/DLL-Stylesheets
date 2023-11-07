@@ -33,13 +33,12 @@
     </desc>
   </doc>
   
-<!--  This might not be necessary, since it doesn't really do much anyway? -->
-<!--    <doc xmlns="http://www.oxygenxml.com/ns/doc/xsl">
+<doc xmlns="http://www.oxygenxml.com/ns/doc/xsl">
     <desc>Process element cit for the apparatus fontium as an \Afootnote in reledmac.</desc>
   </doc>
   <xsl:template match="tei:cit">
       <xsl:apply-templates/>
-  </xsl:template>-->
+  </xsl:template>
 
   <doc xmlns="http://www.oxygenxml.com/ns/doc/xsl">
     <desc>Process element note with @type = 'parallel' for the apparatus testium/fontium
@@ -142,18 +141,17 @@
   <xsl:template name="appLemma">
     <xsl:param name="lemma"/>
     <xsl:for-each select="tei:lem">
-      <!-- If the app is a child of head, \edtext must be supplied by the templates for head -->
+      <!-- The lemma -->
       <xsl:choose>
         <xsl:when test="ancestor::tei:head">
-          <xsl:text>{</xsl:text>
+          <xsl:text>\edtext{}</xsl:text>
         </xsl:when>
         <xsl:otherwise>
-        <xsl:text>\edtext{</xsl:text>
+          <xsl:text>\edtext{</xsl:text>
+          <xsl:apply-templates/>
+          <xsl:text>}</xsl:text>
         </xsl:otherwise>
       </xsl:choose>
-      <!-- The lemma -->
-      <xsl:apply-templates/>
-      <xsl:text>}</xsl:text>
       <!-- Logic for handling various scenarios where the lemma in the app is different from the lemma in the text. -->
       <xsl:choose>
         <xsl:when test="following-sibling::tei:note[@type = 'commentary']">
@@ -183,9 +181,23 @@
           <xsl:text>}</xsl:text>
         </xsl:when>
         <xsl:when test="ancestor::tei:head">
-          <xsl:text>\label{</xsl:text>
-          <xsl:value-of select="ancestor::tei:div/@xml:id"/>
-          <xsl:text>}}{</xsl:text>
+          <xsl:text>{\lemma{</xsl:text>
+          <xsl:choose>
+            <xsl:when test="string-length(self::tei:lem) > 20">
+            <xsl:variable name="words" select="tokenize(normalize-space(.), '\s+')"/>
+            <xsl:for-each select="$words[position() &lt;= 3]">
+              <xsl:value-of select="."/>
+              <xsl:if test="position() != last()">
+                <xsl:text> </xsl:text>
+              </xsl:if>
+            </xsl:for-each>
+            <xsl:text> … </xsl:text>
+            </xsl:when>
+            <xsl:otherwise>
+              <xsl:value-of select="normalize-space(.)"/>
+            </xsl:otherwise>
+          </xsl:choose>
+          <xsl:text>} </xsl:text>
         </xsl:when>
         <xsl:otherwise>
           <!-- Otherwise, just open the bracket for the Cfootnote string. We're using \Cfootnote, since \Afootnote should be reserved for an apparatus fontium. -->
@@ -193,7 +205,14 @@
         </xsl:otherwise>
       </xsl:choose>
       <!-- \Cfootnote{} is where a note should be placed. We're using \Cfootnote, since \Afootnote should be reserved for an apparatus fontium. -->
-      <xsl:text>\Cfootnote</xsl:text>
+      <xsl:choose>
+        <xsl:when test="ancestor::tei:head">
+          <xsl:text>\Bfootnote</xsl:text>
+        </xsl:when>
+        <xsl:otherwise>
+          <xsl:text>\Cfootnote</xsl:text>
+        </xsl:otherwise>
+      </xsl:choose>
       <!-- Logic for handling a lemma with or without witness or source -->
       <xsl:choose>
         <!-- If the lemma doesn't have a witness or a source, just insert the lemma, followed by ], which Reledmac inserts automatically by default (\Xlemmaseparator). -->
@@ -395,9 +414,6 @@
     </xsl:if>
     <!-- Close the apparatus note. -->
     <xsl:text>}}</xsl:text>
-    <xsl:if test="ancestor::tei:head">
-      <xsl:text>&#10;\pend&#10;</xsl:text>
-    </xsl:if>
     <xsl:if test="not(following-sibling::node()[1][self::text()[normalize-space()]])">
       <xsl:text> </xsl:text>
     </xsl:if>
