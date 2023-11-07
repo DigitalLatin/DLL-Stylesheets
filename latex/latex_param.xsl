@@ -184,6 +184,7 @@ the beginning of the document</desc>
 \Xarrangement[B]{paragraph}
 \Xragged[B]{R}
 \Xnumberonlyfirstinline[B]
+\Xinplaceoflemmaseparator[B]{0.5em}
 \Xafternote[B]{0.5em}
 
 </xsl:text>
@@ -554,8 +555,8 @@ characters. The normal characters remain active for LaTeX commands.
   {3ex \@plus .2ex}%
   {\reset@font\LARGE\fontfamily{lmr}}}
   \renewcommand\subsection{\@startsection{subsection}{2}{\z@}%
-  {-1.75ex\@plus -0.5ex \@minus- .2ex}%
-  {2.5ex \@plus .2ex}%
+  {-4.5ex\@plus -0.5ex \@minus- .2ex}%
+  {0.5ex \@plus .2ex}%
   {\reset@font\Large\fontfamily{lmr}}}
   \renewcommand\subsubsection{\@startsection{subsubsection}{3}{\z@}%
   {4ex\@plus -0.35ex \@minus -.2ex}%
