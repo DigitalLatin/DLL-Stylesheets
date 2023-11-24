@@ -37,10 +37,17 @@
   </xsl:template>
 
   <doc xmlns="http://www.oxygenxml.com/ns/doc/xsl">
-    <desc>Process element bibl</desc>
+    <desc>Process element bibl in "cite" mode.</desc>
   </doc>
   <xsl:template match="tei:bibl" mode="cite">
     <xsl:apply-templates select="text()[1]"/>
+  </xsl:template>
+  
+  <doc xmlns="http://www.oxygenxml.com/ns/doc/xsl">
+    <desc>Process element bibl when child of tei:cit</desc>
+  </doc>
+  <xsl:template match="tei:cit/tei:bibl" >
+    <xsl:apply-templates/>
   </xsl:template>
 
   <doc xmlns="http://www.oxygenxml.com/ns/doc/xsl">
@@ -332,6 +339,14 @@
               </xsl:when>
               <!-- This is for the title of a commentary, with a reset of the fancyheader. -->
               <xsl:when test="ancestor::tei:back">
+                <xsl:text>[{</xsl:text>
+                <xsl:apply-templates/>
+                <xsl:text>}]{\centering\uppercase{\so{</xsl:text>
+                <xsl:apply-templates/>
+                <xsl:text>}}}\label{</xsl:text>
+                <xsl:value-of select="parent::tei:div/@xml:id"/>
+                <xsl:text>}</xsl:text>
+                <xsl:text>&#10;\vspace{2\baselineskip} % Whitespace</xsl:text>
                 <xsl:text>&#10;&#10;\pagestyle{fancy}&#10;</xsl:text>
                 <xsl:text>&#10;\fancyhead[LE]{\thepage}</xsl:text>
                 <xsl:text>&#10;\fancyhead[CE]{</xsl:text>
@@ -556,11 +571,11 @@
   </doc>
   <xsl:template match="tei:list">
     <xsl:if test="tei:head">
-      <xsl:text>\leftline{\textbf{</xsl:text>
+      <xsl:text>&#10;\par&#10;\textbf{</xsl:text>
       <xsl:for-each select="tei:head">
         <xsl:apply-templates/>
       </xsl:for-each>
-      <xsl:text>}} </xsl:text>
+      <xsl:text>} </xsl:text>
     </xsl:if>
     <xsl:sequence select="tei:makeHyperTarget(@xml:id)"/>
     <xsl:choose>
@@ -579,9 +594,9 @@
         <xsl:apply-templates mode="runin" select="tei:item"/>
       </xsl:when>
       <xsl:otherwise>
-        <xsl:text>\begin{itemize}</xsl:text>
+        <xsl:text>&#10;\begin{itemize}</xsl:text>
         <xsl:apply-templates/>
-        <xsl:text>\end{itemize} </xsl:text>
+        <xsl:text>&#10;\end{itemize}&#10;</xsl:text>
       </xsl:otherwise>
     </xsl:choose>
   </xsl:template>
@@ -635,34 +650,6 @@
   <doc xmlns="http://www.oxygenxml.com/ns/doc/xsl">
     <desc>Process element listBibl/tei:bibl</desc>
   </doc>
-  <!--<xsl:template match="tei:listBibl/tei:bibl">
-    <xsl:text> \bibitem {</xsl:text>
-    <xsl:choose>
-      <xsl:when test="@xml:id">
-        <xsl:value-of select="@xml:id"/>
-      </xsl:when>
-      <xsl:otherwise>bibitem-<xsl:number level="any"/>
-      </xsl:otherwise>
-    </xsl:choose>
-    <xsl:text>}</xsl:text>
-    <xsl:choose>
-      <xsl:when test="parent::tei:listBibl/@xml:lang = 'zh-TW' or @xml:lang = 'zh-TW'">
-        <xsl:text>{\textChinese </xsl:text>
-        <xsl:apply-templates/>
-        <xsl:text>}</xsl:text>
-      </xsl:when>
-      <xsl:when test="parent::tei:listBibl/@xml:lang = 'ja' or @xml:lang = 'ja'">
-        <xsl:text>{\textJapanese </xsl:text>
-        <xsl:apply-templates/>
-        <xsl:text>}</xsl:text>
-      </xsl:when>
-      <xsl:otherwise>
-        <xsl:apply-templates/>
-      </xsl:otherwise>
-    </xsl:choose>
-    <xsl:text>&#10;</xsl:text>
-  </xsl:template>-->
-  
   <xsl:template match="tei:listBibl/tei:bibl">
     <xsl:text>\bibitem </xsl:text>
     <xsl:choose>
@@ -689,15 +676,6 @@
   <xsl:template match="tei:listWit/tei:witness/tei:bibl">
     <xsl:text> </xsl:text>
     <xsl:apply-templates/>
-  </xsl:template>
-  
-  <doc xmlns="http://www.oxygenxml.com/ns/doc/xsl">
-    <desc>Process element tei:bibl within a tei:cit (for apparatus fontium)</desc>
-  </doc>
-  <xsl:template match="tei:cit/tei:bibl">
-    <xsl:text>\edtext{}{\Afootnote[nosep]{</xsl:text>
-    <xsl:apply-templates/>
-    <xsl:text>}}</xsl:text>
   </xsl:template>
   
   <doc xmlns="http://www.oxygenxml.com/ns/doc/xsl">
@@ -905,7 +883,7 @@
     </xsl:if>
     <xsl:text>}</xsl:text>
   </xsl:template>
-
+  
   <doc xmlns="http://www.oxygenxml.com/ns/doc/xsl">
     <desc>Process element p</desc>
   </doc>
@@ -1194,4 +1172,5 @@
           <xsl:text> </xsl:text>
         </xsl:if>
   </xsl:template>
+  
 </xsl:stylesheet>
