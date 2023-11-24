@@ -27,19 +27,23 @@
       <p>Copyright: 2013, TEI Consortium</p>
     </desc>
   </doc>
-  <doc xmlns="http://www.oxygenxml.com/ns/doc/xsl">
-    <desc>
-      <p>For processing the apparatus fontium, see the template for tei:cit in latex_core.xsl.</p>
-    </desc>
-  </doc>
   
-<doc xmlns="http://www.oxygenxml.com/ns/doc/xsl">
-    <desc>Process element cit for the apparatus fontium as an \Afootnote in reledmac.</desc>
-  </doc>
-  <xsl:template match="tei:cit">
-      <xsl:apply-templates/>
+  <xsl:template match="tei:cit[@type='fontium']">
+      <xsl:text>\edtext{</xsl:text>
+      <xsl:value-of select="$preQuote"/>
+      <xsl:apply-templates select="tei:quote"/>
+      <xsl:value-of select="$postQuote"/>
+      <xsl:text>}{\Afootnote{</xsl:text>
+      <xsl:for-each select="tei:bibl">
+        <xsl:apply-templates select="."/>
+        <xsl:if test="following-sibling::tei:note">
+          <xsl:text> (</xsl:text>
+          <xsl:apply-templates select="following-sibling::tei:note"/>
+          <xsl:text>)</xsl:text>
+        </xsl:if>
+        <xsl:text>}}</xsl:text>
+      </xsl:for-each>
   </xsl:template>
-
   <doc xmlns="http://www.oxygenxml.com/ns/doc/xsl">
     <desc>Process element note with @type = 'parallel' for the apparatus testium/fontium
       using \Bfootnote in reledmac.</desc>
@@ -132,6 +136,75 @@
 
   <doc xmlns="http://www.oxygenxml.com/ns/doc/xsl">
     <desc>
+      <p>Assemble nested lems.</p>
+    </desc>
+    <param name="currentNode">The lems.</param>
+  </doc>
+  <xsl:template name="concatenate-lem-text">
+    <xsl:param name="currentNode"/>
+    
+    <!-- Process the current node -->
+    <xsl:for-each select="$currentNode">
+      <!-- Recursively process child <lem> elements -->
+      <xsl:for-each select=".//tei:lem">
+        <xsl:value-of select="tei:lem"/>
+      </xsl:for-each>
+    </xsl:for-each>
+  </xsl:template>
+
+  <doc xmlns="http://www.oxygenxml.com/ns/doc/xsl">
+    <desc>
+      <p>Get the first words of the lemma.</p>
+    </desc>
+    <param name="text">The parameter 'text' is used for text inside lem.</param>
+    <param name="count">The count of words.</param>
+    <param name="n">The specified number of words to count.</param>
+  </doc>
+  <xsl:template name="get-first-words">
+    <xsl:param name="text"/>
+    <xsl:param name="count" select="1"/>
+    <xsl:param name="n"/>
+    
+    <!-- Base case: If count exceeds n or text is empty, stop recursion -->
+    <xsl:if test="$count &lt;= $n and normalize-space($text) != ''">
+      <!-- Output the first word -->
+      <xsl:value-of select="substring-before(concat(normalize-space($text), ' '), ' ')"/>
+      <xsl:text> </xsl:text>
+      
+      <!-- Recursive call for the next word -->
+      <xsl:call-template name="get-first-words">
+        <xsl:with-param name="text" select="substring-after(normalize-space($text), ' ')"/>
+        <xsl:with-param name="count" select="$count + 1"/>
+        <xsl:with-param name="n" select="$n"/>
+      </xsl:call-template>
+    </xsl:if>
+  </xsl:template>
+  
+  <doc xmlns="http://www.oxygenxml.com/ns/doc/xsl">
+    <desc>
+      <p>Get the last word of the lemma.</p>
+    </desc>
+    <param name="text">The parameter 'text' is used for text inside lem.</param>
+  </doc>
+  <xsl:template name="get-last-word">
+    <xsl:param name="text"/>    
+    <!-- Check if there is a space in the string -->
+    <xsl:choose>
+      <xsl:when test="contains($text, ' ')">
+        <!-- Recursive call with the substring after the first space -->
+        <xsl:call-template name="get-last-word">
+          <xsl:with-param name="text" select="substring-after($text, ' ')"/>
+        </xsl:call-template>
+      </xsl:when>
+      <xsl:otherwise>
+        <!-- If no space is found, return the entire string -->
+        <xsl:value-of select="$text"/>
+      </xsl:otherwise>
+    </xsl:choose>
+  </xsl:template>
+  
+  <doc xmlns="http://www.oxygenxml.com/ns/doc/xsl">
+    <desc>
       <p>Assemble the lemma, its witnesses and sources, and any notes or witDetails associated with
         it.</p>
     </desc>
@@ -141,9 +214,15 @@
   <xsl:template name="appLemma">
     <xsl:param name="lemma"/>
     <xsl:for-each select="tei:lem">
+      <!-- Variable to hold concatenated string from <lem> elements -->
+      <xsl:variable name="lemText">
+        <xsl:call-template name="concatenate-lem-text">
+          <xsl:with-param name="currentNode" select="."/>
+        </xsl:call-template>
+      </xsl:variable>
       <!-- The lemma -->
       <xsl:choose>
-        <xsl:when test="ancestor::tei:head">
+        <xsl:when test="ancestor::tei:head or string-length($lemText) > 50">
           <xsl:text>\edtext{}</xsl:text>
         </xsl:when>
         <xsl:otherwise>
@@ -180,24 +259,36 @@
           <xsl:apply-templates select="self::tei:lem"/>
           <xsl:text>}</xsl:text>
         </xsl:when>
-        <xsl:when test="ancestor::tei:head">
+        <!-- If the lemma is in tei:head or is very long -->
+        <xsl:when test="ancestor::tei:head or self::tei:lem[@type='long']">
           <xsl:text>{\lemma{</xsl:text>
-          <xsl:choose>
-            <xsl:when test="string-length(self::tei:lem) > 20">
-            <xsl:variable name="words" select="tokenize(normalize-space(.), '\s+')"/>
-            <xsl:for-each select="$words[position() &lt;= 3]">
-              <xsl:value-of select="."/>
-              <xsl:if test="position() != last()">
+          <!-- Output first and last words -->
+          <xsl:variable name="lemText">
+            <xsl:for-each select="descendant-or-self::tei:lem/text()">
+              <!-- Ensure a space is added between words from different <lem> elements -->
+              <xsl:if test="position() != 1">
                 <xsl:text> </xsl:text>
               </xsl:if>
-            </xsl:for-each>
-            <xsl:text> … </xsl:text>
-            </xsl:when>
-            <xsl:otherwise>
               <xsl:value-of select="normalize-space(.)"/>
-            </xsl:otherwise>
-          </xsl:choose>
-          <xsl:text>} </xsl:text>
+            </xsl:for-each>
+          </xsl:variable>
+          <!-- Extract first and last words from $lemText -->
+          <xsl:variable name="firstWords">
+            <xsl:call-template name="get-first-words">
+              <xsl:with-param name="text" select="$lemText"/>
+              <xsl:with-param name="n" select="3"/>
+            </xsl:call-template>
+          </xsl:variable>
+          <xsl:variable name="lastWord">
+            <xsl:call-template name="get-last-word">
+              <xsl:with-param name="text" select="$lemText"/>
+            </xsl:call-template>
+          </xsl:variable>
+          <!-- Output first and last words -->
+          <xsl:value-of select="normalize-space($firstWords)"/>
+          <xsl:text> … </xsl:text>
+          <xsl:value-of select="normalize-space($lastWord)"/>
+          <xsl:text>}</xsl:text>
         </xsl:when>
         <xsl:otherwise>
           <!-- Otherwise, just open the bracket for the Cfootnote string. We're using \Cfootnote, since \Afootnote should be reserved for an apparatus fontium. -->
@@ -272,9 +363,9 @@
                     </xsl:when>
                     <!-- There's just a plain note -->
                     <xsl:otherwise>
-                      <xsl:text> \textit{</xsl:text>
+                      <xsl:text> (\textit{</xsl:text>
                       <xsl:apply-templates select="following-sibling::*[1][self::tei:note]"/>
-                      <xsl:text>}</xsl:text>
+                      <xsl:text>})</xsl:text>
                     </xsl:otherwise>
                   </xsl:choose>
                 </xsl:when>
@@ -466,6 +557,11 @@
     /><xsl:text>} </xsl:text>
   </xsl:template>
 
+  <xsldoc:doc xmlns:xsldoc="http://www.oxygenxml.com/ns/doc/xsl">
+    <xsldoc:desc>
+      <p>Process l inside of app.</p>
+    </xsldoc:desc>
+  </xsldoc:doc>
   <xsl:template match="tei:l[ancestor::tei:app and not(@processed)]">
     <xsl:variable name="self" select="."/>
     <xsl:if test="parent::tei:lem">
