@@ -33,7 +33,8 @@
       <xsl:value-of select="$preQuote"/>
       <xsl:apply-templates select="tei:quote"/>
       <xsl:value-of select="$postQuote"/>
-      <xsl:text>}{\Afootnote{</xsl:text>
+      <!-- Use an empty \lemma{} and [nosep] to avoid printing the lemma in the apparatus. -->
+      <xsl:text>}{\lemma{}\Afootnote[nosep]{</xsl:text>
       <xsl:for-each select="tei:bibl">
         <xsl:apply-templates select="."/>
         <xsl:if test="following-sibling::tei:note">
