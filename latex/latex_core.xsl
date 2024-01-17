@@ -314,7 +314,7 @@
           <!-- First Order Heads -->
           <xsl:when test="$depth = '0'">
             <xsl:choose>
-              <xsl:when test="ancestor::tei:body">
+              <xsl:when test="ancestor::tei:body or tei:back">
                 <xsl:text>[{</xsl:text>
                 <xsl:apply-templates/>
                 <xsl:text>}]{\centering\uppercase{\so{</xsl:text>
@@ -339,13 +339,6 @@
               </xsl:when>
               <!-- This is for the title of a commentary, with a reset of the fancyheader. -->
               <xsl:when test="ancestor::tei:back">
-                <xsl:text>[{</xsl:text>
-                <xsl:apply-templates/>
-                <xsl:text>}]{\centering\uppercase{\so{</xsl:text>
-                <xsl:apply-templates/>
-                <xsl:text>}}}\label{</xsl:text>
-                <xsl:value-of select="parent::tei:div/@xml:id"/>
-                <xsl:text>}</xsl:text>
                 <xsl:text>&#10;\vspace{2\baselineskip} % Whitespace</xsl:text>
                 <xsl:text>&#10;&#10;\pagestyle{fancy}&#10;</xsl:text>
                 <xsl:text>&#10;\fancyhead[LE]{\thepage}</xsl:text>
