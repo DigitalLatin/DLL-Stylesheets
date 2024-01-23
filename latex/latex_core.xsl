@@ -42,49 +42,95 @@
   <xsl:template match="tei:bibl" mode="cite">
     <xsl:apply-templates select="text()[1]"/>
   </xsl:template>
-  
-  <doc xmlns="http://www.oxygenxml.com/ns/doc/xsl">
-    <desc>Process element bibl when child of tei:cit</desc>
-  </doc>
-  <xsl:template match="tei:cit/tei:bibl" >
-    <xsl:apply-templates/>
-  </xsl:template>
 
   <doc xmlns="http://www.oxygenxml.com/ns/doc/xsl">
     <desc>Process element cit</desc>
   </doc>
   <xsl:template match="tei:cit">
-    <xsl:choose>
-      <xsl:when test="tei:match(@rend, 'display') or tei:q/tei:p or tei:quote/tei:l or tei:quote/tei:p">
-        <xsl:text>&#10;\begin{</xsl:text>
-        <xsl:value-of select="$quoteEnv"/>
-        <xsl:text>}&#10;</xsl:text>
-        <xsl:if test="@n">
-          <xsl:text>(</xsl:text>
-          <xsl:value-of select="@n"/>
-          <xsl:text>) </xsl:text>
-        </xsl:if>
-        <xsl:sequence select="tei:makeHyperTarget(@xml:id)"/>
-        <xsl:apply-templates select="*[not(self::tei:bibl)]"/>
-        <xsl:text>\par&#10;</xsl:text>
-        <xsl:apply-templates select="tei:bibl"/>
-        <xsl:text>&#10;\end{</xsl:text>
-        <xsl:value-of select="$quoteEnv"/>
-        <xsl:text>}&#10;</xsl:text>
-      </xsl:when>
-      <xsl:otherwise>
-        <xsl:value-of select="$preQuote"/>
-        <xsl:if test="@n">
-          <xsl:text>(</xsl:text>
-          <xsl:value-of select="@n"/>
-          <xsl:text>) </xsl:text>
-        </xsl:if>
-        <xsl:apply-templates/>
-        <xsl:value-of select="$postQuote"/>
-      </xsl:otherwise>
-    </xsl:choose>
+    <!-- Apply templates to child nodes of <cit> with mode -->
+    <xsl:apply-templates mode="quoteProcessing"/>
+  </xsl:template>
+  
+  <doc xmlns="http://www.oxygenxml.com/ns/doc/xsl">
+    <desc>Process element quote when child of cit</desc>
+  </doc>
+  <xsl:template match="tei:quote" mode="quoteProcessing">
+    <!-- Apply templates only to text and 'lem' that are not descendants of 'rdg' -->
+    <xsl:variable name="quoteContent">
+      <xsl:apply-templates select="text() | .//tei:lem[not(ancestor::tei:rdg)]" mode="quoteProcessing"/>
+    </xsl:variable>
+    <xsl:text>\edtext{``</xsl:text>
+    <xsl:value-of select="normalize-space($quoteContent)"/>
+    <xsl:text>''}{\lemma{}\Afootnote{</xsl:text>
+    <xsl:apply-templates select="ancestor::tei:cit/tei:bibl" />
+    <xsl:text>}}</xsl:text>
+  </xsl:template>
+  
+  <doc xmlns="http://www.oxygenxml.com/ns/doc/xsl">
+    <desc>Process element ref when child of cit</desc>
+  </doc>
+  <xsl:template match="tei:ref" mode="quoteProcessing">
+    <xsl:apply-templates select="."/>
+  </xsl:template>
+  
+  <doc xmlns="http://www.oxygenxml.com/ns/doc/xsl">
+    <desc>Process element bibl when child of cit</desc>
+  </doc>
+  <xsl:template match="tei:bibl" mode="quoteProcessing">
+    <xsl:apply-templates />
   </xsl:template>
 
+  <doc xmlns="http://www.oxygenxml.com/ns/doc/xsl">
+    <desc>Part of the processing to get just the text of quote as child of cit</desc>
+  </doc>
+  <xsl:template match="text()" mode="quoteProcessing">
+    <!-- Output the text node -->
+    <xsl:value-of select="normalize-space(.)"/>
+    <!-- Add a space after the text, if it is not empty -->
+    <xsl:if test="normalize-space(.) != ''">
+      <xsl:text> </xsl:text>
+    </xsl:if>
+  </xsl:template>
+  
+  <doc xmlns="http://www.oxygenxml.com/ns/doc/xsl">
+    <desc>Process only the immediate child text nodes of lem in cit/quote</desc>
+  </doc>
+  <xsl:template match="tei:lem[not(ancestor::tei:rdg)]" mode="quoteProcessing">
+    <!-- Process only the immediate child text nodes of 'lem' -->
+    <xsl:for-each select="text()">
+      <xsl:value-of select="normalize-space(.)"/>
+      <xsl:if test="position() != last()">
+        <xsl:text> </xsl:text>
+      </xsl:if>
+    </xsl:for-each>
+    <!-- Check if there are any text nodes to avoid adding extra space -->
+    <xsl:if test="text()">
+      <xsl:text> </xsl:text>
+    </xsl:if>
+  </xsl:template>
+  
+  <doc xmlns="http://www.oxygenxml.com/ns/doc/xsl">
+    <desc>Ignore rdg, bibl, and ref in cit/quote in quoteProcessing mode</desc>
+  </doc>
+  <xsl:template match="tei:rdg|tei:bibl" mode="quoteProcessing"/>
+  
+  
+  <!--  <doc xmlns="http://www.oxygenxml.com/ns/doc/xsl">
+    <desc>Process element bibl when child of tei:cit</desc>
+  </doc>
+  <xsl:template match="tei:cit/tei:bibl" name="citBibl">
+    <xsl:text>{\lemma{}\Afootnote[nosep]{</xsl:text>
+      <xsl:for-each select="tei:bibl">
+        <xsl:apply-templates select="."/>
+        <xsl:if test="following-sibling::tei:note">
+          <xsl:text> (</xsl:text>
+          <xsl:apply-templates select="following-sibling::tei:note"/>
+          <xsl:text>) </xsl:text>
+        </xsl:if>
+      </xsl:for-each>
+    <xsl:text>}</xsl:text>
+  </xsl:template>
+-->  
   <doc xmlns="http://www.oxygenxml.com/ns/doc/xsl">
     <desc>Process element code</desc>
   </doc>
@@ -430,13 +476,63 @@
           <!-- Third Order Heads -->
           <xsl:when test="$depth = '2'">
             <xsl:choose>
-              <xsl:when test="child::tei:app">
-                <xsl:apply-templates/>
+                <xsl:when test="ancestor::tei:front">
+                  <xsl:text>{</xsl:text>
+                  <xsl:apply-templates/>
+                  <xsl:text>}&#10;</xsl:text>
+                </xsl:when>
+                <xsl:when test="ancestor::tei:body and parent::tei:div[@type = 'textpart']">
+                <xsl:choose>
+                  <!-- If there is a child app element, process it -->
+                  <xsl:when test="tei:app">
+                    <!-- Output the subsection with the value of the descendant lem element -->
+                    <xsl:if test="string-length(tei:app/tei:lem) > 20">
+                      <xsl:text>[</xsl:text>
+                      <xsl:variable name="words" select="tokenize(normalize-space(.), '\s+')"/>
+                      <xsl:for-each select="$words[position() &lt;= 3]">
+                        <xsl:value-of select="."/>
+                        <xsl:if test="position() != last()">
+                          <xsl:text> </xsl:text>
+                        </xsl:if>
+                      </xsl:for-each>
+                      <xsl:text> … ]</xsl:text>
+                    </xsl:if>
+                    <xsl:text>{</xsl:text>
+                    <xsl:value-of select="normalize-space(tei:app/tei:lem)"/>
+                    <xsl:text>}</xsl:text>
+                    <xsl:text>\label{</xsl:text>
+                    <xsl:value-of select="parent::tei:div/@xml:id"/>
+                    <xsl:text>}</xsl:text>
+                    <xsl:text>&#10;\pstart&#10;</xsl:text>
+                    <!-- Apply templates only for app and its children -->
+                    <xsl:apply-templates select="tei:app"/>
+                    <xsl:text>&#10;\pend&#10;</xsl:text>
+                  </xsl:when>
+                  <!-- Otherwise, just apply the templates -->
+                  <xsl:otherwise>
+                    <!-- If the value of head is greater than 20 characters, 
+                    create a short optional label for the running header at 
+                    the top of the page. -->
+                    <xsl:if test="string-length(self::tei:head) > 20">
+                      <xsl:text>[</xsl:text>
+                      <xsl:variable name="words" select="tokenize(normalize-space(.), '\s+')"/>
+                      <xsl:for-each select="$words[position() &lt;= 3]">
+                        <xsl:value-of select="."/>
+                        <xsl:if test="position() != last()">
+                          <xsl:text> </xsl:text>
+                        </xsl:if>
+                      </xsl:for-each>
+                      <xsl:text> … ]</xsl:text>
+                    </xsl:if>
+                    <xsl:text>{</xsl:text>
+                    <xsl:apply-templates/>
+                    <xsl:text>}</xsl:text>
+                    <xsl:text>\label{</xsl:text>
+                    <xsl:value-of select="parent::tei:div/@xml:id"/>
+                    <xsl:text>}</xsl:text>
+                  </xsl:otherwise>
+                </xsl:choose>
               </xsl:when>
-              <xsl:otherwise><xsl:text>{</xsl:text>
-                <xsl:apply-templates/>
-                <xsl:text>}&#10;</xsl:text>
-              </xsl:otherwise>
             </xsl:choose>
           </xsl:when>
           <xsl:otherwise>
@@ -1047,14 +1143,15 @@
         <xsl:text>&#10;\endgroup&#10;</xsl:text>
       </xsl:when>
       <xsl:when test="parent::tei:cit">
-        <xsl:if test="preceding-sibling::tei:ref">
+        
+        <!--<xsl:if test="preceding-sibling::tei:ref">
           <xsl:text> </xsl:text>
         </xsl:if>
         <xsl:sequence select="tei:makeHyperTarget(@xml:id)"/>
         <xsl:apply-templates/>
         <xsl:if test="following-sibling::tei:ref">
           <xsl:text> </xsl:text>
-        </xsl:if>
+        </xsl:if>-->
       </xsl:when>
       <xsl:when test="@rend = 'inline'">
         <xsl:text>``</xsl:text>
