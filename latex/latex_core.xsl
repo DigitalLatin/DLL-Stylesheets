@@ -61,9 +61,47 @@
     </xsl:variable>
     <xsl:text>\edtext{``</xsl:text>
     <xsl:value-of select="normalize-space($quoteContent)"/>
-    <xsl:text>''}{\lemma{}\Afootnote{</xsl:text>
-    <xsl:apply-templates select="ancestor::tei:cit/tei:bibl" />
+    <xsl:text>''}{\lemma{}\Afootnote[nosep]{</xsl:text>
+    <xsl:apply-templates select="ancestor::tei:cit/tei:bibl" mode="citBibl" />
     <xsl:text>}}</xsl:text>
+    <xsl:for-each select="tei:app">
+      <xsl:call-template name="makeAppEntry"/>
+    </xsl:for-each>
+  </xsl:template>
+  
+  <doc xmlns="http://www.oxygenxml.com/ns/doc/xsl">
+    <desc>Process element bibl when child of cit</desc>
+  </doc>
+  <xsl:template match="tei:cit/tei:bibl" mode="citBibl">
+      <xsl:if test="tei:author">
+        <xsl:for-each select="tei:author">
+          <xsl:choose>
+            <xsl:when test="@role='vertit'">
+              <xsl:text>(</xsl:text><xsl:value-of select="normalize-space(.)"/><xsl:text>)</xsl:text>
+            </xsl:when>
+            <xsl:otherwise>
+              <xsl:value-of select="normalize-space(.)"/>  
+            </xsl:otherwise>
+          </xsl:choose>
+          <xsl:text> </xsl:text>
+        </xsl:for-each>
+      </xsl:if>
+      <xsl:if test="tei:title"><xsl:text>\textit{</xsl:text><xsl:value-of select="normalize-space(tei:title)"/><xsl:text>} </xsl:text></xsl:if>
+      <xsl:if test="tei:biblScope">
+        <xsl:for-each select="tei:biblScope">
+          <xsl:value-of select="normalize-space(.)"/>
+          <xsl:if test="position() != last()">.</xsl:if>
+          <xsl:if test="position() = last()">. </xsl:if>
+        </xsl:for-each>
+      </xsl:if>
+      <xsl:if test="following-sibling::tei:note">
+        <xsl:text> (</xsl:text>
+        <xsl:apply-templates select="following-sibling::tei:note"/>
+        <xsl:text>) </xsl:text>
+      </xsl:if>
+      <xsl:if test="not(position() = last())">
+        <xsl:text>; </xsl:text>
+      </xsl:if>
   </xsl:template>
   
   <doc xmlns="http://www.oxygenxml.com/ns/doc/xsl">
@@ -77,7 +115,7 @@
     <desc>Process element bibl when child of cit</desc>
   </doc>
   <xsl:template match="tei:bibl" mode="quoteProcessing">
-    <xsl:apply-templates />
+    <xsl:apply-templates/>
   </xsl:template>
 
   <doc xmlns="http://www.oxygenxml.com/ns/doc/xsl">
@@ -113,7 +151,6 @@
     <desc>Ignore rdg, bibl, and ref in cit/quote in quoteProcessing mode</desc>
   </doc>
   <xsl:template match="tei:rdg|tei:bibl" mode="quoteProcessing"/>
-  
   
   <!--  <doc xmlns="http://www.oxygenxml.com/ns/doc/xsl">
     <desc>Process element bibl when child of tei:cit</desc>
@@ -858,7 +895,7 @@
     <desc>Process num.</desc>
   </doc>
   <xsl:template match="tei:num">
-    <xsl:value-of select="."/>
+    <xsl:apply-templates/>
   </xsl:template>
   
   <doc xmlns="http://www.oxygenxml.com/ns/doc/xsl">
