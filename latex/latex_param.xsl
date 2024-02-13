@@ -774,7 +774,7 @@ characters. The normal characters remain active for LaTeX commands.
 \newunicodechar{⍪}{\textfallbackMUFI{}} % MUFI PUA
 \newunicodechar{⟨}{\textfallbackMUFI{⟨}}
 \newunicodechar{⟩}{\textfallbackMUFI{⟩}}
-\newunicodechar{ꝯ}{\textfallbackMUFI{ꝯ}}
+\newunicodechar{ⳋ}{\textfallbackMUFI{9}}
 % Asterisk character for gap.
 %\newunicodechar{∗}{\textfallbackMUFI{*}}
 % Siglum character
