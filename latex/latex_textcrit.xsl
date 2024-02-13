@@ -28,12 +28,12 @@
     </desc>
   </doc>
   
-  <xsl:template match="tei:cit[@type='fontium']">
+<!--  <xsl:template match="tei:cit[@type='fontium']">
       <xsl:text>\edtext{</xsl:text>
       <xsl:value-of select="$preQuote"/>
       <xsl:apply-templates select="tei:quote"/>
       <xsl:value-of select="$postQuote"/>
-      <!-- Use an empty \lemma{} and [nosep] to avoid printing the lemma in the apparatus. -->
+      <!-\- Use an empty \lemma{} and [nosep] to avoid printing the lemma in the apparatus. -\->
       <xsl:text>}{\lemma{}\Afootnote[nosep]{</xsl:text>
       <xsl:for-each select="tei:bibl">
         <xsl:apply-templates select="."/>
@@ -44,7 +44,7 @@
         </xsl:if>
         <xsl:text>}}</xsl:text>
       </xsl:for-each>
-  </xsl:template>
+  </xsl:template>-->
   <doc xmlns="http://www.oxygenxml.com/ns/doc/xsl">
     <desc>Process element note with @type = 'parallel' for the apparatus testium/fontium
       using \Bfootnote in reledmac.</desc>
@@ -223,7 +223,7 @@
       </xsl:variable>
       <!-- The lemma -->
       <xsl:choose>
-        <xsl:when test="ancestor::tei:head or string-length($lemText) > 50">
+        <xsl:when test="ancestor::tei:head or string-length($lemText) > 50 or ancestor::tei:quote">
           <xsl:text>\edtext{}</xsl:text>
         </xsl:when>
         <xsl:otherwise>
@@ -260,35 +260,48 @@
           <xsl:apply-templates select="self::tei:lem"/>
           <xsl:text>}</xsl:text>
         </xsl:when>
-        <!-- If the lemma is in tei:head or is very long -->
+        <!-- If the lemma is very long -->
         <xsl:when test="ancestor::tei:head or self::tei:lem[@type='long']">
           <xsl:text>{\lemma{</xsl:text>
-          <!-- Output first and last words -->
-          <xsl:variable name="lemText">
-            <xsl:for-each select="descendant-or-self::tei:lem/text()">
-              <!-- Ensure a space is added between words from different <lem> elements -->
-              <xsl:if test="position() != 1">
-                <xsl:text> </xsl:text>
-              </xsl:if>
-              <xsl:value-of select="normalize-space(.)"/>
-            </xsl:for-each>
-          </xsl:variable>
-          <!-- Extract first and last words from $lemText -->
-          <xsl:variable name="firstWords">
-            <xsl:call-template name="get-first-words">
-              <xsl:with-param name="text" select="$lemText"/>
-              <xsl:with-param name="n" select="3"/>
-            </xsl:call-template>
-          </xsl:variable>
-          <xsl:variable name="lastWord">
-            <xsl:call-template name="get-last-word">
-              <xsl:with-param name="text" select="$lemText"/>
-            </xsl:call-template>
-          </xsl:variable>
-          <!-- Output first and last words -->
-          <xsl:value-of select="normalize-space($firstWords)"/>
-          <xsl:text> … </xsl:text>
-          <xsl:value-of select="normalize-space($lastWord)"/>
+          <xsl:choose>
+            <xsl:when test="self::tei:lem[@type='long']"><!-- Output first and last words -->
+                <xsl:variable name="lemText">
+                  <xsl:for-each select="descendant-or-self::tei:lem/text()">
+                    <!-- Ensure a space is added between words from different <lem> elements -->
+                    <xsl:if test="position() != 1">
+                      <xsl:text> </xsl:text>
+                    </xsl:if>
+                    <xsl:value-of select="normalize-space(.)"/>
+                  </xsl:for-each>
+                </xsl:variable>
+                <!-- Extract first and last words from $lemText -->
+                <xsl:variable name="firstWords">
+                  <xsl:call-template name="get-first-words">
+                    <xsl:with-param name="text" select="$lemText"/>
+                    <xsl:with-param name="n" select="3"/>
+                  </xsl:call-template>
+                </xsl:variable>
+                <xsl:variable name="lastWord">
+                  <xsl:call-template name="get-last-word">
+                    <xsl:with-param name="text" select="$lemText"/>
+                  </xsl:call-template>
+                </xsl:variable>
+                <!-- Output first and last words -->
+                <xsl:value-of select="normalize-space($firstWords)"/>
+                <xsl:text> … </xsl:text>
+                <xsl:value-of select="normalize-space($lastWord)"/>
+                <xsl:text>}</xsl:text>
+            </xsl:when>
+            <xsl:otherwise>
+              <xsl:value-of select="."/>
+              <xsl:text>}</xsl:text>
+            </xsl:otherwise>
+          </xsl:choose>
+        </xsl:when>
+        <!-- When the ancestor is tei:quote -->
+        <xsl:when test="ancestor::tei:quote">
+          <xsl:text>{\lemma{</xsl:text>
+          <xsl:apply-templates select="self::tei:lem"/>
           <xsl:text>}</xsl:text>
         </xsl:when>
         <xsl:otherwise>
@@ -638,6 +651,10 @@
       <xsl:when test="@type='correction-altered'">p.c.</xsl:when>
       <xsl:when test="@type='correction-original'">a.c.</xsl:when>
     </xsl:choose>
+  </xsl:template>
+  
+  <xsl:template match="tei:witDetail">
+    <xsl:apply-templates/>
   </xsl:template>
 
   <doc xmlns="http://www.oxygenxml.com/ns/doc/xsl">
