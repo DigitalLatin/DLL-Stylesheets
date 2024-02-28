@@ -57,7 +57,7 @@
   <xsl:template match="tei:quote" mode="quoteProcessing">
     <!-- Apply templates only to text and 'lem' that are not descendants of 'rdg' -->
     <xsl:variable name="quoteContent">
-      <xsl:apply-templates select="text() | .//tei:lem[not(ancestor::tei:rdg)]" mode="quoteProcessing"/>
+      <xsl:apply-templates select="text() | .//tei:lem[not(ancestor::tei:rdg)]/* | .//tei:lem[not(ancestor::tei:rdg)]" mode="quoteProcessing"/>
     </xsl:variable>
     <xsl:text>\edtext{``</xsl:text>
     <xsl:value-of select="normalize-space($quoteContent)"/>
