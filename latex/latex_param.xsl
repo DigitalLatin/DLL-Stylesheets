@@ -127,6 +127,7 @@ the beginning of the document</desc>
 \usepackage{titlesec}
 \usepackage{titletoc}
 \usepackage{accents}
+\usepackage{csquotes}
 
 % Use thalie for drama texts (consider logic to insert this when needed)
 \usepackage[characterstyle=simple,playstyle=bigcenter]{thalie}
@@ -553,15 +554,15 @@ characters. The normal characters remain active for LaTeX commands.
 \renewcommand\section{\@startsection {section}{1}{\z@}%
   {-2ex \@plus -0.5ex \@minus -.2ex}%
   {3ex \@plus .2ex}%
-  {\reset@font\LARGE\fontfamily{lmr}}}
-  \renewcommand\subsection{\@startsection{subsection}{2}{\z@}%
+  {\reset@font\LARGE}}
+\renewcommand\subsection{\@startsection{subsection}{2}{\z@}%
   {-4.5ex\@plus -0.5ex \@minus- .2ex}%
   {0.5ex \@plus .2ex}%
-  {\reset@font\Large\fontfamily{lmr}}}
-  \renewcommand\subsubsection{\@startsection{subsubsection}{3}{\z@}%
+  {\reset@font\Large}}
+\renewcommand\subsubsection{\@startsection{subsubsection}{3}{\z@}%
   {4ex\@plus -0.35ex \@minus -.2ex}%
   {2ex \@plus .2ex}%
-  {\reset@font\fontfamily{lmr}\large}}
+  {\reset@font\large}}
  \renewcommand\paragraph{\@startsection{paragraph}{4}{\z@}%
   {3ex \@plus-0.35ex \@minus -0.2ex}%
   {1ex \@plus .2ex}%
@@ -775,6 +776,8 @@ characters. The normal characters remain active for LaTeX commands.
 \newunicodechar{⟨}{\textfallbackMUFI{⟨}}
 \newunicodechar{⟩}{\textfallbackMUFI{⟩}}
 \newunicodechar{ⳋ}{\textfallbackMUFI{9}}
+\newcommand{\textzwnj}{}
+\newunicodechar{‌}{\textzwnj}
 % Asterisk character for gap.
 %\newunicodechar{∗}{\textfallbackMUFI{*}}
 % Siglum character
