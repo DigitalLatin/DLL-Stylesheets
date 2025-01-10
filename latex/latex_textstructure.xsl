@@ -308,7 +308,12 @@ Volumes are published under the </xsl:text>
     </doc>
     <xsl:template match="tei:back">
         <xsl:if test="not(preceding::tei:back)">
-            <xsl:text>&#10;\backmatter </xsl:text>
+            <xsl:text>&#10;\newpage             % 1. Force new page</xsl:text>
+            <xsl:text>&#10;\pagestyle{empty}    % 2. Set empty style</xsl:text>
+            <xsl:text>&#10;\clearpage           % 3. Clear current page</xsl:text>
+            <xsl:text>&#10;\cleardoublepage    % 4. Force even page</xsl:text>
+            <xsl:text>&#10;\blankpage          % 5. Add blank page</xsl:text>
+            <xsl:text>&#10;&#10;\backmatter </xsl:text>
         </xsl:if>
         <xsl:apply-templates/>
     </xsl:template>
