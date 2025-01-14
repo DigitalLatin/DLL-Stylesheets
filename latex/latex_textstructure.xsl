@@ -314,6 +314,14 @@ Volumes are published under the </xsl:text>
             <xsl:text>&#10;\cleardoublepage    % 4. Force even page</xsl:text>
             <xsl:text>&#10;\blankpage          % 5. Add blank page</xsl:text>
             <xsl:text>&#10;&#10;\backmatter </xsl:text>
+            <xsl:text>% Reformat subsubheadings and paragraphs</xsl:text>
+            <xsl:text>&#10;&#10;\makeatletter</xsl:text>
+            <xsl:text>&#10;\renewcommand\subsubsection{\@startsection{subsubsection}{3}{\z@}%</xsl:text>
+            <xsl:text>&#10;  {3.25ex\@plus 1ex \@minus .2ex}%</xsl:text>
+            <xsl:text>&#10;  {0.2ex \@plus .2ex}%</xsl:text>
+            <xsl:text>&#10;  {\reset@font\large}}</xsl:text>
+            <xsl:text>&#10;\setlength\parskip{0.75em plus 0.1em minus 0.2em}</xsl:text>
+            <xsl:text>&#10;\makeatother</xsl:text>
         </xsl:if>
         <xsl:apply-templates/>
     </xsl:template>
