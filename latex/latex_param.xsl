@@ -540,7 +540,7 @@ characters. The normal characters remain active for LaTeX commands.
 \def\@pnumwidth{1.55em}
 \def\@tocrmarg {2.55em}
 \def\@dotsep{4.5}
-\setcounter{tocdepth}{3}
+\setcounter{tocdepth}{1}
 \clubpenalty=8000
 \emergencystretch 3em
 \hbadness=4000
@@ -558,15 +558,15 @@ characters. The normal characters remain active for LaTeX commands.
 \renewcommand\subsection{\@startsection{subsection}{2}{\z@}%
   {-4.5ex\@plus -0.5ex \@minus- .2ex}%
   {0.5ex \@plus .2ex}%
-  {\reset@font\Large}}
+  {\reset@font\large}}
 \renewcommand\subsubsection{\@startsection{subsubsection}{3}{\z@}%
   {4ex\@plus -0.35ex \@minus -.2ex}%
   {2ex \@plus .2ex}%
-  {\reset@font\large}}
+  {\reset@font\normalsize}}
  \renewcommand\paragraph{\@startsection{paragraph}{4}{\z@}%
   {3ex \@plus-0.35ex \@minus -0.2ex}%
   {1ex \@plus .2ex}%
-  {\reset@font\normalsize\fontfamily{lmr}\textit}}
+  {\reset@font\normalsize\textit}}
 \renewcommand\subparagraph{\@startsection{subparagraph}{5}{\parindent}%
   {1.5ex \@plus1ex \@minus .2ex}%
   {-1em}%
@@ -789,6 +789,8 @@ characters. The normal characters remain active for LaTeX commands.
 \DeclareTextFontCommand{\textfallbackStigma}{\fallbackfontStigma}
 \newunicodechar{Ϛ}{\textfallbackStigma{Ϛ}}
 \newunicodechar{ϛ}{\textfallbackStigma{ϛ}}
+% For dingbat characters
+\usepackage{pifont}
 </xsl:text>
 </xsl:template>
   
