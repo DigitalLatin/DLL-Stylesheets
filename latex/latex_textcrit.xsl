@@ -45,7 +45,7 @@
         <xsl:text>}}</xsl:text>
       </xsl:for-each>
   </xsl:template>-->
-  <doc xmlns="http://www.oxygenxml.com/ns/doc/xsl">
+  <!--<doc xmlns="http://www.oxygenxml.com/ns/doc/xsl">
     <desc>Process element note with @type = 'parallel' for the apparatus testium/fontium
       using \Bfootnote in reledmac.</desc>
   </doc>
@@ -87,7 +87,7 @@
       </xsl:otherwise>
     </xsl:choose>
     <xsl:text>}}</xsl:text>
-  </xsl:template>
+  </xsl:template>-->
 
   <doc xmlns="http://www.oxygenxml.com/ns/doc/xsl">
     <desc>
@@ -223,7 +223,7 @@
       </xsl:variable>
       <!-- The lemma -->
       <xsl:choose>
-        <xsl:when test="ancestor::tei:head or string-length($lemText) > 50 or ancestor::tei:quote">
+        <xsl:when test="ancestor::tei:head or string-length($lemText) > 50">
           <xsl:text>\edtext{}</xsl:text>
         </xsl:when>
         <xsl:otherwise>
@@ -293,16 +293,10 @@
                 <xsl:text>}</xsl:text>
             </xsl:when>
             <xsl:otherwise>
-              <xsl:value-of select="."/>
+              <xsl:value-of select="normalize-space(.)"/>
               <xsl:text>}</xsl:text>
             </xsl:otherwise>
           </xsl:choose>
-        </xsl:when>
-        <!-- When the ancestor is tei:quote -->
-        <xsl:when test="ancestor::tei:quote">
-          <xsl:text>{\lemma{</xsl:text>
-          <xsl:apply-templates select="self::tei:lem"/>
-          <xsl:text>}</xsl:text>
         </xsl:when>
         <xsl:otherwise>
           <!-- Otherwise, just open the bracket for the Cfootnote string. We're using \Cfootnote, since \Afootnote should be reserved for an apparatus fontium. -->
