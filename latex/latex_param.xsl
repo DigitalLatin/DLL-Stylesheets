@@ -791,6 +791,17 @@ characters. The normal characters remain active for LaTeX commands.
 \newunicodechar{ϛ}{\textfallbackStigma{ϛ}}
 % For dingbat characters
 \usepackage{pifont}
+
+\newcommand{\ornamentpagebreak}{%
+\vspace{1em}
+\begin{center}
+    {\Large \ding{167}}
+\end{center}
+\pend
+\vfill
+
+\newpage
+}
 </xsl:text>
 </xsl:template>
   
