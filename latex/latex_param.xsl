@@ -793,11 +793,12 @@ characters. The normal characters remain active for LaTeX commands.
 \usepackage{pifont}
 
 \newcommand{\ornamentpagebreak}{%
-\vspace{1em}
-\begin{center}
+  \vspace{1em}
+  \begin{center}
     {\Large \ding{167}}
-\end{center}
+  \end{center}
 \pend
+
 \vfill
 
 \newpage
