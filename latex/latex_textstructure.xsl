@@ -379,6 +379,14 @@ Volumes are published under the </xsl:text>
             <xsl:when test="self::tei:div[@type = 'edition']">
                 <xsl:text>&#10;\beginnumbering&#10;</xsl:text>
                 <xsl:apply-templates/>
+                <!-- SJH: Insert three centered dingbats at the end of the edition -->
+                <xsl:text>&#10;\pstart
+    \vspace{1em}
+    \begin{center}
+        {\Large \ding{167} \ding{167} \ding{167}}
+    \end{center}
+\pend&#10;
+                </xsl:text>
                 <xsl:text>&#10;\endnumbering</xsl:text>
             </xsl:when>
             <xsl:otherwise>
